@@ -1,0 +1,10 @@
+# hexo robots.txt
+User-agent: * Allow: /
+Allow: /archives/
+Disallow: /vendors/
+Disallow: /js/
+Disallow: /css/
+Disallow: /vendors/
+
+Sitemap: http://blog.injectxx.com/sitemap.xml
+Sitemap: http://blog.injectxx.com/baidusitemap.xml

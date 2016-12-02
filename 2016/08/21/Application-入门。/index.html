@@ -1,350 +1,791 @@
+<!doctype html>
 
- <!DOCTYPE HTML>
-<html lang="zh-Hans">
-<head>
-  <meta charset="UTF-8">
+
+
   
-    <title>编写Native Application-入门。 | 岁月&#39;s Blog</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
     
-    <meta name="author" content="岁月。">
     
-    <meta name="description" content="简介：什么是NT Native Application？在读完资料前我也不知道这是什么，感觉很高大上的样子，仔细了解后才知道最早出现 Native Application 应该是06年的事，而我在十年之后才知道，心好痛。">
+  
+
+  
+
+  
+
+  
+
+  
+
+  
     
     
-    
-    
-    
-    <link rel="icon" href="/favicon.ico">
-    
-    
-    <link rel="apple-touch-icon" href="/img/pacman.jpg">
-    <link rel="apple-touch-icon-precomposed" href="/img/pacman.jpg">
-    
-    <link rel="stylesheet" href="/css/style.css">
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="C/C++," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="简介：什么是NT Native Application？在读完资料前我也不知道这是什么，感觉很高大上的样子，仔细了解后才知道最早出现 Native Application 应该是06年的事，而我在十年之后才知道，心好痛。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="编写Native Application-入门。">
+<meta property="og:url" content="http://blog.injectxx.com/2016/08/21/Application-入门。/index.html">
+<meta property="og:site_name" content="岁月's Blog">
+<meta property="og:description" content="简介：什么是NT Native Application？在读完资料前我也不知道这是什么，感觉很高大上的样子，仔细了解后才知道最早出现 Native Application 应该是06年的事，而我在十年之后才知道，心好痛。">
+<meta property="og:image" content="http://blog.injectxx.com/img/1.jpg">
+<meta property="og:image" content="http://blog.injectxx.com/img/2.jpg">
+<meta property="og:image" content="http://blog.injectxx.com/img/3.jpg">
+<meta property="og:image" content="http://blog.injectxx.com/img/4.jpg">
+<meta property="og:updated_time" content="2016-08-20T16:45:36.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="编写Native Application-入门。">
+<meta name="twitter:description" content="简介：什么是NT Native Application？在读完资料前我也不知道这是什么，感觉很高大上的样子，仔细了解后才知道最早出现 Native Application 应该是06年的事，而我在十年之后才知道，心好痛。">
+<meta name="twitter:image" content="http://blog.injectxx.com/img/1.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.injectxx.com/2016/08/21/Application-入门。/"/>
+
+
+
+
+
+  <title> 编写Native Application-入门。 | 岁月's Blog </title>
 </head>
 
-  <body>
-    <header>
-      <div>
-		
-			<div id="imglogo">
-				<a href="/"><img src="/img/logo.svg" alt="岁月&#39;s Blog" title="岁月&#39;s Blog"/></a>
-			</div>
-			
-			<div id="textlogo">
-				<h1 class="site-name"><a href="/" title="岁月&#39;s Blog">岁月&#39;s Blog</a></h1>
-				<h2 class="blog-motto">一只奋斗的猿</h2>
-			</div>
-			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
-			</a></div>
-			<nav class="animated">
-				<ul>
-					
-						<li><a href="/">Home</a></li>
-					
-						<li><a href="/archives">Archives</a></li>
-					
-					<li>
-					
-					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
-						<label>Search</label>
-						<input type="text" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search" />
-						<input type="hidden" name="q" value="site:blog.injectxx.com">
-					</form>
-					
-					</li>
-				</ul>
-			</nav>			
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?b1d70a29b3f59b8638bc9305a50cc2f6";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+  <div style="display: none;">
+    <script src="//s95.cnzz.com/z_stat.php?id=1260188451&web_id=1260188451" language="JavaScript"></script>
+  </div>
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">岁月's Blog</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">一只奋斗的猿</p>
 </div>
 
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-board">
+          <a href="/board" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-book"></i> <br />
+            
+            留言板
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-neighbor">
+          <a href="/neighbor" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-heart"></i> <br />
+            
+            邻居
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
     </header>
-    <div id="container">
-      <div id="main" class="post" itemscope itemprop="blogPost">
-	<article itemprop="articleBody"> 
-		<header class="article-info clearfix">
-  <h1 itemprop="name">
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
     
-      <a href="/2016/08/21/Application-入门。/" title="编写Native Application-入门。" itemprop="url">编写Native Application-入门。</a>
-  </h1>
-  <p class="article-author">By
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://blog.injectxx.com/2016/08/21/Application-入门。/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="岁月。">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/images/avatar.jpg">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="岁月's Blog">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="岁月's Blog" src="">
+    </span>
+  </span>
+
     
-      <a href="http://blog.injectxx.com" title="岁月。">岁月。</a>
-    </p>
-  <p class="article-time">
-    <time datetime="2016-08-20T16:31:00.000Z" itemprop="datePublished">2016-08-21</time>
-    Updated:<time datetime="2016-08-20T16:45:36.000Z" itemprop="dateModified">2016-08-21</time>
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                编写Native Application-入门。
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-08-21T00:31:00+08:00">
+                2016-08-21
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <a href="/2016/08/21/Application-入门。/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/08/21/Application-入门。/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+        </div>
+      </header>
     
-  </p>
-</header>
-	<div class="article-content">
-		
-		
-		<div id="toc" class="toc-article">
-			<strong class="toc-title">Contents</strong>
-		
-		</div>
-		
-		<p>简介：<br>什么是NT Native Application？在读完资料前我也不知道这是什么，感觉很高大上的样子，仔细了解后才知道最早出现 Native Application 应该是06年的事，而我在十年之后才知道，心好痛。<br><a id="more"></a><br>用一幅图来解释说明一下吧：<br><img src="/img/1.jpg" alt="说明" title="1"><br>如果读过Windows Nt相关的资料。则应该知道Windows有所谓的子系统，子系统就包括了windows程序，POSIX以及OS/2程序，子系统也就是Windows的下层程序。<br>（我迷了，解释半天也不知道到底什么意思。）<br>举个简单的例子，在异常关机重启时，Windows会对磁盘进行检查，这个检查程序就是一个Native Application，这样应该好理解一些。<br>参考资料：<a href="http://technet.microsoft.com/en-us/sysinternals/bb897447.aspx" target="_blank" rel="external">http://technet.microsoft.com/en-us/sysinternals/bb897447.aspx</a></p>
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>简介：<br>什么是NT Native Application？在读完资料前我也不知道这是什么，感觉很高大上的样子，仔细了解后才知道最早出现 Native Application 应该是06年的事，而我在十年之后才知道，心好痛。<br><a id="more"></a><br>用一幅图来解释说明一下吧：<br><img src="/img/1.jpg" alt="说明" title="1"><br>如果读过Windows Nt相关的资料。则应该知道Windows有所谓的子系统，子系统就包括了windows程序，POSIX以及OS/2程序，子系统也就是Windows的下层程序。<br>（我迷了，解释半天也不知道到底什么意思。）<br>举个简单的例子，在异常关机重启时，Windows会对磁盘进行检查，这个检查程序就是一个Native Application，这样应该好理解一些。<br>参考资料：<a href="http://technet.microsoft.com/en-us/sysinternals/bb897447.aspx" target="_blank" rel="external">http://technet.microsoft.com/en-us/sysinternals/bb897447.aspx</a></p>
 <p>Native Application启动时机：<br>我们先来看看Windows的启动流程<br>1）读取主引导记录（MBR）<br>2）读取启动配置数据存储中的信息<br>3）启动管理器（Windows Boot Manager）运行OS loader    Winload.exe<br>4）加载Ntoskrnl.exe和hal.dll从注册表取数据设置并加载驱动<br>5）运行windows会话管理器（smss.exe），启动Windows启动程序（wininit.exe），启动本地安全验证（lsass.exe）与服务（services.exe），此后可以登录系统。<br>加载序号    Cid ParentCid   Image<br>0   0004    0000    System<br>1   012c    0004    smss.exe<br>2   0170    0164    csrss.exe<br>3   01a8    0164    wininit.exe<br>4   01b4    01a0    csrss.exe<br>5   01ec    01a0    winlogon.exe<br>6   021c    01a8    services.exe<br>7   022c    01a8    lsass.exe<br>8   0234    01a8    lsm.exe<br>9   02a4    021c    svchost.exe<br>                                   这里还是启动服务进程。<br>10  0618    01ec    userinit.exe<br>11  0230    0618    explorer.exe<br>大体是这样的。<br>当 Windows 内核的引导完成以后，就会启动会话管理器 smss.exe 进程了。<br>smss.exe 进程虽然是一个用户模式的进程，但是这个进程相对于其他用户模式进程是具有一定特殊性的，<br>首先 smss.exe 进程是直接建立在 Windows NT 内核上的，其不依赖于任何一个环境子系统，<br>至于不依赖于任何一个环境子系统这一说的话，还是可以很好的解释的，<br>因为当环境子系统进程(Windows 子系统进程为 csrss.exe)就是由 smss.exe 进程启动的，<br>然后 smss.exe 是 Windows 操作系统启动的第一个用户态进程，<br>而 Native Application 也属于用户态程序，自然 Native Application 的启动是在 smss.exe 之后，<br>而后前面也说过，Native Application 运行时，子系统进程还尚未启动，<br>所以 Native Application 的启动则是在 csrss.exe 之前的，<br>而话又说回来，csrss.exe 就是由会话管理器(smss.exe)启动的，<br>而 Native Application 的启动时机也就只有一种可能了，<br>即 smss.exe 先启动 Native Application，然后 Native Application 开始执行，<br>等到 Native Application 都给执行完了后 smss.exe 再启动 csrss.exe 进程。<br><img src="/img/2.jpg" alt="说明" title="2"><br>测试：<br><figure class="highlight plain"><figcaption><span>C</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">#include &quot;ntddk.h&quot;</div><div class="line"> </div><div class="line">NTSTATUS NTAPI NtDisplayString(PUNICODE_STRING String);</div><div class="line">NTSTATUS NTAPI NtTerminateProcess(HANDLE ProcessHandle, LONG ExitStatus);</div><div class="line"> </div><div class="line">void NtProcessStartup(PPEB pPEB)</div><div class="line">&#123;</div><div class="line">    UNICODE_STRING Test;</div><div class="line">    RtlInitUnicodeString(&amp;Test, L&quot;Test\n&quot;);</div><div class="line">    NtDisplayString(&amp;Test);</div><div class="line">    NtTerminateProcess(NtCurrentProcess(), 0);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
 <p>使用方法：<br>编译好对应平台的程序，放入System32文件夹中之后在注册表中打开HKLM\System\CurrentControlSet\Control\Session Manager\BootExecute，这里存放一个MULTI_SZ类型的键值，也就是会话管理器所执行的程序名称和参数。</p>
 <p>效果：<br>Win7 X64<br><img src="/img/3.jpg" alt="说明" title="3"><br>Win XP<br><img src="/img/4.jpg" alt="说明" title="4"><br>完整的工程文件：<a href="http://www.injectxx.com/down/make.rar" target="_blank" rel="external">http://www.injectxx.com/down/make.rar</a></p>
-  
-	</div>
-		<footer class="article-footer clearfix">
 
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/C-C/">C/C++</a>
-  </div>
-
-
-
-
-<div class="article-share" id="share">
-
-  <div data-url="http://blog.injectxx.com/2016/08/21/Application-入门。/" data-title="编写Native Application-入门。 | 岁月&#39;s Blog" data-tsina="null" class="share clearfix">
-  </div>
-
-</div>
-</footer>   	       
-	</article>
-	
-<nav class="article-nav clearfix">
- 
- <div class="prev" >
- <a href="/2016/08/21/关于调试权限清0。/" title="关于调试权限清0。">
-  <strong>PREVIOUS:</strong><br/>
-  <span>
-  关于调试权限清0。</span>
-</a>
-</div>
-
-
-<div class="next">
-<a href="/2016/08/20/PE结构。/"  title="PE结构。">
- <strong>NEXT:</strong><br/> 
- <span>PE结构。
-</span>
-</a>
-</div>
-
-</nav>
-
-	
-<section class="comment">
-	<div class="ds-thread"></div>
-</section>
-
-</div>  
-      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
-
-  <div id="toc" class="toc-aside">
-  <strong class="toc-title">Contents</strong>
-  
-  </div>
-
-<div id="asidepart">
-<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
-<aside class="clearfix">
-
-  
-
-  
-<div class="tagslist">
-	<p class="asidetitle">Tags</p>
-		<ul class="clearfix">
-		
-			<li><a href="/tags/Android/" title="Android">Android<sup>5</sup></a></li>
-		
-			<li><a href="/tags/C/" title="C++">C++<sup>7</sup></a></li>
-		
-			<li><a href="/tags/C-C/" title="C/C++">C/C++<sup>1</sup></a></li>
-		
-			<li><a href="/tags/Cydia/" title="Cydia">Cydia<sup>1</sup></a></li>
-		
-			<li><a href="/tags/Hexo/" title="Hexo">Hexo<sup>1</sup></a></li>
-		
-			<li><a href="/tags/Hook/" title="Hook">Hook<sup>3</sup></a></li>
-		
-			<li><a href="/tags/Windows/" title="Windows">Windows<sup>2</sup></a></li>
-		
-			<li><a href="/tags/Xposed/" title="Xposed">Xposed<sup>1</sup></a></li>
-		
-			<li><a href="/tags/inject/" title="inject">inject<sup>2</sup></a></li>
-		
-			<li><a href="/tags/函数替换/" title="函数替换">函数替换<sup>1</sup></a></li>
-		
-			<li><a href="/tags/反汇编/" title="反汇编">反汇编<sup>7</sup></a></li>
-		
-			<li><a href="/tags/日常/" title="日常">日常<sup>1</sup></a></li>
-		
-			<li><a href="/tags/注入/" title="注入">注入<sup>1</sup></a></li>
-		
-			<li><a href="/tags/远程线程注入/" title="远程线程注入">远程线程注入<sup>1</sup></a></li>
-		
-			<li><a href="/tags/逆向/" title="逆向">逆向<sup>7</sup></a></li>
-		
-			<li><a href="/tags/驱动/" title="驱动">驱动<sup>1</sup></a></li>
-		
-		</ul>
-</div>
-
-
-  <div class="rsspart">
-	<a href="undefined" target="_blank" title="rss">RSS</a>
-</div>
-
-</aside>
-</div>
-    </div>
-    <footer><div id="footer" >
-	
-	<div class="line">
-		<span></span>
-		<div class="author"></div>
-	</div>
-	
-	
-	<div class="social-font clearfix">
-		
-		
-		
-		
-		
-	</div>
-		<p class="copyright">Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/A-limon/pacman" target="_blank" title="Pacman">Pacman</a> © 2016 
-		
-		<a href="http://blog.injectxx.com" target="_blank" title="岁月。">岁月。</a>
-		
-		</p>
-</div>
-</footer>
-    <script src="/js/jquery-2.1.0.min.js"></script>
-<script type="text/javascript">
-$(document).ready(function(){ 
-  $('.navbar').click(function(){
-    $('header nav').toggleClass('shownav');
-  });
-  var myWidth = 0;
-  function getSize(){
-    if( typeof( window.innerWidth ) == 'number' ) {
-      myWidth = window.innerWidth;
-    } else if( document.documentElement && document.documentElement.clientWidth) {
-      myWidth = document.documentElement.clientWidth;
-    };
-  };
-  var m = $('#main'),
-      a = $('#asidepart'),
-      c = $('.closeaside'),
-      o = $('.openaside');
-  $(window).resize(function(){
-    getSize(); 
-    if (myWidth >= 1024) {
-      $('header nav').removeClass('shownav');
-    }else
-    {
-      m.removeClass('moveMain');
-      a.css('display', 'block').removeClass('fadeOut');
-      o.css('display', 'none');
       
-      $('#toc.toc-aside').css('display', 'none');
+    </div>
+
+    <div>
+      
         
-    }
-  });
-  c.click(function(){
-    a.addClass('fadeOut').css('display', 'none');
-    o.css('display', 'block').addClass('fadeIn');
-    m.addClass('moveMain');
-  });
-  o.click(function(){
-    o.css('display', 'none').removeClass('beforeFadeIn');
-    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
-    m.removeClass('moveMain');
-  });
-  $(window).scroll(function(){
-    o.css("top",Math.max(80,260-$(this).scrollTop()));
-  });
-});
-</script>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/C-C/" rel="tag"># C/C++</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/08/20/PE结构。/" rel="next" title="PE结构。">
+                <i class="fa fa-chevron-left"></i> PE结构。
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/08/21/关于调试权限清0。/" rel="prev" title="关于调试权限清0。">
+                关于调试权限清0。 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/08/21/Application-入门。/"
+           data-title="编写Native Application-入门。" data-url="http://blog.injectxx.com/2016/08/21/Application-入门。/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview sidebar-panel sidebar-panel-active">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpg"
+               alt="岁月。" />
+          <p class="site-author-name" itemprop="name">岁月。</p>
+          <p class="site-description motion-element" itemprop="description">志之所向，金石为开，谁能御之？</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">21</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">16</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/Kernel32Sun" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://weibo.com" target="_blank" title="Weibo">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                  Weibo
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="mailto:s.allure.love@gmail.com" target="_blank" title="Email">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  Email
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-block">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              小伙伴儿
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.injectxx.com/" title="岁月's Blog" target="_blank">岁月's Blog</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.wangzhixian.org/" title="wnagzihxain’s Blog" target="_blank">wnagzihxain’s Blog</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">岁月。</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+<div class="busuanzi-count">
+
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv"><i class="fa fa-user"></i><span class="busuanzi-value" id="busuanzi_value_site_uv"></span></span>
+  
+
+  
+    <span class="site-pv"><i class="fa fa-eye"></i><span class="busuanzi-value" id="busuanzi_value_site_pv"></span></span>
+  
+  
+</div>
+
+
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
 
 <script type="text/javascript">
-$(document).ready(function(){ 
-  var ai = $('.article-content>iframe'),
-      ae = $('.article-content>embed'),
-      t  = $('#toc'),
-      h  = $('article h2')
-      ah = $('article h2'),
-      ta = $('#toc.toc-aside'),
-      o  = $('.openaside'),
-      c  = $('.closeaside');
-  if(ai.length>0){
-    ai.wrap('<div class="video-container" />');
-  };
-  if(ae.length>0){
-   ae.wrap('<div class="video-container" />');
-  };
-  if(ah.length==0){
-    t.css('display','none');
-  }else{
-    c.click(function(){
-      ta.css('display', 'block').addClass('fadeIn');
-    });
-    o.click(function(){
-      ta.css('display', 'none');
-    });
-    $(window).scroll(function(){
-      ta.css("top",Math.max(140,320-$(this).scrollTop()));
-    });
-  };
-});
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
 </script>
 
 
-<script type="text/javascript">
-$(document).ready(function(){ 
-  var $this = $('.share'),
-      url = $this.attr('data-url'),
-      encodedUrl = encodeURIComponent(url),
-      title = $this.attr('data-title'),
-      tsina = $this.attr('data-tsina');
-  var html = [
-  '<a href="#" class="overlay" id="qrcode"></a>',
-  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#share"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
-  '<a href="#textlogo" class="article-back-to-top" title="Top"></a>',
-  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
-  '<a href="#qrcode" class="article-share-qrcode" title="QRcode"></a>',
-  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
-  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="Weibo"></a>',
-  '<span title="Share to"></span>'
-  ].join('');
-  $this.append(html);
-  $('.article-share-qrcode').click(function(){
-    var imgSrc = $('#qrcode-pic').attr('data-src');
-    $('#qrcode-pic').attr('src', imgSrc);
-    $('#qrcode-pic').load(function(){
-        $('.qrcode strong').text(' ');
-    });
-  });
-});     
-</script>
-
-
-<script type="text/javascript">
-  var duoshuoQuery = {short_name:"Kernel32Sun"};
-  (function() {
-    var ds = document.createElement('script');
-    ds.type = 'text/javascript';ds.async = true;
-    ds.src = '//static.duoshuo.com/embed.js';
-    ds.charset = 'UTF-8';
-    (document.getElementsByTagName('head')[0] 
-    || document.getElementsByTagName('body')[0]).appendChild(ds);
-  })();
-</script> 
 
 
 
 
 
-  </body>
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"kernel32sun"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=5.1.0"></script>
+
+
+
+</body>
 </html>

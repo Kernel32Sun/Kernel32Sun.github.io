@@ -1,91 +1,413 @@
+<!doctype html>
 
- <!DOCTYPE HTML>
-<html lang="zh-Hans">
-<head>
-  <meta charset="UTF-8">
+
+
   
-    <title>代码注入之一。 | 岁月&#39;s Blog</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
     
-    <meta name="author" content="岁月。">
     
-    <meta name="description" content="好久没更新博客了，转眼自己又长大了一岁，搬砖的时间长了感觉文笔越来越差（其实以前也不怎么好），什么也写不出来，这里就写最近工作中用到的一些小方法吧，没什么技术含量，共勉之。">
+  
+
+  
+
+  
+
+  
+
+  
+
+  
     
     
-    
-    
-    
-    <link rel="icon" href="/favicon.ico">
-    
-    
-    <link rel="apple-touch-icon" href="/img/pacman.jpg">
-    <link rel="apple-touch-icon-precomposed" href="/img/pacman.jpg">
-    
-    <link rel="stylesheet" href="/css/style.css">
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="inject,远程线程注入," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="好久没更新博客了，转眼自己又长大了一岁，搬砖的时间长了感觉文笔越来越差（其实以前也不怎么好），什么也写不出来，这里就写最近工作中用到的一些小方法吧，没什么技术含量，共勉之。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="代码注入之一。">
+<meta property="og:url" content="http://blog.injectxx.com/2016/10/15/代码注入之一。/index.html">
+<meta property="og:site_name" content="岁月's Blog">
+<meta property="og:description" content="好久没更新博客了，转眼自己又长大了一岁，搬砖的时间长了感觉文笔越来越差（其实以前也不怎么好），什么也写不出来，这里就写最近工作中用到的一些小方法吧，没什么技术含量，共勉之。">
+<meta property="og:image" content="http://blog.injectxx.com/img/15.png">
+<meta property="og:updated_time" content="2016-11-21T16:58:31.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="代码注入之一。">
+<meta name="twitter:description" content="好久没更新博客了，转眼自己又长大了一岁，搬砖的时间长了感觉文笔越来越差（其实以前也不怎么好），什么也写不出来，这里就写最近工作中用到的一些小方法吧，没什么技术含量，共勉之。">
+<meta name="twitter:image" content="http://blog.injectxx.com/img/15.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.injectxx.com/2016/10/15/代码注入之一。/"/>
+
+
+
+
+
+  <title> 代码注入之一。 | 岁月's Blog </title>
 </head>
 
-  <body>
-    <header>
-      <div>
-		
-			<div id="imglogo">
-				<a href="/"><img src="/img/logo.svg" alt="岁月&#39;s Blog" title="岁月&#39;s Blog"/></a>
-			</div>
-			
-			<div id="textlogo">
-				<h1 class="site-name"><a href="/" title="岁月&#39;s Blog">岁月&#39;s Blog</a></h1>
-				<h2 class="blog-motto">一只奋斗的猿</h2>
-			</div>
-			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
-			</a></div>
-			<nav class="animated">
-				<ul>
-					
-						<li><a href="/">Home</a></li>
-					
-						<li><a href="/archives">Archives</a></li>
-					
-					<li>
-					
-					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
-						<label>Search</label>
-						<input type="text" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search" />
-						<input type="hidden" name="q" value="site:blog.injectxx.com">
-					</form>
-					
-					</li>
-				</ul>
-			</nav>			
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?b1d70a29b3f59b8638bc9305a50cc2f6";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+  <div style="display: none;">
+    <script src="//s95.cnzz.com/z_stat.php?id=1260188451&web_id=1260188451" language="JavaScript"></script>
+  </div>
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">岁月's Blog</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">一只奋斗的猿</p>
 </div>
 
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-board">
+          <a href="/board" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-book"></i> <br />
+            
+            留言板
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-neighbor">
+          <a href="/neighbor" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-heart"></i> <br />
+            
+            邻居
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
     </header>
-    <div id="container">
-      <div id="main" class="post" itemscope itemprop="blogPost">
-	<article itemprop="articleBody"> 
-		<header class="article-info clearfix">
-  <h1 itemprop="name">
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
     
-      <a href="/2016/10/15/代码注入之一。/" title="代码注入之一。" itemprop="url">代码注入之一。</a>
-  </h1>
-  <p class="article-author">By
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://blog.injectxx.com/2016/10/15/代码注入之一。/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="岁月。">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/images/avatar.jpg">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="岁月's Blog">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="岁月's Blog" src="">
+    </span>
+  </span>
+
     
-      <a href="http://blog.injectxx.com" title="岁月。">岁月。</a>
-    </p>
-  <p class="article-time">
-    <time datetime="2016-10-15T01:48:13.000Z" itemprop="datePublished">2016-10-15</time>
-    Updated:<time datetime="2016-11-21T16:58:31.000Z" itemprop="dateModified">2016-11-22</time>
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                代码注入之一。
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-10-15T09:48:13+08:00">
+                2016-10-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <a href="/2016/10/15/代码注入之一。/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/10/15/代码注入之一。/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+        </div>
+      </header>
     
-  </p>
-</header>
-	<div class="article-content">
-		
-		
-		<div id="toc" class="toc-article">
-			<strong class="toc-title">Contents</strong>
-		
-		</div>
-		
-		<p>好久没更新博客了，转眼自己又长大了一岁，搬砖的时间长了感觉文笔越来越差（其实以前也不怎么好），什么也写不出来，这里就写最近工作中用到的一些小方法吧，没什么技术含量，共勉之。</p>
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>好久没更新博客了，转眼自己又长大了一岁，搬砖的时间长了感觉文笔越来越差（其实以前也不怎么好），什么也写不出来，这里就写最近工作中用到的一些小方法吧，没什么技术含量，共勉之。</p>
 <a id="more"></a>
 <p>有时候需要用某些程序中的函数实现其功能，但现在代码保护技术十分强大的情况下，分析代码着实是一个体力活，这算是一种解决方案吧。</p>
 <p>测试代码：<br><figure class="highlight plain"><figcaption><span>C</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">#include &quot;stdafx.h&quot;</div><div class="line">#include &lt;stdio.h&gt;</div><div class="line"></div><div class="line">int Add(int a,int b)</div><div class="line">&#123;</div><div class="line">    int nRes = a + b;</div><div class="line">    return nRes;</div><div class="line">&#125;</div><div class="line"></div><div class="line">int main(int argc, char* argv[])</div><div class="line">&#123;</div><div class="line">    int a,b;</div><div class="line">    scanf(&quot;%d %d&quot;,&amp;a,&amp;b);</div><div class="line">    int n = Add(a,b);</div><div class="line">    printf(&quot;Hello World! %d\n&quot;,n);</div><div class="line">    return 0;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
@@ -94,262 +416,380 @@
 <p>00401031处就是我们的Add函数，根据stdcall调用规则，函数从右到左依次入栈，至此可以进行远程call调用。</p>
 <p>注入代码：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div></pre></td><td class="code"><pre><div class="line">#include &quot;stdafx.h&quot;</div><div class="line">#include &lt;windows.h&gt;</div><div class="line">int InjectProcess(LPVOID mFunc, LPVOID Param, DWORD ParamSize)</div><div class="line">&#123;</div><div class="line">    </div><div class="line">    DWORD dwPID = 1560;</div><div class="line">    HANDLE hProcess;</div><div class="line">    HANDLE  hThread;</div><div class="line">    LPVOID ThreadAddr;</div><div class="line">    LPVOID ParamAddr;</div><div class="line">    DWORD lpNumberOfBytes;</div><div class="line">    </div><div class="line">    </div><div class="line">    hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, dwPID);</div><div class="line">    if (hProcess == NULL)</div><div class="line">    &#123;</div><div class="line">        return 0;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    ParamAddr = VirtualAllocEx(hProcess, NULL, ParamSize, MEM_COMMIT, PAGE_EXECUTE_READWRITE);</div><div class="line">    </div><div class="line">    if (ParamAddr == NULL)</div><div class="line">    &#123;</div><div class="line">        return 0;</div><div class="line">    &#125;</div><div class="line">    ThreadAddr = VirtualAllocEx(hProcess, NULL, 0x100, MEM_COMMIT, PAGE_EXECUTE_READWRITE);</div><div class="line">    if (ThreadAddr == NULL)</div><div class="line">    &#123;</div><div class="line">        return 0;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    if (!WriteProcessMemory(hProcess, ParamAddr, Param, ParamSize, &amp;lpNumberOfBytes))</div><div class="line">    &#123;</div><div class="line">        return 0;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    if (!WriteProcessMemory(hProcess, ThreadAddr, mFunc, 0x128, &amp;lpNumberOfBytes))</div><div class="line">    &#123;</div><div class="line">        return 0;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    </div><div class="line">    hThread = CreateRemoteThread(hProcess, NULL, 0, (LPTHREAD_START_ROUTINE)ThreadAddr, ParamAddr, 0, &amp;lpNumberOfBytes);</div><div class="line">    </div><div class="line">    </div><div class="line">    WaitForSingleObject(hThread, INFINITE);</div><div class="line">    DWORD dwRet = 0;</div><div class="line">    GetExitCodeThread(hThread, &amp;dwRet);</div><div class="line">    </div><div class="line">    </div><div class="line">    </div><div class="line">    VirtualFreeEx(hProcess, ThreadAddr, 0x128, MEM_RELEASE);</div><div class="line">    VirtualFreeEx(hProcess, ParamAddr, ParamSize, MEM_RELEASE);</div><div class="line">    CloseHandle(hThread);</div><div class="line">    CloseHandle(hProcess);</div><div class="line">    return 0;</div><div class="line">&#125;</div><div class="line"></div><div class="line">typedef struct _Param</div><div class="line">&#123;</div><div class="line">    int a;</div><div class="line">    int b;</div><div class="line">&#125;Param, *PParam;</div><div class="line"></div><div class="line">void __stdcall Add(PParam Param)</div><div class="line">&#123;</div><div class="line">    DWORD dwAddr = 0x00401000;</div><div class="line">    int a = Param-&gt;a;</div><div class="line">    int b = Param-&gt;b;</div><div class="line">    __asm</div><div class="line">    &#123;</div><div class="line">        push a</div><div class="line">        push b</div><div class="line">        call dwAddr</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">void CallAdd(int a,int b)</div><div class="line">&#123;</div><div class="line">    Param p;</div><div class="line">    p.a = a;</div><div class="line">    p.b = b;</div><div class="line">    InjectProcess(Add, &amp;p, sizeof(p));</div><div class="line">&#125;</div><div class="line">int main(int argc, char* argv[])</div><div class="line">&#123;</div><div class="line">    CallAdd(2,3);</div><div class="line">    printf(&quot;Hello World!\n&quot;);</div><div class="line">    return 0;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
 <p>结果：<br><img src="/img/15.png" alt="说明" title="15"></p>
-  
-	</div>
-		<footer class="article-footer clearfix">
 
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/inject/">inject</a><a href="/tags/远程线程注入/">远程线程注入</a>
-  </div>
-
-
-
-
-<div class="article-share" id="share">
-
-  <div data-url="http://blog.injectxx.com/2016/10/15/代码注入之一。/" data-title="代码注入之一。 | 岁月&#39;s Blog" data-tsina="null" class="share clearfix">
-  </div>
-
-</div>
-</footer>   	       
-	</article>
-	
-<nav class="article-nav clearfix">
- 
- <div class="prev" >
- <a href="/2016/10/28/Patch Clover。/" title="Patch Clover。">
-  <strong>PREVIOUS:</strong><br/>
-  <span>
-  Patch Clover。</span>
-</a>
-</div>
-
-
-<div class="next">
-<a href="/2016/08/24/Xposed Hook/"  title="Android Xposed Hook。">
- <strong>NEXT:</strong><br/> 
- <span>Android Xposed Hook。
-</span>
-</a>
-</div>
-
-</nav>
-
-	
-<section class="comment">
-	<div class="ds-thread"></div>
-</section>
-
-</div>  
-      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
-
-  <div id="toc" class="toc-aside">
-  <strong class="toc-title">Contents</strong>
-  
-  </div>
-
-<div id="asidepart">
-<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
-<aside class="clearfix">
-
-  
-
-  
-<div class="tagslist">
-	<p class="asidetitle">Tags</p>
-		<ul class="clearfix">
-		
-			<li><a href="/tags/Android/" title="Android">Android<sup>5</sup></a></li>
-		
-			<li><a href="/tags/C/" title="C++">C++<sup>7</sup></a></li>
-		
-			<li><a href="/tags/C-C/" title="C/C++">C/C++<sup>1</sup></a></li>
-		
-			<li><a href="/tags/Cydia/" title="Cydia">Cydia<sup>1</sup></a></li>
-		
-			<li><a href="/tags/Hexo/" title="Hexo">Hexo<sup>1</sup></a></li>
-		
-			<li><a href="/tags/Hook/" title="Hook">Hook<sup>3</sup></a></li>
-		
-			<li><a href="/tags/Windows/" title="Windows">Windows<sup>2</sup></a></li>
-		
-			<li><a href="/tags/Xposed/" title="Xposed">Xposed<sup>1</sup></a></li>
-		
-			<li><a href="/tags/inject/" title="inject">inject<sup>2</sup></a></li>
-		
-			<li><a href="/tags/函数替换/" title="函数替换">函数替换<sup>1</sup></a></li>
-		
-			<li><a href="/tags/反汇编/" title="反汇编">反汇编<sup>7</sup></a></li>
-		
-			<li><a href="/tags/日常/" title="日常">日常<sup>1</sup></a></li>
-		
-			<li><a href="/tags/注入/" title="注入">注入<sup>1</sup></a></li>
-		
-			<li><a href="/tags/远程线程注入/" title="远程线程注入">远程线程注入<sup>1</sup></a></li>
-		
-			<li><a href="/tags/逆向/" title="逆向">逆向<sup>7</sup></a></li>
-		
-			<li><a href="/tags/驱动/" title="驱动">驱动<sup>1</sup></a></li>
-		
-		</ul>
-</div>
-
-
-  <div class="rsspart">
-	<a href="undefined" target="_blank" title="rss">RSS</a>
-</div>
-
-</aside>
-</div>
-    </div>
-    <footer><div id="footer" >
-	
-	<div class="line">
-		<span></span>
-		<div class="author"></div>
-	</div>
-	
-	
-	<div class="social-font clearfix">
-		
-		
-		
-		
-		
-	</div>
-		<p class="copyright">Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/A-limon/pacman" target="_blank" title="Pacman">Pacman</a> © 2016 
-		
-		<a href="http://blog.injectxx.com" target="_blank" title="岁月。">岁月。</a>
-		
-		</p>
-</div>
-</footer>
-    <script src="/js/jquery-2.1.0.min.js"></script>
-<script type="text/javascript">
-$(document).ready(function(){ 
-  $('.navbar').click(function(){
-    $('header nav').toggleClass('shownav');
-  });
-  var myWidth = 0;
-  function getSize(){
-    if( typeof( window.innerWidth ) == 'number' ) {
-      myWidth = window.innerWidth;
-    } else if( document.documentElement && document.documentElement.clientWidth) {
-      myWidth = document.documentElement.clientWidth;
-    };
-  };
-  var m = $('#main'),
-      a = $('#asidepart'),
-      c = $('.closeaside'),
-      o = $('.openaside');
-  $(window).resize(function(){
-    getSize(); 
-    if (myWidth >= 1024) {
-      $('header nav').removeClass('shownav');
-    }else
-    {
-      m.removeClass('moveMain');
-      a.css('display', 'block').removeClass('fadeOut');
-      o.css('display', 'none');
       
-      $('#toc.toc-aside').css('display', 'none');
+    </div>
+
+    <div>
+      
         
-    }
-  });
-  c.click(function(){
-    a.addClass('fadeOut').css('display', 'none');
-    o.css('display', 'block').addClass('fadeIn');
-    m.addClass('moveMain');
-  });
-  o.click(function(){
-    o.css('display', 'none').removeClass('beforeFadeIn');
-    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
-    m.removeClass('moveMain');
-  });
-  $(window).scroll(function(){
-    o.css("top",Math.max(80,260-$(this).scrollTop()));
-  });
-});
-</script>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/inject/" rel="tag"># inject</a>
+          
+            <a href="/tags/远程线程注入/" rel="tag"># 远程线程注入</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/08/24/Xposed Hook/" rel="next" title="Android Xposed Hook。">
+                <i class="fa fa-chevron-left"></i> Android Xposed Hook。
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/10/28/Patch Clover。/" rel="prev" title="Patch Clover。">
+                Patch Clover。 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/10/15/代码注入之一。/"
+           data-title="代码注入之一。" data-url="http://blog.injectxx.com/2016/10/15/代码注入之一。/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview sidebar-panel sidebar-panel-active">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpg"
+               alt="岁月。" />
+          <p class="site-author-name" itemprop="name">岁月。</p>
+          <p class="site-description motion-element" itemprop="description">志之所向，金石为开，谁能御之？</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">21</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">16</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/Kernel32Sun" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://weibo.com" target="_blank" title="Weibo">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                  Weibo
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="mailto:s.allure.love@gmail.com" target="_blank" title="Email">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  Email
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-block">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              小伙伴儿
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.injectxx.com/" title="岁月's Blog" target="_blank">岁月's Blog</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.wangzhixian.org/" title="wnagzihxain’s Blog" target="_blank">wnagzihxain’s Blog</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">岁月。</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+<div class="busuanzi-count">
+
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv"><i class="fa fa-user"></i><span class="busuanzi-value" id="busuanzi_value_site_uv"></span></span>
+  
+
+  
+    <span class="site-pv"><i class="fa fa-eye"></i><span class="busuanzi-value" id="busuanzi_value_site_pv"></span></span>
+  
+  
+</div>
+
+
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
 
 <script type="text/javascript">
-$(document).ready(function(){ 
-  var ai = $('.article-content>iframe'),
-      ae = $('.article-content>embed'),
-      t  = $('#toc'),
-      h  = $('article h2')
-      ah = $('article h2'),
-      ta = $('#toc.toc-aside'),
-      o  = $('.openaside'),
-      c  = $('.closeaside');
-  if(ai.length>0){
-    ai.wrap('<div class="video-container" />');
-  };
-  if(ae.length>0){
-   ae.wrap('<div class="video-container" />');
-  };
-  if(ah.length==0){
-    t.css('display','none');
-  }else{
-    c.click(function(){
-      ta.css('display', 'block').addClass('fadeIn');
-    });
-    o.click(function(){
-      ta.css('display', 'none');
-    });
-    $(window).scroll(function(){
-      ta.css("top",Math.max(140,320-$(this).scrollTop()));
-    });
-  };
-});
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
 </script>
 
 
-<script type="text/javascript">
-$(document).ready(function(){ 
-  var $this = $('.share'),
-      url = $this.attr('data-url'),
-      encodedUrl = encodeURIComponent(url),
-      title = $this.attr('data-title'),
-      tsina = $this.attr('data-tsina');
-  var html = [
-  '<a href="#" class="overlay" id="qrcode"></a>',
-  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#share"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
-  '<a href="#textlogo" class="article-back-to-top" title="Top"></a>',
-  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
-  '<a href="#qrcode" class="article-share-qrcode" title="QRcode"></a>',
-  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
-  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="Weibo"></a>',
-  '<span title="Share to"></span>'
-  ].join('');
-  $this.append(html);
-  $('.article-share-qrcode').click(function(){
-    var imgSrc = $('#qrcode-pic').attr('data-src');
-    $('#qrcode-pic').attr('src', imgSrc);
-    $('#qrcode-pic').load(function(){
-        $('.qrcode strong').text(' ');
-    });
-  });
-});     
-</script>
-
-
-<script type="text/javascript">
-  var duoshuoQuery = {short_name:"Kernel32Sun"};
-  (function() {
-    var ds = document.createElement('script');
-    ds.type = 'text/javascript';ds.async = true;
-    ds.src = '//static.duoshuo.com/embed.js';
-    ds.charset = 'UTF-8';
-    (document.getElementsByTagName('head')[0] 
-    || document.getElementsByTagName('body')[0]).appendChild(ds);
-  })();
-</script> 
 
 
 
 
 
-  </body>
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"kernel32sun"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=5.1.0"></script>
+
+
+
+</body>
 </html>
