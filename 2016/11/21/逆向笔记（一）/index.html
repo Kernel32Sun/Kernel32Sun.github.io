@@ -1,0 +1,374 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>逆向笔记（一） | 岁月&#39;s Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
+    
+    <meta name="author" content="岁月。">
+    
+    <meta name="description" content="最近闲了下来，总结一下之前的知识，这些东西都是好久之前留下的了，现在在回味一遍，梳理梳理。
+逆向笔记之流程控制语句。">
+    
+    
+    
+    
+    
+    <link rel="icon" href="/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/pacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/pacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      <div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.svg" alt="岁月&#39;s Blog" title="岁月&#39;s Blog"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="岁月&#39;s Blog">岁月&#39;s Blog</a></h1>
+				<h2 class="blog-motto">一只奋斗的猿</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+					<li>
+					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="text" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search" />
+						<input type="hidden" name="q" value="site:blog.injectxx.com">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2016/11/21/逆向笔记（一）/" title="逆向笔记（一）" itemprop="url">逆向笔记（一）</a>
+  </h1>
+  <p class="article-author">By
+    
+      <a href="http://blog.injectxx.com" title="岁月。">岁月。</a>
+    </p>
+  <p class="article-time">
+    <time datetime="2016-11-20T17:10:00.000Z" itemprop="datePublished">2016-11-21</time>
+    Updated:<time datetime="2016-11-22T13:28:22.000Z" itemprop="dateModified">2016-11-22</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#if语句"><span class="toc-number">1.</span> <span class="toc-text">if语句</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#if-else语句"><span class="toc-number">2.</span> <span class="toc-text">if-else语句</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#if-else-if-else语句"><span class="toc-number">3.</span> <span class="toc-text">if-else if-else语句</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#小于等于3条case语句块的Switch结构"><span class="toc-number">4.</span> <span class="toc-text">小于等于3条case语句块的Switch结构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#分支数大于3且存在线性关系的Switch结构"><span class="toc-number">5.</span> <span class="toc-text">分支数大于3且存在线性关系的Switch结构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#难以构成跳转表的Switch结构"><span class="toc-number">6.</span> <span class="toc-text">难以构成跳转表的Switch结构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#降低判断树"><span class="toc-number">7.</span> <span class="toc-text">降低判断树</span></a></li></ol>
+		</div>
+		
+		<p>最近闲了下来，总结一下之前的知识，这些东西都是好久之前留下的了，现在在回味一遍，梳理梳理。</p>
+<p>逆向笔记之流程控制语句。<br><a id="more"></a></p>
+<h2 id="if语句"><a href="#if语句" class="headerlink" title="if语句"></a>if语句</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">C代码：</div><div class="line">    if (argc &gt; 0)</div><div class="line">    &#123;</div><div class="line">        printf(&quot;%d\n&quot;, argc);</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">对应反汇编Debug：</div><div class="line">008B13DE    837D 08 00      cmp dword ptr ss:[ebp+0x8],0x0 //参数1与0比较</div><div class="line">008B13E2    7E 1B           jle short TestCode.008B13FF //小于等于0则跳转，使用了相反的跳转指令</div><div class="line">008B13E4    8BF4            mov esi,esp</div><div class="line">008B13E6    8B45 08         mov eax,dword ptr ss:[ebp+0x8]</div><div class="line">008B13E9    50              push eax</div><div class="line">008B13EA    68 58588B00     push offset TestCode.??_C@_03PMGGPEJJ@?$&gt;; %d\n</div><div class="line">008B13EF    FF15 14918B00   call dword ptr ds:[&lt;&amp;MSVCR120D.printf&gt;]  ; msvcr120.printf</div><div class="line">008B13F5    83C4 08         add esp,0x8</div><div class="line">008B13F8    3BF4            cmp esi,esp</div><div class="line">008B13FA    E8 41FDFFFF     call TestCode.008B1140</div><div class="line">008B13FF    33C0            xor eax,eax</div></pre></td></tr></table></figure>
+<p>总结：<br>执行影响标志位的指令<br>    cmp xx,xx<br>执行跳转指令<br>    jxx xx</p>
+<h2 id="if-else语句"><a href="#if-else语句" class="headerlink" title="if-else语句"></a>if-else语句</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">C代码：</div><div class="line">int _tmain(int argc, _TCHAR* argv[])</div><div class="line">&#123;</div><div class="line">    if (argc == 0)</div><div class="line">    &#123;</div><div class="line">        printf(&quot;argc == 0&quot;);</div><div class="line">    &#125;</div><div class="line">    else</div><div class="line">    &#123;</div><div class="line">        printf(&quot;argc != 0&quot;);</div><div class="line">    &#125;</div><div class="line">    return 0;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">对应反汇编Debug：</div><div class="line">00871A0E    837D 08 00      cmp dword ptr ss:[ebp+0x8],0x0 //参数1与0比较</div><div class="line">00871A12    75 19           jnz short TestCode.00871A2D //不等于0跳转到else语句块</div><div class="line">00871A14    8BF4            mov esi,esp</div><div class="line">00871A16    68 20598700     push offset TestCode.??_C@_08EMJPKIIM@ar&gt;; argc ==0</div><div class="line">00871A1B    FF15 14918700   call dword ptr ds:[&lt;&amp;MSVCR120D.printf&gt;]  ; msvcr120.printf</div><div class="line">00871A21    83C4 04         add esp,0x4</div><div class="line">00871A24    3BF4            cmp esi,esp</div><div class="line">00871A26    E8 15F7FFFF     call TestCode.00871140</div><div class="line">00871A2B    EB 17           jmp short TestCode.00871A44 //条件成立跳到结尾处，与if语句相比只多了这句跳转指令</div><div class="line">00871A2D    8BF4            mov esi,esp</div><div class="line">00871A2F    68 B0588700     push offset TestCode.??_C@_09ICDCLPKD@ar&gt;; argc != 0</div><div class="line">00871A34    FF15 14918700   call dword ptr ds:[&lt;&amp;MSVCR120D.printf&gt;]  ; msvcr120.printf</div><div class="line">00871A3A    83C4 04         add esp,0x4</div><div class="line">00871A3D    3BF4            cmp esi,esp</div><div class="line">00871A3F    E8 FCF6FFFF     call TestCode.00871140</div><div class="line">00871A44    33C0            xor eax,eax</div></pre></td></tr></table></figure>
+<p>总结：<br>执行影响标志位的指令<br>    cmp xx,xx<br>执行跳转指令<br>    jxx Else_Begin<br>If_Begin<br>    …if语句块<br>If_End<br>    jmp Else_End<br>Else_Begin<br>    …else语句块<br>Else_End    </p>
+<h2 id="if-else-if-else语句"><a href="#if-else-if-else语句" class="headerlink" title="if-else if-else语句"></a>if-else if-else语句</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">C代码：</div><div class="line">int _tmain(int argc, _TCHAR* argv[])</div><div class="line">&#123;</div><div class="line">    if (argc &gt; 0)</div><div class="line">    &#123;</div><div class="line">        printf(&quot;argc &gt; 0&quot;);</div><div class="line">    &#125;</div><div class="line">    else if (argc == 0)</div><div class="line">    &#123;</div><div class="line">        printf(&quot;argc == 0&quot;);</div><div class="line">    &#125;</div><div class="line">    else</div><div class="line">    &#123;</div><div class="line">        printf(&quot;argc &lt;= 0&quot;);</div><div class="line">    &#125;</div><div class="line">    return 0;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line">对应反汇编Debug：</div><div class="line">00C313DE    837D 08 00      cmp dword ptr ss:[ebp+0x8],0x0 //参数1与0比较</div><div class="line">00C313E2    7E 19           jle short 00C313FD //小于等于0则跳转，使用了相反的跳转指令                      ; 00C313FD</div><div class="line">00C313E4    8BF4            mov esi,esp</div><div class="line">00C313E6    68 5858C300     push 0xC35858                            ; argc &gt; 0</div><div class="line">00C313EB    FF15 1491C300   call dword ptr ds:[0xC39114]             ; msvcr120.printf</div><div class="line">00C313F1    83C4 04         add esp,0x4</div><div class="line">00C313F4    3BF4            cmp esi,esp</div><div class="line">00C313F6    E8 45FDFFFF     call 00C31140                            ; 00C31140</div><div class="line">00C313FB    EB 36           jmp short 00C31433 //条件成立跳到结尾处                      ; 00C31433</div><div class="line">00C313FD    837D 08 00      cmp dword ptr ss:[ebp+0x8],0x0 //参数1与0比较</div><div class="line">00C31401    75 19           jnz short 00C3141C //不等于0则跳转                      ; 00C3141C</div><div class="line">00C31403    8BF4            mov esi,esp</div><div class="line">00C31405    68 6458C300     push 0xC35864                            ; argc == 0</div><div class="line">00C3140A    FF15 1491C300   call dword ptr ds:[0xC39114]             ; msvcr120.printf</div><div class="line">00C31410    83C4 04         add esp,0x4</div><div class="line">00C31413    3BF4            cmp esi,esp</div><div class="line">00C31415    E8 26FDFFFF     call 00C31140                            ; 00C31140</div><div class="line">00C3141A    EB 17           jmp short 00C31433                       ; 00C31433</div><div class="line">00C3141C    8BF4            mov esi,esp</div><div class="line">00C3141E    68 7058C300     push 0xC35870                            ; argc &lt;= 0</div><div class="line">00C31423    FF15 1491C300   call dword ptr ds:[0xC39114]             ; msvcr120.printf</div><div class="line">00C31429    83C4 04         add esp,0x4</div><div class="line">00C3142C    3BF4            cmp esi,esp</div><div class="line">00C3142E    E8 0DFDFFFF     call 00C31140                            ; 00C31140</div><div class="line">00C31433    33C0            xor eax,eax</div></pre></td></tr></table></figure>
+<p>总结：<br>执行影响标志位的指令<br>    cmp xx,xx<br>执行跳转指令<br>    jxx xx<br>If_Begin<br>    …if语句块<br>If_End<br>    jmp Else_End<br>Else_If_Begin<br>    …else if语句块<br>Else_If_End<br>    jmp Else_End<br>Else_Begin<br>    …else语句块<br>Else_End</p>
+<p>==========================================================================================</p>
+<h2 id="小于等于3条case语句块的Switch结构"><a href="#小于等于3条case语句块的Switch结构" class="headerlink" title="小于等于3条case语句块的Switch结构"></a>小于等于3条case语句块的Switch结构</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">C代码：</div><div class="line">int _tmain(int argc, _TCHAR* argv[])</div><div class="line">&#123;</div><div class="line">    int nIndex = 0;</div><div class="line">    scanf_s(&quot;%d&quot;, &amp;nIndex);</div><div class="line">    switch (nIndex)</div><div class="line">    &#123;</div><div class="line">    case 1:printf(&quot;case 1\n&quot;); break;</div><div class="line">    case 2:printf(&quot;case 2\n&quot;); break;</div><div class="line">    case 100:printf(&quot;case 100\n&quot;); break;</div><div class="line">    default:</div><div class="line">        break;</div><div class="line">    &#125;</div><div class="line">    return 0;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div></pre></td><td class="code"><pre><div class="line">对应反汇编Debug：</div><div class="line">01303C55    8945 FC         mov dword ptr ss:[ebp-0x4],eax</div><div class="line">01303C58    C745 F4 0000000&gt;mov dword ptr ss:[ebp-0xC],0x0 //ebp-0xC为nIndex</div><div class="line">01303C5F    8BF4            mov esi,esp</div><div class="line">01303C61    8D45 F4         lea eax,dword ptr ss:[ebp-0xC]</div><div class="line">01303C64    50              push eax</div><div class="line">01303C65    68 58583001     push 0x1305858                           ; %d</div><div class="line">01303C6A    FF15 18913001   call dword ptr ds:[0x1309118]            ; msvcr120.scanf_s</div><div class="line">01303C70    83C4 08         add esp,0x8</div><div class="line">01303C73    3BF4            cmp esi,esp</div><div class="line">01303C75    E8 C6D4FFFF     call 01301140         //Stack_Check                   ; 01301140</div><div class="line">01303C7A    8B45 F4         mov eax,dword ptr ss:[ebp-0xC]</div><div class="line">01303C7D    8985 2CFFFFFF   mov dword ptr ss:[ebp-0xD4],eax   //ebp-0xD4为nIndex</div><div class="line">01303C83    83BD 2CFFFFFF 0&gt;cmp dword ptr ss:[ebp-0xD4],0x1   //nIndex与1比较</div><div class="line">01303C8A    74 14           je short 01303CA0                 //相等则跳入对应语句块        ; 01303CA0</div><div class="line">01303C8C    83BD 2CFFFFFF 0&gt;cmp dword ptr ss:[ebp-0xD4],0x2   //nIndex与2比较</div><div class="line">01303C93    74 24           je short 01303CB9                 //相等则跳入对应语句块        ; 01303CB9</div><div class="line">01303C95    83BD 2CFFFFFF 6&gt;cmp dword ptr ss:[ebp-0xD4],0x64  //nIndex与100比较</div><div class="line">01303C9C    74 34           je short 01303CD2                 //相等则跳入对应语句块       ; 01303CD2</div><div class="line">01303C9E    EB 49           jmp short 01303CE9                //不符合条件跳到结尾处       ; 01303CE9</div><div class="line">01303CA0    8BF4            mov esi,esp</div><div class="line">01303CA2    68 64583001     push 0x1305864                           ; case 1\n</div><div class="line">01303CA7    FF15 14913001   call dword ptr ds:[0x1309114]            ; msvcr120.printf</div><div class="line">01303CAD    83C4 04         add esp,0x4</div><div class="line">01303CB0    3BF4            cmp esi,esp</div><div class="line">01303CB2    E8 89D4FFFF     call 01301140                            ; 01301140</div><div class="line">01303CB7    EB 30           jmp short 01303CE9      //执行完跳到结尾处                 ; 01303CE9</div><div class="line">01303CB9    8BF4            mov esi,esp</div><div class="line">01303CBB    68 70583001     push 0x1305870                           ; case 2\n</div><div class="line">01303CC0    FF15 14913001   call dword ptr ds:[0x1309114]            ; msvcr120.printf</div><div class="line">01303CC6    83C4 04         add esp,0x4</div><div class="line">01303CC9    3BF4            cmp esi,esp</div><div class="line">01303CCB    E8 70D4FFFF     call 01301140                            ; 01301140</div><div class="line">01303CD0    EB 17           jmp short 01303CE9                       ; 01303CE9</div><div class="line">01303CD2    8BF4            mov esi,esp</div><div class="line">01303CD4    68 D0583001     push 0x13058D0                           ; case 100\n</div><div class="line">01303CD9    FF15 14913001   call dword ptr ds:[0x1309114]            ; msvcr120.printf</div><div class="line">01303CDF    83C4 04         add esp,0x4</div><div class="line">01303CE2    3BF4            cmp esi,esp</div><div class="line">01303CE4    E8 57D4FFFF     call 01301140                            ; 01301140</div><div class="line">01303CE9    33C0            xor eax,eax</div></pre></td></tr></table></figure>
+<p>总结：<br>获取switch变量的值<br>    mov xxx，reg<br>执行影响标志位的指令<br>    cmp xxx，xxx<br>执行跳转指令<br>    jxx xxx<br>执行影响标志位的指令<br>    cmp xxx，xxx<br>执行跳转指令<br>    jxx xxx<br>执行影响标志位的指令<br>    cmp xxx，xxx<br>执行跳转指令<br>    jxx xxx<br>执行跳转到结尾处<br>    jmp End<br>    … case语句块<br>    … case语句块<br>    … case语句块<br>End</p>
+<h2 id="分支数大于3且存在线性关系的Switch结构"><a href="#分支数大于3且存在线性关系的Switch结构" class="headerlink" title="分支数大于3且存在线性关系的Switch结构"></a>分支数大于3且存在线性关系的Switch结构</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">C代码：</div><div class="line">int _tmain(int argc, _TCHAR* argv[])</div><div class="line">&#123;</div><div class="line">    int nIndex = 0;</div><div class="line">    scanf_s(&quot;%d&quot;, &amp;nIndex);</div><div class="line">    switch (nIndex)</div><div class="line">    &#123;</div><div class="line">    case 1:printf(&quot;case 1\n&quot;); break;</div><div class="line">    case 2:printf(&quot;case 2\n&quot;); break;</div><div class="line">    case 3:printf(&quot;case 3\n&quot;); break;</div><div class="line">    case 4:printf(&quot;case 4\n&quot;); break;</div><div class="line">    case 5:printf(&quot;case 5\n&quot;); break;</div><div class="line">    case 6:printf(&quot;case 6\n&quot;); break;</div><div class="line">    case 7:printf(&quot;case 7\n&quot;); break;</div><div class="line">    default:</div><div class="line">        break;</div><div class="line">    &#125;</div><div class="line">    return 0;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div></pre></td><td class="code"><pre><div class="line">对应反汇编Debug：</div><div class="line">01233C58    C745 F4 0000000&gt;mov dword ptr ss:[ebp-0xC],0x0</div><div class="line">01233C5F    8BF4            mov esi,esp</div><div class="line">01233C61    8D45 F4         lea eax,dword ptr ss:[ebp-0xC]</div><div class="line">01233C64    50              push eax</div><div class="line">01233C65    68 58582301     push 0x1235858                           ; %d</div><div class="line">01233C6A    FF15 18912301   call dword ptr ds:[0x1239118]            ; msvcr120.scanf_s</div><div class="line">01233C70    83C4 08         add esp,0x8</div><div class="line">01233C73    3BF4            cmp esi,esp</div><div class="line">01233C75    E8 C6D4FFFF     call 01231140                            ; 01231140</div><div class="line">01233C7A    8B45 F4         mov eax,dword ptr ss:[ebp-0xC] </div><div class="line">01233C7D    8985 2CFFFFFF   mov dword ptr ss:[ebp-0xD4],eax //ebp-0xD4为nIndex</div><div class="line">01233C83    8B8D 2CFFFFFF   mov ecx,dword ptr ss:[ebp-0xD4] //nIndex给ecx</div><div class="line">01233C89    83E9 01         sub ecx,0x1 //ecx -1 做下标对齐</div><div class="line">01233C8C    898D 2CFFFFFF   mov dword ptr ss:[ebp-0xD4],ecx          ; TestCode.&lt;ModuleEntryPoint&gt;</div><div class="line">01233C92    83BD 2CFFFFFF 0&gt;cmp dword ptr ss:[ebp-0xD4],0x6 检查范围</div><div class="line">01233C99    0F87 BD000000   ja 01233D5C       //大于则跳转到结尾                       ; 01233D5C</div><div class="line">01233C9F    8B95 2CFFFFFF   mov edx,dword ptr ss:[ebp-0xD4] //以edx为下标进行寻址</div><div class="line">01233CA5    FF2495 AC3D2301 jmp dword ptr ds:[edx*4+0x1233DAC] //0x1233DAC为跳转表地址</div><div class="line">01233CAC    8BF4            mov esi,esp</div><div class="line">01233CAE    68 64582301     push 0x1235864                           ; case 1\n</div><div class="line">01233CB3    FF15 14912301   call dword ptr ds:[0x1239114]            ; msvcr120.printf</div><div class="line">01233CB9    83C4 04         add esp,0x4</div><div class="line">01233CBC    3BF4            cmp esi,esp</div><div class="line">01233CBE    E8 7DD4FFFF     call 01231140                            ; 01231140</div><div class="line">01233CC3    E9 94000000     jmp 01233D5C                             ; 01233D5C</div><div class="line">01233CC8    8BF4            mov esi,esp</div><div class="line">01233CCA    68 70582301     push 0x1235870                           ; case 2\n</div><div class="line">01233CCF    FF15 14912301   call dword ptr ds:[0x1239114]            ; msvcr120.printf</div><div class="line">01233CD5    83C4 04         add esp,0x4</div><div class="line">01233CD8    3BF4            cmp esi,esp</div><div class="line">01233CDA    E8 61D4FFFF     call 01231140                            ; 01231140</div><div class="line">01233CDF    EB 7B           jmp short 01233D5C                       ; 01233D5C</div><div class="line">01233CE1    8BF4            mov esi,esp</div><div class="line">01233CE3    68 D0582301     push 0x12358D0                           ; case 3\n</div><div class="line">01233CE8    FF15 14912301   call dword ptr ds:[0x1239114]            ; msvcr120.printf</div><div class="line">01233CEE    83C4 04         add esp,0x4</div><div class="line">01233CF1    3BF4            cmp esi,esp</div><div class="line">01233CF3    E8 48D4FFFF     call 01231140                            ; 01231140</div><div class="line">01233CF8    EB 62           jmp short 01233D5C                       ; 01233D5C</div><div class="line">01233CFA    8BF4            mov esi,esp</div><div class="line">01233CFC    68 5C582301     push 0x123585C                           ; case 4\n</div><div class="line">01233D01    FF15 14912301   call dword ptr ds:[0x1239114]            ; msvcr120.printf</div><div class="line">01233D07    83C4 04         add esp,0x4</div><div class="line">01233D0A    3BF4            cmp esi,esp</div><div class="line">01233D0C    E8 2FD4FFFF     call 01231140                            ; 01231140</div><div class="line">01233D11    EB 49           jmp short 01233D5C                       ; 01233D5C</div><div class="line">01233D13    8BF4            mov esi,esp</div><div class="line">01233D15    68 78582301     push 0x1235878                           ; case 5\n</div><div class="line">01233D1A    FF15 14912301   call dword ptr ds:[0x1239114]            ; msvcr120.printf</div><div class="line">01233D20    83C4 04         add esp,0x4</div><div class="line">01233D23    3BF4            cmp esi,esp</div><div class="line">01233D25    E8 16D4FFFF     call 01231140                            ; 01231140</div><div class="line">01233D2A    EB 30           jmp short 01233D5C                       ; 01233D5C</div><div class="line">01233D2C    8BF4            mov esi,esp</div><div class="line">01233D2E    68 D8582301     push 0x12358D8                           ; case 6\n</div><div class="line">01233D33    FF15 14912301   call dword ptr ds:[0x1239114]            ; msvcr120.printf</div><div class="line">01233D39    83C4 04         add esp,0x4</div><div class="line">01233D3C    3BF4            cmp esi,esp</div><div class="line">01233D3E    E8 FDD3FFFF     call 01231140                            ; 01231140</div><div class="line">01233D43    EB 17           jmp short 01233D5C                       ; 01233D5C</div><div class="line">01233D45    8BF4            mov esi,esp</div><div class="line">01233D47    68 40592301     push 0x1235940                           ; case 7\n</div><div class="line">01233D4C    FF15 14912301   call dword ptr ds:[0x1239114]            ; msvcr120.printf</div><div class="line">01233D52    83C4 04         add esp,0x4</div><div class="line">01233D55    3BF4            cmp esi,esp</div><div class="line">01233D57    E8 E4D3FFFF     call 01231140                            ; 01231140</div><div class="line">01233D5C    33C0            xor eax,eax</div></pre></td></tr></table></figure>
+<p>跳转表：<br><img src="http://oc7zh19yb.bkt.clouddn.com/image/jpg/1.jpg" alt="" title=""></p>
+<p>总结：<br>获取switch变量的值<br>    mov xxx,reg<br>对下标进行对齐<br>mov reg,xx<br>Sub xx,xx<br>执行影响标志位的指令，进行范围检查<br>Cmp xx,xx<br>执行跳转指令<br>Jxx End<br>查表，xxx为跳转表首地址<br>    jmp dword ptr ds:[edx*4+xxx]</p>
+<h2 id="难以构成跳转表的Switch结构"><a href="#难以构成跳转表的Switch结构" class="headerlink" title="难以构成跳转表的Switch结构"></a>难以构成跳转表的Switch结构</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">C代码：</div><div class="line">int _tmain(int argc, _TCHAR* argv[])</div><div class="line">&#123;</div><div class="line">    int nIndex = 0;</div><div class="line">    scanf_s(&quot;%d&quot;, &amp;nIndex);</div><div class="line">    switch (nIndex)</div><div class="line">    &#123;</div><div class="line">    case 1:printf(&quot;case 1\n&quot;); break;</div><div class="line">    case 2:printf(&quot;case 2\n&quot;); break;</div><div class="line">    case 3:printf(&quot;case 3\n&quot;); break;</div><div class="line">    case 5:printf(&quot;case 5\n&quot;); break;</div><div class="line">    case 6:printf(&quot;case 6\n&quot;); break;</div><div class="line">    case 255:printf(&quot;case 255\n&quot;); break;</div><div class="line">    default:</div><div class="line">        break;</div><div class="line">    &#125;</div><div class="line">    return 0;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div></pre></td><td class="code"><pre><div class="line">对应反汇编Debug：</div><div class="line">00BB3C55    8945 FC         mov dword ptr ss:[ebp-0x4],eax</div><div class="line">00BB3C58    C745 F4 0000000&gt;mov dword ptr ss:[ebp-0xC],0x0</div><div class="line">00BB3C5F    8BF4            mov esi,esp</div><div class="line">00BB3C61    8D45 F4         lea eax,dword ptr ss:[ebp-0xC]</div><div class="line">00BB3C64    50              push eax</div><div class="line">00BB3C65    68 5858BB00     push 0xBB5858                            ; %d</div><div class="line">00BB3C6A    FF15 1891BB00   call dword ptr ds:[0xBB9118]             ; msvcr120.scanf_s</div><div class="line">00BB3C70    83C4 08         add esp,0x8</div><div class="line">00BB3C73    3BF4            cmp esi,esp</div><div class="line">00BB3C75    E8 C6D4FFFF     call 00BB1140                            ; 00BB1140</div><div class="line">00BB3C7A    8B45 F4         mov eax,dword ptr ss:[ebp-0xC] </div><div class="line">00BB3C7D    8985 2CFFFFFF   mov dword ptr ss:[ebp-0xD4],eax ebp-0xd4为nIndex</div><div class="line">00BB3C83    8B8D 2CFFFFFF   mov ecx,dword ptr ss:[ebp-0xD4] </div><div class="line">00BB3C89    83E9 01         sub ecx,0x1 //进行下标对齐</div><div class="line">00BB3C8C    898D 2CFFFFFF   mov dword ptr ss:[ebp-0xD4],ecx          ; TestCode.&lt;ModuleEntryPoint&gt;</div><div class="line">00BB3C92    81BD 2CFFFFFF F&gt;cmp dword ptr ss:[ebp-0xD4],0xFE //检查范围</div><div class="line">00BB3C9C    0F87 A8000000   ja 00BB3D4A                              ; 00BB3D4A</div><div class="line">00BB3CA2    8B95 2CFFFFFF   mov edx,dword ptr ss:[ebp-0xD4]  //以edx为下标进行寻址        ; case 1\n</div><div class="line">00BB3CA8    0FB682 B43DBB00 movzx eax,byte ptr ds:[edx+0xBB3DB4] //查索引表</div><div class="line">00BB3CAF    FF2485 983DBB00 jmp dword ptr ds:[eax*4+0xBB3D98]  //根据索引查跳转表</div><div class="line">00BB3CB6    8BF4            mov esi,esp</div><div class="line">00BB3CB8    68 6458BB00     push 0xBB5864                            ; case 1\n</div><div class="line">00BB3CBD    FF15 1491BB00   call dword ptr ds:[0xBB9114]             ; msvcr120.printf</div><div class="line">00BB3CC3    83C4 04         add esp,0x4</div><div class="line">00BB3CC6    3BF4            cmp esi,esp</div><div class="line">00BB3CC8    E8 73D4FFFF     call 00BB1140                            ; 00BB1140</div><div class="line">00BB3CCD    EB 7B           jmp short 00BB3D4A                       ; 00BB3D4A</div><div class="line">00BB3CCF    8BF4            mov esi,esp</div><div class="line">00BB3CD1    68 7058BB00     push 0xBB5870                            ; case 2\n</div><div class="line">00BB3CD6    FF15 1491BB00   call dword ptr ds:[0xBB9114]             ; msvcr120.printf</div><div class="line">00BB3CDC    83C4 04         add esp,0x4</div><div class="line">00BB3CDF    3BF4            cmp esi,esp</div><div class="line">00BB3CE1    E8 5AD4FFFF     call 00BB1140                            ; 00BB1140</div><div class="line">00BB3CE6    EB 62           jmp short 00BB3D4A                       ; 00BB3D4A</div><div class="line">00BB3CE8    8BF4            mov esi,esp</div><div class="line">00BB3CEA    68 D058BB00     push 0xBB58D0                            ; case 3\n</div><div class="line">00BB3CEF    FF15 1491BB00   call dword ptr ds:[0xBB9114]             ; msvcr120.printf</div><div class="line">00BB3CF5    83C4 04         add esp,0x4</div><div class="line">00BB3CF8    3BF4            cmp esi,esp</div><div class="line">00BB3CFA    E8 41D4FFFF     call 00BB1140                            ; 00BB1140</div><div class="line">00BB3CFF    EB 49           jmp short 00BB3D4A                       ; 00BB3D4A</div><div class="line">00BB3D01    8BF4            mov esi,esp</div><div class="line">00BB3D03    68 5C58BB00     push 0xBB585C                            ; case 5\n</div><div class="line">00BB3D08    FF15 1491BB00   call dword ptr ds:[0xBB9114]             ; msvcr120.printf</div><div class="line">00BB3D0E    83C4 04         add esp,0x4</div><div class="line">00BB3D11    3BF4            cmp esi,esp</div><div class="line">00BB3D13    E8 28D4FFFF     call 00BB1140                            ; 00BB1140</div><div class="line">00BB3D18    EB 30           jmp short 00BB3D4A                       ; 00BB3D4A</div><div class="line">00BB3D1A    8BF4            mov esi,esp</div><div class="line">00BB3D1C    68 7858BB00     push 0xBB5878                            ; case 6\n</div><div class="line">00BB3D21    FF15 1491BB00   call dword ptr ds:[0xBB9114]             ; msvcr120.printf</div><div class="line">00BB3D27    83C4 04         add esp,0x4</div><div class="line">00BB3D2A    3BF4            cmp esi,esp</div><div class="line">00BB3D2C    E8 0FD4FFFF     call 00BB1140                            ; 00BB1140</div><div class="line">00BB3D31    EB 17           jmp short 00BB3D4A                       ; 00BB3D4A</div><div class="line">00BB3D33    8BF4            mov esi,esp</div><div class="line">00BB3D35    68 EC59BB00     push 0xBB59EC                            ; case 255\n</div><div class="line">00BB3D3A    FF15 1491BB00   call dword ptr ds:[0xBB9114]             ; msvcr120.printf</div><div class="line">00BB3D40    83C4 04         add esp,0x4</div><div class="line">00BB3D43    3BF4            cmp esi,esp</div><div class="line">00BB3D45    E8 F6D3FFFF     call 00BB1140                            ; 00BB1140</div><div class="line">00BB3D4A    33C0            xor eax,eax</div></pre></td></tr></table></figure>
+<p>索引表：<br><img src="http://oc7zh19yb.bkt.clouddn.com/image/jpg/2.jpg" alt="" title=""><br>索引表每一项大小一字节</p>
+<p>跳转表：<br><img src="http://oc7zh19yb.bkt.clouddn.com/image/jpg/3.jpg" alt="" title=""></p>
+<p>总结：<br>Mov xxx,reg<br>sub reg,1<br>cmp         dword ptr [ebp-0D4h],0FEh   影响标志位的指令，进行范围检查<br>jxx xxxx 超出范围跳到结尾处<br>mov         edx,dword ptr [ebp-0D4h]<br>movzx       eax,byte ptr [edx+xxx]edx为下标，后面的是下标索引表首地址<br>jmp         dword ptr [eax*4+xxx]<br>在这种情况下，编译器会为switch建立两张表，一张是前面类似的地址表，一张则是索引表。</p>
+<h2 id="降低判断树"><a href="#降低判断树" class="headerlink" title="降低判断树"></a>降低判断树</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">C代码：</div><div class="line">int _tmain(int argc, _TCHAR* argv[])</div><div class="line">&#123;</div><div class="line">    int nIndex = 0;</div><div class="line">    scanf_s(&quot;%d&quot;, &amp;nIndex);</div><div class="line">    switch (nIndex)</div><div class="line">    &#123;</div><div class="line">    case 2:printf(&quot;case 2\n&quot;); break;</div><div class="line">    case 3:printf(&quot;case 3\n&quot;); break;</div><div class="line">    case 8:printf(&quot;case 8\n&quot;); break;</div><div class="line">    case 10:printf(&quot;case 10\n&quot;); break;</div><div class="line">    case 35:printf(&quot;case 35\n&quot;); break;</div><div class="line">    case 37:printf(&quot;case 37\n&quot;); break;</div><div class="line">    case 666:printf(&quot;case 666\n&quot;); break;</div><div class="line">    default:</div><div class="line">        break;</div><div class="line">    &#125;</div><div class="line">    return 0;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div></pre></td><td class="code"><pre><div class="line">对应反汇编Debug：</div><div class="line">00DB3C58    C745 F4 0000000&gt;mov dword ptr ss:[ebp-0xC],0x0</div><div class="line">00DB3C5F    8BF4            mov esi,esp</div><div class="line">00DB3C61    8D45 F4         lea eax,dword ptr ss:[ebp-0xC]</div><div class="line">00DB3C64    50              push eax</div><div class="line">00DB3C65    68 5858DB00     push 0xDB5858                            ; %d</div><div class="line">00DB3C6A    FF15 1891DB00   call dword ptr ds:[0xDB9118]             ; msvcr120.scanf_s</div><div class="line">00DB3C70    83C4 08         add esp,0x8</div><div class="line">00DB3C73    3BF4            cmp esi,esp</div><div class="line">00DB3C75    E8 C6D4FFFF     call 00DB1140                            ; 00DB1140</div><div class="line">00DB3C7A    8B45 F4         mov eax,dword ptr ss:[ebp-0xC]</div><div class="line">00DB3C7D    8985 2CFFFFFF   mov dword ptr ss:[ebp-0xD4],eax</div><div class="line">00DB3C83    83BD 2CFFFFFF 0&gt;cmp dword ptr ss:[ebp-0xD4],0xA</div><div class="line">00DB3C8A    7F 2D           jg short 00DB3CB9                        ; 00DB3CB9</div><div class="line">00DB3C8C    83BD 2CFFFFFF 0&gt;cmp dword ptr ss:[ebp-0xD4],0xA</div><div class="line">00DB3C93    0F84 9D000000   je 00DB3D36                              ; 00DB3D36</div><div class="line">00DB3C99    83BD 2CFFFFFF 0&gt;cmp dword ptr ss:[ebp-0xD4],0x2</div><div class="line">00DB3CA0    74 46           je short 00DB3CE8                        ; 00DB3CE8</div><div class="line">00DB3CA2    83BD 2CFFFFFF 0&gt;cmp dword ptr ss:[ebp-0xD4],0x3          ; case 1\n</div><div class="line">00DB3CA9    74 59           je short 00DB3D04                        ; 00DB3D04</div><div class="line">00DB3CAB    83BD 2CFFFFFF 0&gt;cmp dword ptr ss:[ebp-0xD4],0x8</div><div class="line">00DB3CB2    74 69           je short 00DB3D1D                        ; 00DB3D1D</div><div class="line">00DB3CB4    E9 DF000000     jmp 00DB3D98                             ; 00DB3D98</div><div class="line">00DB3CB9    83BD 2CFFFFFF 2&gt;cmp dword ptr ss:[ebp-0xD4],0x23</div><div class="line">00DB3CC0    0F84 89000000   je 00DB3D4F                              ; 00DB3D4F</div><div class="line">00DB3CC6    83BD 2CFFFFFF 2&gt;cmp dword ptr ss:[ebp-0xD4],0x25</div><div class="line">00DB3CCD    0F84 95000000   je 00DB3D68                              ; 00DB3D68</div><div class="line">00DB3CD3    81BD 2CFFFFFF 9&gt;cmp dword ptr ss:[ebp-0xD4],0x29A</div><div class="line">00DB3CDD    0F84 9E000000   je 00DB3D81                              ; 00DB3D81</div><div class="line">00DB3CE3    E9 B0000000     jmp 00DB3D98                             ; case 3\n</div><div class="line">00DB3CE8    8BF4            mov esi,esp</div><div class="line">00DB3CEA    68 6458DB00     push 0xDB5864                            ; case 2\n</div><div class="line">00DB3CEF    FF15 1491DB00   call dword ptr ds:[0xDB9114]             ; msvcr120.printf</div><div class="line">00DB3CF5    83C4 04         add esp,0x4</div><div class="line">00DB3CF8    3BF4            cmp esi,esp</div><div class="line">00DB3CFA    E8 41D4FFFF     call 00DB1140                            ; 00DB1140</div><div class="line">00DB3CFF    E9 94000000     jmp 00DB3D98                             ; 00DB3D98</div><div class="line">00DB3D04    8BF4            mov esi,esp</div><div class="line">00DB3D06    68 7058DB00     push 0xDB5870                            ; case 3\n</div><div class="line">00DB3D0B    FF15 1491DB00   call dword ptr ds:[0xDB9114]             ; msvcr120.printf</div><div class="line">00DB3D11    83C4 04         add esp,0x4</div><div class="line">00DB3D14    3BF4            cmp esi,esp</div><div class="line">00DB3D16    E8 25D4FFFF     call 00DB1140                            ; 00DB1140</div><div class="line">00DB3D1B    EB 7B           jmp short 00DB3D98                       ; 00DB3D98</div><div class="line">00DB3D1D    8BF4            mov esi,esp</div><div class="line">00DB3D1F    68 D058DB00     push 0xDB58D0                            ; case 8\n</div><div class="line">00DB3D24    FF15 1491DB00   call dword ptr ds:[0xDB9114]             ; msvcr120.printf</div><div class="line">00DB3D2A    83C4 04         add esp,0x4</div><div class="line">00DB3D2D    3BF4            cmp esi,esp</div><div class="line">00DB3D2F    E8 0CD4FFFF     call 00DB1140                            ; 00DB1140</div><div class="line">00DB3D34    EB 62           jmp short 00DB3D98                       ; 00DB3D98</div><div class="line">00DB3D36    8BF4            mov esi,esp</div><div class="line">00DB3D38    68 4059DB00     push 0xDB5940                            ; case 10\n</div><div class="line">00DB3D3D    FF15 1491DB00   call dword ptr ds:[0xDB9114]             ; msvcr120.printf</div><div class="line">00DB3D43    83C4 04         add esp,0x4</div><div class="line">00DB3D46    3BF4            cmp esi,esp</div><div class="line">00DB3D48    E8 F3D3FFFF     call 00DB1140                            ; 00DB1140</div><div class="line">00DB3D4D    EB 49           jmp short 00DB3D98                       ; 00DB3D98</div><div class="line">00DB3D4F    8BF4            mov esi,esp</div><div class="line">00DB3D51    68 F859DB00     push 0xDB59F8                            ; case 35\n</div><div class="line">00DB3D56    FF15 1491DB00   call dword ptr ds:[0xDB9114]             ; msvcr120.printf</div><div class="line">00DB3D5C    83C4 04         add esp,0x4</div><div class="line">00DB3D5F    3BF4            cmp esi,esp</div><div class="line">00DB3D61    E8 DAD3FFFF     call 00DB1140                            ; 00DB1140</div><div class="line">00DB3D66    EB 30           jmp short 00DB3D98                       ; 00DB3D98</div><div class="line">00DB3D68    8BF4            mov esi,esp</div><div class="line">00DB3D6A    68 EC59DB00     push 0xDB59EC                            ; case 37\n</div><div class="line">00DB3D6F    FF15 1491DB00   call dword ptr ds:[0xDB9114]             ; msvcr120.printf</div><div class="line">00DB3D75    83C4 04         add esp,0x4</div><div class="line">00DB3D78    3BF4            cmp esi,esp</div><div class="line">00DB3D7A    E8 C1D3FFFF     call 00DB1140                            ; 00DB1140</div><div class="line">00DB3D7F    EB 17           jmp short 00DB3D98                       ; 00DB3D98</div><div class="line">00DB3D81    8BF4            mov esi,esp</div><div class="line">00DB3D83    68 045ADB00     push 0xDB5A04                            ; case 666\n</div><div class="line">00DB3D88    FF15 1491DB00   call dword ptr ds:[0xDB9114]             ; msvcr120.printf</div><div class="line">00DB3D8E    83C4 04         add esp,0x4</div><div class="line">00DB3D91    3BF4            cmp esi,esp</div><div class="line">00DB3D93    E8 A8D3FFFF     call 00DB1140                            ; 00DB1140</div><div class="line">00DB3D98    33C0            xor eax,eax</div></pre></td></tr></table></figure>
+<p>在这里，由于case值相差过大，因此采取类似于二叉树的结构来进行查找。首先判断是否大于35，之后分成两部分进行判断，小于35的由于比较接近因此采用线性查找法，而大于35的部分则采用if…else…模拟法即使用第一种优化方式进行优化。<br>Release版结构图：<br><img src="http://oc7zh19yb.bkt.clouddn.com/image/jpg/4.jpg" alt="" title=""></p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/逆向/">逆向</a><a href="/tags/反汇编/">反汇编</a><a href="/tags/C/">C++</a>
+  </div>
+
+
+
+
+<div class="article-share" id="share">
+
+  <div data-url="http://blog.injectxx.com/2016/11/21/逆向笔记（一）/" data-title="逆向笔记（一） | 岁月&#39;s Blog" data-tsina="null" class="share clearfix">
+  </div>
+
+</div>
+</footer>   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2016/11/22/逆向笔记（二）/" title="逆向笔记（二）">
+  <strong>PREVIOUS:</strong><br/>
+  <span>
+  逆向笔记（二）</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2016/11/10/代码注入之二。/"  title="代码注入之二。">
+ <strong>NEXT:</strong><br/> 
+ <span>代码注入之二。
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section class="comment">
+	<div class="ds-thread"></div>
+</section>
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+  <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#if语句"><span class="toc-number">1.</span> <span class="toc-text">if语句</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#if-else语句"><span class="toc-number">2.</span> <span class="toc-text">if-else语句</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#if-else-if-else语句"><span class="toc-number">3.</span> <span class="toc-text">if-else if-else语句</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#小于等于3条case语句块的Switch结构"><span class="toc-number">4.</span> <span class="toc-text">小于等于3条case语句块的Switch结构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#分支数大于3且存在线性关系的Switch结构"><span class="toc-number">5.</span> <span class="toc-text">分支数大于3且存在线性关系的Switch结构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#难以构成跳转表的Switch结构"><span class="toc-number">6.</span> <span class="toc-text">难以构成跳转表的Switch结构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#降低判断树"><span class="toc-number">7.</span> <span class="toc-text">降低判断树</span></a></li></ol>
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+
+  
+<div class="tagslist">
+	<p class="asidetitle">Tags</p>
+		<ul class="clearfix">
+		
+			<li><a href="/tags/Android/" title="Android">Android<sup>5</sup></a></li>
+		
+			<li><a href="/tags/C/" title="C++">C++<sup>7</sup></a></li>
+		
+			<li><a href="/tags/C-C/" title="C/C++">C/C++<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Cydia/" title="Cydia">Cydia<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Hexo/" title="Hexo">Hexo<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Hook/" title="Hook">Hook<sup>3</sup></a></li>
+		
+			<li><a href="/tags/Windows/" title="Windows">Windows<sup>2</sup></a></li>
+		
+			<li><a href="/tags/Xposed/" title="Xposed">Xposed<sup>1</sup></a></li>
+		
+			<li><a href="/tags/inject/" title="inject">inject<sup>2</sup></a></li>
+		
+			<li><a href="/tags/函数替换/" title="函数替换">函数替换<sup>1</sup></a></li>
+		
+			<li><a href="/tags/反汇编/" title="反汇编">反汇编<sup>7</sup></a></li>
+		
+			<li><a href="/tags/日常/" title="日常">日常<sup>1</sup></a></li>
+		
+			<li><a href="/tags/注入/" title="注入">注入<sup>1</sup></a></li>
+		
+			<li><a href="/tags/远程线程注入/" title="远程线程注入">远程线程注入<sup>1</sup></a></li>
+		
+			<li><a href="/tags/逆向/" title="逆向">逆向<sup>7</sup></a></li>
+		
+			<li><a href="/tags/驱动/" title="驱动">驱动<sup>1</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  <div class="rsspart">
+	<a href="undefined" target="_blank" title="rss">RSS</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<div class="social-font clearfix">
+		
+		
+		
+		
+		
+	</div>
+		<p class="copyright">Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/A-limon/pacman" target="_blank" title="Pacman">Pacman</a> © 2016 
+		
+		<a href="http://blog.injectxx.com" target="_blank" title="岁月。">岁月。</a>
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.1.0.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else
+    {
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      h  = $('article h2')
+      ah = $('article h2'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  if(ah.length==0){
+    t.css('display','none');
+  }else{
+    c.click(function(){
+      ta.css('display', 'block').addClass('fadeIn');
+    });
+    o.click(function(){
+      ta.css('display', 'none');
+    });
+    $(window).scroll(function(){
+      ta.css("top",Math.max(140,320-$(this).scrollTop()));
+    });
+  };
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#share"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="#textlogo" class="article-back-to-top" title="Top"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="QRcode"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="Weibo"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"Kernel32Sun"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+  </body>
+</html>

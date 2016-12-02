@@ -1,0 +1,347 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>虚拟地址，相对虚拟地址，文件偏移的转换。 | 岁月&#39;s Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
+    
+    <meta name="author" content="岁月。">
+    
+    <meta name="description" content="1.文件偏移地址 (File Offest)数据在PE文件中的地址叫文件偏移地址,个人认为叫做文件地址更加准确.这是文件在磁盘上存放时相 对文件开头的偏移.2.装载地址 (Image Base)PE装入内存时的基地址.默认情况下,EXE文件在内存中的基地址是0x00400000,DLL文件是0x10000000.">
+    
+    
+    
+    
+    
+    <link rel="icon" href="/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/pacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/pacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      <div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.svg" alt="岁月&#39;s Blog" title="岁月&#39;s Blog"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="岁月&#39;s Blog">岁月&#39;s Blog</a></h1>
+				<h2 class="blog-motto">一只奋斗的猿</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+					<li>
+					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="text" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search" />
+						<input type="hidden" name="q" value="site:blog.injectxx.com">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2016/08/20/虚拟地址，相对虚拟地址，文件偏移的转换。/" title="虚拟地址，相对虚拟地址，文件偏移的转换。" itemprop="url">虚拟地址，相对虚拟地址，文件偏移的转换。</a>
+  </h1>
+  <p class="article-author">By
+    
+      <a href="http://blog.injectxx.com" title="岁月。">岁月。</a>
+    </p>
+  <p class="article-time">
+    <time datetime="2016-08-20T15:02:37.000Z" itemprop="datePublished">2016-08-20</time>
+    Updated:<time datetime="2016-08-20T15:10:48.000Z" itemprop="dateModified">2016-08-20</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+		</div>
+		
+		<p>1.文件偏移地址 (File Offest)<br>数据在PE文件中的地址叫文件偏移地址,个人认为叫做文件地址更加准确.这是文件在磁盘上存放时相 对文件开头的偏移.<br>2.装载地址 (Image Base)<br>PE装入内存时的基地址.默认情况下,EXE文件在内存中的基地址是0x00400000,DLL文件是0x10000000.<br><a id="more"></a><br>这些位置可以通过修改编译选项更改.<br>3.虚拟内存地址 (Virtual Address,VA)<br>PE文件中的指令被装入内存后的地址.<br>4.相对虚拟地址 (Relative Virtual Address,RVA)<br>相对虚拟地址是内存地址相对于映射基质的偏移量.<br>虚拟内存地址,映射基质,相对虚拟内存地址三者之间有如下关系.<br>VA=Image Base + RVA<br>File_Offset   就是磁盘文件中A的位置。<br>              File_Offset = VA – ImageBase – VRk = RVA – VRk<br>ImageBase     就是文件加载到内存的起始位置。<br>              ImageBase = VA – RVA<br>EntryPoint    就是.text的VA地址。<br>VA    就是内存映像中A的位置，即A的地址。<br>      VA = ImageBase + FileOffset + VRk = ImageBase + RVA<br>RVA   就是内存映像中A的位置与文件映射基址的差。<br>      RVA = VA – ImageBase = File_Offset + VRk<br>VRk  就是文件映射到内存后，每一节之间填充的00的个数。<br>         由于要进行对齐，所以文件加载到内存后每一节之间要填充大量00<br>         因此文件中A的位置会变化。由于各个文件头与各个节大小不变，所以:<br>         VRk = RVA – File_Offset = &lt;填充的00的个数&gt;<br>由FileOffset到RVA/VA:<br>     RVA = FileOffset(A) + ( RVA(.data) – FileOffset(.data) )<br>         = FileOffset(A) +  VRk<br>     VA  = RVA + ImageBase = 0000E050 + 00400000 = 0040E050<br>由RVA/VA到FileOffset:<br>     RVA = 0000E050   /   VA = 0040E050   /   ImageBase = 00400000<br>     FileOffset = RVA(A) – RVk<br>                = RVA(A) – ( RVA(.data) – FileOffset(.data) )<br>转换的一般步骤为：<br>1.将exe文件映射入内存中，读取Dos MZ Header，在这个结构中，我们能够通过e_lfanew来获取NT文件头相对于Dos文件头的偏移。<br>2.获取到了NT文件头的地址，NT文件头中包含了两个文件头，一个是FILE文件头，一个是Optional可选文件头，在FILE文件头中我们可以读取到段的数量，在转换RVA地址的时候，我们只需要得到这个数量。<br>3.将NT文件头之后紧跟着的就是SECTION TABLE，这是段描述头，在这个段描述头中，我们几乎可以获取到全部的段的资料。<br>VritualAddress: 这个是一个RVA地址，代表的意义是告诉PE加载器该段存在于RVA地址为VritualAddress处<br>PointerToRawData: 这是一个物理偏移地址，告诉PE加载器将物理文件偏移PointerToRawData处的数据映射入VritualAddress处<br>VirtualSize: 该段的大小<br>SizeOfRawData: 该段的物理大小。由于存在对齐问题，所以该大小为不小于VirtualSize大小的对齐大小的整数倍。<br>4.通过遍历SECTION TABLE，判断要转换的RVA地址是否处于所有段的RVA地址范围内。该段的RVA范围为: VritualAddress + SizeOfRawData，当然更精确点是VirtualAddress + VirtualSize。<br>5.假如存在于地址范围内，那么我们可以通过要转换的RVA地址减去该段的VirtualAddress算出相对于该段的偏移量<br>6.将偏移量加上PointerToRawData，即可算出物理地址<br><figure class="highlight plain"><figcaption><span>C</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div></pre></td><td class="code"><pre><div class="line">#include &quot;stdafx.h&quot;</div><div class="line">#include &lt;windows.h&gt;</div><div class="line">#include &lt;stdlib.h&gt;</div><div class="line">int _tmain(int argc, _TCHAR* argv[])</div><div class="line">&#123;</div><div class="line">    TCHAR szFilePath[MAX_PATH];</div><div class="line">    memset(szFilePath, 0, MAX_PATH);</div><div class="line"> </div><div class="line">    OPENFILENAME ofn;</div><div class="line">    memset(&amp;ofn, 0, sizeof(ofn));</div><div class="line">    ofn.lStructSize = sizeof(ofn);</div><div class="line">    ofn.hwndOwner = NULL;</div><div class="line">    ofn.hInstance = GetModuleHandle(NULL);</div><div class="line">    ofn.nMaxFile = MAX_PATH;</div><div class="line">    ofn.lpstrInitialDir = L&quot;.&quot;;</div><div class="line">    ofn.lpstrFile = szFilePath;</div><div class="line">    ofn.lpstrTitle = L&quot;Please OpenFile&quot;;</div><div class="line">    ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;</div><div class="line">    ofn.lpstrFilter = L&quot;*.*\0*.*\0&quot;;</div><div class="line">    if (!GetOpenFileName(&amp;ofn))</div><div class="line">    &#123;</div><div class="line">        return FALSE;</div><div class="line">    &#125;</div><div class="line"> </div><div class="line">    HANDLE hFile;</div><div class="line">    HANDLE hFileMapping;</div><div class="line">    LPVOID lpBase;</div><div class="line">    PIMAGE_DOS_HEADER pDos;</div><div class="line">    PIMAGE_NT_HEADERS pNt;</div><div class="line">    PIMAGE_SECTION_HEADER pSec;</div><div class="line"> </div><div class="line">    hFile = CreateFile(szFilePath,GENERIC_READ,0,NULL,OPEN_EXISTING,NULL,NULL);</div><div class="line">    //Check</div><div class="line"> </div><div class="line">    hFileMapping = CreateFileMapping(hFile, NULL, PAGE_READONLY, 0, 0, NULL);</div><div class="line">    //Check</div><div class="line"> </div><div class="line">    lpBase = MapViewOfFile(hFileMapping, FILE_MAP_READ, 0, 0, 0);</div><div class="line">    //Check</div><div class="line"> </div><div class="line">    pDos = (PIMAGE_DOS_HEADER)lpBase;</div><div class="line">    if (pDos-&gt;e_magic != IMAGE_DOS_SIGNATURE)</div><div class="line">    &#123;</div><div class="line">        printf(&quot;无效文件\r\n&quot;);</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    pNt = (PIMAGE_NT_HEADERS)((DWORD)lpBase + pDos-&gt;e_lfanew);//指向Nt头,这个值好像是3c</div><div class="line">    //检查是否有效PE文件 0x5045</div><div class="line">    if (pNt-&gt;Signature != IMAGE_NT_SIGNATURE)</div><div class="line">    &#123;</div><div class="line">        printf(&quot;无效文件\r\n&quot;);</div><div class="line">    &#125;</div><div class="line"> </div><div class="line">    pSec = IMAGE_FIRST_SECTION(pNt);</div><div class="line"> </div><div class="line">    int nSum = 0;</div><div class="line">    //节表总数</div><div class="line">    nSum = pNt-&gt;FileHeader.NumberOfSections;</div><div class="line">    for (int i = 0; i &lt; nSum; i++)</div><div class="line">    &#123;</div><div class="line">        printf(&quot;%s %x %x %x %x\r\n&quot;, pSec[i].Name, pSec[i].VirtualAddress, pSec[i].Misc.VirtualSize, pSec[i].SizeOfRawData,pSec[i].PointerToRawData);</div><div class="line">    &#125;</div><div class="line"> </div><div class="line">    int n;</div><div class="line">    DWORD dwAddr;</div><div class="line">    DWORD dwVa = 0;  //虚拟地址</div><div class="line">    DWORD dwRva = 0;  // 虚拟偏移</div><div class="line">    DWORD dwFileOffset = 0;  //文件偏移</div><div class="line">    printf(&quot;选择要转换的地址1:虚拟地址 2:相对虚拟地址 3:文件偏移\r\n&quot;);</div><div class="line">    scanf_s(&quot;%d&quot;, &amp;n);</div><div class="line">    switch (n)</div><div class="line">    &#123;</div><div class="line">        case 1:</div><div class="line">            printf(&quot;输入虚拟地址:\r\n&quot;);</div><div class="line">            scanf_s(&quot;%x&quot;, &amp;dwAddr);</div><div class="line">            //遍历节表</div><div class="line">            for (int i = 0; i &lt; nSum;i++)</div><div class="line">            &#123;</div><div class="line">                //判断所在节区</div><div class="line">                if (dwAddr &gt;= (pNt-&gt;OptionalHeader.ImageBase) + pSec[i].VirtualAddress &amp;&amp; dwAddr &lt; (pNt-&gt;OptionalHeader.ImageBase) + pSec[i].VirtualAddress + (pSec[i].Misc.VirtualSize / 1000) * 1000)</div><div class="line">                &#123;</div><div class="line">                    dwVa = dwAddr;</div><div class="line">                    dwRva = dwVa - pNt-&gt;OptionalHeader.ImageBase;</div><div class="line">                    dwFileOffset = pSec[i].PointerToRawData + (dwRva - pSec[i].VirtualAddress);  //文件偏移=文件基址+(RVA-虚拟基址)</div><div class="line">                    printf(&quot;虚拟地址是:%x\t虚拟偏移是:%x\t文件偏移是:%x\n&quot;, dwVa, dwRva, dwFileOffset);</div><div class="line"> </div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">            break;</div><div class="line">        </div><div class="line">        case 2:</div><div class="line">            printf(&quot;输入相对虚拟地址:\r\n&quot;);</div><div class="line">            scanf_s(&quot;%x&quot;, &amp;dwAddr);</div><div class="line">            for (int i = 0; i &lt; nSum; i++)</div><div class="line">            &#123;</div><div class="line">                if (dwAddr &gt;= pSec[i].VirtualAddress &amp;&amp; dwAddr &lt; (pNt-&gt;OptionalHeader.ImageBase) + pSec[i].VirtualAddress + (pSec[i].Misc.VirtualSize / 1000) * 1000)</div><div class="line">                &#123;</div><div class="line">                    dwVa = dwAddr;</div><div class="line">                    dwRva = dwVa - pNt-&gt;OptionalHeader.ImageBase;</div><div class="line">                    dwFileOffset = pSec[i].PointerToRawData + (dwRva - pSec[i].VirtualAddress);  //文件偏移=文件基址+(RVA-虚拟基址)</div><div class="line">                    printf(&quot;虚拟地址是:%x\t虚拟偏移是:%x\t文件偏移是:%x\n&quot;, dwVa, dwRva, dwFileOffset);</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">            break;</div><div class="line"> </div><div class="line">        case 3:</div><div class="line">            printf(&quot;输入文件偏移地址:\r\n&quot;);</div><div class="line">            scanf_s(&quot;%x&quot;, &amp;dwAddr);</div><div class="line">            for (int i = 0; i &lt; nSum; i++)</div><div class="line">            &#123;</div><div class="line">                if (dwAddr &gt;= pSec[i].PointerToRawData &amp;&amp; dwAddr &lt;= pSec[i].PointerToRawData + pSec[i].SizeOfRawData)</div><div class="line">                &#123;</div><div class="line">                    dwFileOffset = dwAddr;</div><div class="line">                    dwRva = pSec[i].VirtualAddress + (dwFileOffset - pSec[i].PointerToRawData);</div><div class="line">                    dwVa = dwRva + pNt-&gt;OptionalHeader.ImageBase;</div><div class="line">                    printf(&quot;虚拟地址是:%x\t虚拟偏移是:%x\t文件偏移是:%x\n&quot;, dwVa, dwRva, dwFileOffset);</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">            break;</div><div class="line"> </div><div class="line">        default:</div><div class="line">            break;</div><div class="line">    &#125;</div><div class="line"> </div><div class="line">    system(&quot;pause&quot;);</div><div class="line">    return 0;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/Windows/">Windows</a>
+  </div>
+
+
+
+
+<div class="article-share" id="share">
+
+  <div data-url="http://blog.injectxx.com/2016/08/20/虚拟地址，相对虚拟地址，文件偏移的转换。/" data-title="虚拟地址，相对虚拟地址，文件偏移的转换。 | 岁月&#39;s Blog" data-tsina="null" class="share clearfix">
+  </div>
+
+</div>
+</footer>   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2016/08/20/PE结构。/" title="PE结构。">
+  <strong>PREVIOUS:</strong><br/>
+  <span>
+  PE结构。</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2016/08/20/ELF文件结构。/"  title="ELF文件结构。">
+ <strong>NEXT:</strong><br/> 
+ <span>ELF文件结构。
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section class="comment">
+	<div class="ds-thread"></div>
+</section>
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+  
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+
+  
+<div class="tagslist">
+	<p class="asidetitle">Tags</p>
+		<ul class="clearfix">
+		
+			<li><a href="/tags/Android/" title="Android">Android<sup>5</sup></a></li>
+		
+			<li><a href="/tags/C/" title="C++">C++<sup>7</sup></a></li>
+		
+			<li><a href="/tags/C-C/" title="C/C++">C/C++<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Cydia/" title="Cydia">Cydia<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Hexo/" title="Hexo">Hexo<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Hook/" title="Hook">Hook<sup>3</sup></a></li>
+		
+			<li><a href="/tags/Windows/" title="Windows">Windows<sup>2</sup></a></li>
+		
+			<li><a href="/tags/Xposed/" title="Xposed">Xposed<sup>1</sup></a></li>
+		
+			<li><a href="/tags/inject/" title="inject">inject<sup>2</sup></a></li>
+		
+			<li><a href="/tags/函数替换/" title="函数替换">函数替换<sup>1</sup></a></li>
+		
+			<li><a href="/tags/反汇编/" title="反汇编">反汇编<sup>7</sup></a></li>
+		
+			<li><a href="/tags/日常/" title="日常">日常<sup>1</sup></a></li>
+		
+			<li><a href="/tags/注入/" title="注入">注入<sup>1</sup></a></li>
+		
+			<li><a href="/tags/远程线程注入/" title="远程线程注入">远程线程注入<sup>1</sup></a></li>
+		
+			<li><a href="/tags/逆向/" title="逆向">逆向<sup>7</sup></a></li>
+		
+			<li><a href="/tags/驱动/" title="驱动">驱动<sup>1</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  <div class="rsspart">
+	<a href="undefined" target="_blank" title="rss">RSS</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<div class="social-font clearfix">
+		
+		
+		
+		
+		
+	</div>
+		<p class="copyright">Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/A-limon/pacman" target="_blank" title="Pacman">Pacman</a> © 2016 
+		
+		<a href="http://blog.injectxx.com" target="_blank" title="岁月。">岁月。</a>
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.1.0.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else
+    {
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      h  = $('article h2')
+      ah = $('article h2'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  if(ah.length==0){
+    t.css('display','none');
+  }else{
+    c.click(function(){
+      ta.css('display', 'block').addClass('fadeIn');
+    });
+    o.click(function(){
+      ta.css('display', 'none');
+    });
+    $(window).scroll(function(){
+      ta.css("top",Math.max(140,320-$(this).scrollTop()));
+    });
+  };
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#share"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="#textlogo" class="article-back-to-top" title="Top"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="QRcode"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="Weibo"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"Kernel32Sun"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+  </body>
+</html>

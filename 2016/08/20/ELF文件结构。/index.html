@@ -1,0 +1,347 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>ELF文件结构。 | 岁月&#39;s Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
+    
+    <meta name="author" content="岁月。">
+    
+    <meta name="description" content="写Dex解析小工具时整理的头文件。">
+    
+    
+    
+    
+    
+    <link rel="icon" href="/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/pacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/pacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      <div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.svg" alt="岁月&#39;s Blog" title="岁月&#39;s Blog"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="岁月&#39;s Blog">岁月&#39;s Blog</a></h1>
+				<h2 class="blog-motto">一只奋斗的猿</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+					<li>
+					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="text" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search" />
+						<input type="hidden" name="q" value="site:blog.injectxx.com">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2016/08/20/ELF文件结构。/" title="ELF文件结构。" itemprop="url">ELF文件结构。</a>
+  </h1>
+  <p class="article-author">By
+    
+      <a href="http://blog.injectxx.com" title="岁月。">岁月。</a>
+    </p>
+  <p class="article-time">
+    <time datetime="2016-08-20T15:01:19.000Z" itemprop="datePublished">2016-08-20</time>
+    Updated:<time datetime="2016-08-20T15:11:46.000Z" itemprop="dateModified">2016-08-20</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+		</div>
+		
+		<p>写Dex解析小工具时整理的头文件。<br><a id="more"></a><br><figure class="highlight plain"><figcaption><span>C</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div></pre></td><td class="code"><pre><div class="line">#include &lt;windows.h&gt;</div><div class="line">#define ACC_PUBLIC 0x1 // class, field, method, ic</div><div class="line">#define ACC_PRIVATE 0x2 // field, method, ic</div><div class="line">#define ACC_PROTECTED 0x4 // field, method, ic</div><div class="line">#define ACC_STATIC 0x8 // field, method, ic</div><div class="line">struct DexHeader</div><div class="line">&#123;</div><div class="line">byte magic[8];</div><div class="line">UINT32 checksum;</div><div class="line">byte signature[20];</div><div class="line">UINT32 fileSize;</div><div class="line">UINT32 headerSize;</div><div class="line">UINT32 endianTag;</div><div class="line">UINT32 linkSize;</div><div class="line">UINT32 linkOff;</div><div class="line">UINT32 mapOff;</div><div class="line">UINT32 stringIdsSize;</div><div class="line">UINT32 stringIdsOff;</div><div class="line">UINT32 typeIdsSize;</div><div class="line">UINT32 typeIdsOff;</div><div class="line">UINT32 protoIdsSize;</div><div class="line">UINT32 protoIdsOff;</div><div class="line">UINT32 fieldIdsSize;</div><div class="line">UINT32 fieldIdsOff;</div><div class="line">UINT32 methodIdsSize;</div><div class="line">UINT32 methodIdsOff;</div><div class="line">UINT32 classDefsSize;</div><div class="line">UINT32 classDefsOff;</div><div class="line">UINT32 dataSize;</div><div class="line">UINT32 dataOff;</div><div class="line">&#125;;</div><div class="line">struct DexMapItem &#123;</div><div class="line">unsigned short type; /* type code (see kDexType* above) */</div><div class="line">unsigned short unused;</div><div class="line">UINT32 size; /* count of items of the indicated type */</div><div class="line">UINT32 offset; /* file offset to the start of data */</div><div class="line">&#125;;</div><div class="line">struct DexMapList &#123;</div><div class="line">UINT32 size; /* #of entries in list */</div><div class="line">DexMapItem list[1]; /* entries */</div><div class="line">&#125;;</div><div class="line">struct DexStringId &#123;</div><div class="line">UINT32 stringDataOff; /* file offset to string_data_item */</div><div class="line">&#125;;</div><div class="line">struct DexProtoId</div><div class="line">&#123;</div><div class="line">UINT32 shortyIdx; //指向DexStringID列表的索引</div><div class="line">UINT32 returnTypeIdx; //指向DexTypeID列表的索引</div><div class="line">UINT32 parametersOff; //指向DexTypeList的偏移</div><div class="line">&#125;;</div><div class="line">struct DexFieldId</div><div class="line">&#123;</div><div class="line">unsigned short classIdx; //类的类型</div><div class="line">unsigned short typeIdx; //字段类型</div><div class="line">UINT32 nameIdx; //字段名</div><div class="line">&#125;;</div><div class="line">struct DexMethodId</div><div class="line">&#123;</div><div class="line">unsigned short classIdx; //类的类型</div><div class="line">unsigned short protoIdx; //声明类型</div><div class="line">UINT32 nameIdx; //方法名</div><div class="line">&#125;;</div><div class="line">struct DexTypeItem &#123;</div><div class="line">UINT32 typeIdx; /* index into typeIds */</div><div class="line">&#125;;</div><div class="line">struct DexTypeList &#123;</div><div class="line">UINT32 size; /* #of entries in list */</div><div class="line">DexTypeItem list[1]; /* entries */</div><div class="line">&#125;;</div><div class="line">struct DexClassDef</div><div class="line">&#123;</div><div class="line">UINT32 classIdx; //描述具体的 class 类型,idx of type_ids</div><div class="line">UINT32 accessFlags; //描述 class 的访问类型 ，如 public , final , static 等</div><div class="line">UINT32 superclassIdx; //描述父类的类型,idx of type_ids</div><div class="line">UINT32 interfacesOff; //指向 class 的 interfaces(接口), 被指向的数据结构为 type_list,若无接口，值为0</div><div class="line">UINT32 sourceFileIdx; //表示源代码文件的信息,值是string_ids的一个 index.若此项信息缺失,此项值赋值为NO_INDEX=0xffff ffff</div><div class="line">UINT32 annotationsOff; //值是一个偏移地址 ，指向的内容是该 class 的注释 ，位置在 data 区，格式为 annotations_direcotry_item 。若没有此项内容 ，值为 0 。</div><div class="line">UINT32 classDataOff; //指向class_data_item[]</div><div class="line">UINT32 staticValuesOff; //指向 data 区里的一个list,格式为 encoded_array_item</div><div class="line">&#125;;</div></pre></td></tr></table></figure></p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/Android/">Android</a>
+  </div>
+
+
+
+
+<div class="article-share" id="share">
+
+  <div data-url="http://blog.injectxx.com/2016/08/20/ELF文件结构。/" data-title="ELF文件结构。 | 岁月&#39;s Blog" data-tsina="null" class="share clearfix">
+  </div>
+
+</div>
+</footer>   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2016/08/20/虚拟地址，相对虚拟地址，文件偏移的转换。/" title="虚拟地址，相对虚拟地址，文件偏移的转换。">
+  <strong>PREVIOUS:</strong><br/>
+  <span>
+  虚拟地址，相对虚拟地址，文件偏移的转换。</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2016/08/20/Dex文件结构。/"  title="Dex文件结构。">
+ <strong>NEXT:</strong><br/> 
+ <span>Dex文件结构。
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section class="comment">
+	<div class="ds-thread"></div>
+</section>
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+  
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+
+  
+<div class="tagslist">
+	<p class="asidetitle">Tags</p>
+		<ul class="clearfix">
+		
+			<li><a href="/tags/Android/" title="Android">Android<sup>5</sup></a></li>
+		
+			<li><a href="/tags/C/" title="C++">C++<sup>7</sup></a></li>
+		
+			<li><a href="/tags/C-C/" title="C/C++">C/C++<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Cydia/" title="Cydia">Cydia<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Hexo/" title="Hexo">Hexo<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Hook/" title="Hook">Hook<sup>3</sup></a></li>
+		
+			<li><a href="/tags/Windows/" title="Windows">Windows<sup>2</sup></a></li>
+		
+			<li><a href="/tags/Xposed/" title="Xposed">Xposed<sup>1</sup></a></li>
+		
+			<li><a href="/tags/inject/" title="inject">inject<sup>2</sup></a></li>
+		
+			<li><a href="/tags/函数替换/" title="函数替换">函数替换<sup>1</sup></a></li>
+		
+			<li><a href="/tags/反汇编/" title="反汇编">反汇编<sup>7</sup></a></li>
+		
+			<li><a href="/tags/日常/" title="日常">日常<sup>1</sup></a></li>
+		
+			<li><a href="/tags/注入/" title="注入">注入<sup>1</sup></a></li>
+		
+			<li><a href="/tags/远程线程注入/" title="远程线程注入">远程线程注入<sup>1</sup></a></li>
+		
+			<li><a href="/tags/逆向/" title="逆向">逆向<sup>7</sup></a></li>
+		
+			<li><a href="/tags/驱动/" title="驱动">驱动<sup>1</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  <div class="rsspart">
+	<a href="undefined" target="_blank" title="rss">RSS</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<div class="social-font clearfix">
+		
+		
+		
+		
+		
+	</div>
+		<p class="copyright">Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/A-limon/pacman" target="_blank" title="Pacman">Pacman</a> © 2016 
+		
+		<a href="http://blog.injectxx.com" target="_blank" title="岁月。">岁月。</a>
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.1.0.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else
+    {
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      h  = $('article h2')
+      ah = $('article h2'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  if(ah.length==0){
+    t.css('display','none');
+  }else{
+    c.click(function(){
+      ta.css('display', 'block').addClass('fadeIn');
+    });
+    o.click(function(){
+      ta.css('display', 'none');
+    });
+    $(window).scroll(function(){
+      ta.css("top",Math.max(140,320-$(this).scrollTop()));
+    });
+  };
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#share"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="#textlogo" class="article-back-to-top" title="Top"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="QRcode"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="Weibo"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"Kernel32Sun"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+  </body>
+</html>

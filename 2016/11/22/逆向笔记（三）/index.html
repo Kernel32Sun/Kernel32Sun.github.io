@@ -1,0 +1,372 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>逆向笔记（三） | 岁月&#39;s Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
+    
+    <meta name="author" content="岁月。">
+    
+    <meta name="description" content="最近闲了下来，总结一下之前的知识，这些东西都是好久之前留下的了，现在在回味一遍，梳理梳理。
+逆向笔记之函数的工作原理。">
+    
+    
+    
+    
+    
+    <link rel="icon" href="/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/pacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/pacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      <div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.svg" alt="岁月&#39;s Blog" title="岁月&#39;s Blog"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="岁月&#39;s Blog">岁月&#39;s Blog</a></h1>
+				<h2 class="blog-motto">一只奋斗的猿</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+					<li>
+					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="text" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search" />
+						<input type="hidden" name="q" value="site:blog.injectxx.com">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2016/11/22/逆向笔记（三）/" title="逆向笔记（三）" itemprop="url">逆向笔记（三）</a>
+  </h1>
+  <p class="article-author">By
+    
+      <a href="http://blog.injectxx.com" title="岁月。">岁月。</a>
+    </p>
+  <p class="article-time">
+    <time datetime="2016-11-22T13:25:02.000Z" itemprop="datePublished">2016-11-22</time>
+    Updated:<time datetime="2016-11-22T13:37:01.000Z" itemprop="dateModified">2016-11-22</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#栈"><span class="toc-number">1.</span> <span class="toc-text">栈</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#cdecl与-stdcall两种调用的区别："><span class="toc-number">2.</span> <span class="toc-text">_cdecl与_stdcall两种调用的区别：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Printf函数在debug和release的区别："><span class="toc-number">3.</span> <span class="toc-text">Printf函数在debug和release的区别：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#fastcall调用方式："><span class="toc-number">4.</span> <span class="toc-text">__fastcall调用方式：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#使用ebp和esp寻址（栈的寻址）"><span class="toc-number">5.</span> <span class="toc-text">使用ebp和esp寻址（栈的寻址）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#函数的参数"><span class="toc-number">6.</span> <span class="toc-text">函数的参数</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#函数的返回值"><span class="toc-number"></span> <span class="toc-text">函数的返回值</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#基本类型作为返回值"><span class="toc-number">1.</span> <span class="toc-text">基本类型作为返回值</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#结构体作为返回值"><span class="toc-number">2.</span> <span class="toc-text">结构体作为返回值</span></a></li></ol>
+		</div>
+		
+		<p>最近闲了下来，总结一下之前的知识，这些东西都是好久之前留下的了，现在在回味一遍，梳理梳理。</p>
+<p>逆向笔记之函数的工作原理。<br><a id="more"></a></p>
+<h2 id="栈"><a href="#栈" class="headerlink" title="栈"></a>栈</h2><p>先来说说栈，栈是内存中一块特殊的区域，遵循先进后出的原则。栈结构在内存中占用一段连续的存储空间，通过esp和ebp这两个栈指针寄存器来保存当前栈的起始地址和结束地址（也称为栈顶和栈底）。在栈中，没4个字节的栈空间保存一个数据，像这样栈顶到栈底之间的存储空间被称为栈帧。<br>栈帧的形成：当栈顶指针esp小于栈底指针ebp时，就形成了栈帧。通常在VC++中，栈帧可以寻址的数据有局部变量，函数返回地址，函数参数等。<br>栈平衡：不同的两次函数调用，所形成的栈帧也不相同，当由一个函数进入到另一个函数中时，就会针对调用的函数开辟出其所需的栈空间，形成此函数的栈帧，当这个函数结束调用时，需要清除掉它所使用的栈空间，关闭栈帧，这一过程称为栈平衡。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">C代码：</div><div class="line">int _tmain(int argc, _TCHAR* argv[])</div><div class="line">&#123;</div><div class="line">    //这是一个空函数</div><div class="line">    return 0;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">对应反汇编Debug：</div><div class="line">00101790 &gt;  55              push ebp //保存栈底指针ebp</div><div class="line">00101791    8BEC            mov ebp,esp //调整当前栈底指针位置到栈顶</div><div class="line">00101793    81EC C0000000   sub esp,0xC0 //抬高栈底esp，开辟0xc0空间，作为局部变量存储空间</div><div class="line">00101799    53              push ebx    //保存寄存器</div><div class="line">0010179A    56              push esi //保存寄存器                                ; TestCode.&lt;ModuleEntryPoint&gt;</div><div class="line">0010179B    57              push edi//保存寄存器                                 ; TestCode.&lt;ModuleEntryPoint&gt;</div><div class="line">0010179C    8DBD 40FFFFFF   lea edi,dword ptr ss:[ebp-0xC0]//取出函数可用栈空间首地址</div><div class="line">001017A2    B9 30000000     mov ecx,0x30    //ecx赋值</div><div class="line">001017A7    B8 CCCCCCCC     mov eax,0xCCCCCCCC //初始化eax为0xcccccccc</div><div class="line">001017AC    F3:AB           rep stos dword ptr es:[edi] 根据ecx的值,向edi写入eax数据</div><div class="line">001017AE    33C0            xor eax,eax //清零eax</div><div class="line">001017B0    5F              pop edi                                  ; kernel32.762D38F4</div><div class="line">001017B1    5E              pop esi                                  ; kernel32.762D38F4</div><div class="line">001017B2    5B              pop ebx                                  ; kernel32.762D38F4</div><div class="line">001017B3    8BE5            mov esp,ebp //还原esp</div><div class="line">001017B5    5D              pop ebp                                  ; kernel32.762D38F4</div><div class="line">001017B6    C3              retn</div></pre></td></tr></table></figure>
+<p>VC++下有三种函数调用方式，分别是：<strong>cdecl 、 </strong>stdcall 、<strong>fastcal。第一种是C/C++默认的函数调用方式，如果不特殊指明用那种方式则默认使用</strong>cdecl，而且只有第一种可以在不定参数的函数下使用，后面的方式指明所使用的函数必须是确定参数的，包括参数的个数和类型。</p>
+<h2 id="cdecl与-stdcall两种调用的区别："><a href="#cdecl与-stdcall两种调用的区别：" class="headerlink" title="_cdecl与_stdcall两种调用的区别："></a>_cdecl与_stdcall两种调用的区别：</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">C代码：</div><div class="line">//stdcall调用方式，被调方平衡栈</div><div class="line">void _stdcall ShowStd(int nNumber)</div><div class="line">&#123;</div><div class="line">    printf(&quot;%d\n&quot;, nNumber);</div><div class="line">&#125;</div><div class="line">//cdecl调用方式，调用方平衡栈</div><div class="line">void _cdecl ShowCde(int nNumber)</div><div class="line">&#123;</div><div class="line">    printf(&quot;%d\n&quot;, nNumber);</div><div class="line">&#125;</div><div class="line"></div><div class="line">int _tmain(int argc, _TCHAR* argv[])</div><div class="line">&#123;</div><div class="line">    ShowStd(1);</div><div class="line">    ShowCde(1);</div><div class="line">    return 0;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div></pre></td><td class="code"><pre><div class="line">对应反汇编Debug：</div><div class="line">Main函数</div><div class="line">013E33F0 &gt;  55              push ebp</div><div class="line">013E33F1    8BEC            mov ebp,esp</div><div class="line">013E33F3    81EC C0000000   sub esp,0xC0</div><div class="line">013E33F9    53              push ebx</div><div class="line">013E33FA    56              push esi                                 ; TestCode.&lt;ModuleEntryPoint&gt;</div><div class="line">013E33FB    57              push edi                                 ; TestCode.&lt;ModuleEntryPoint&gt;</div><div class="line">013E33FC    8DBD 40FFFFFF   lea edi,dword ptr ss:[ebp-0xC0]</div><div class="line">013E3402    B9 30000000     mov ecx,0x30</div><div class="line">013E3407    B8 CCCCCCCC     mov eax,0xCCCCCCCC</div><div class="line">013E340C    F3:AB           rep stos dword ptr es:[edi]</div><div class="line">013E340E    6A 01           push 0x1</div><div class="line">013E3410    E8 DADDFFFF     call TestCode.013E11EF //_stdcall</div><div class="line">013E3415    6A 01           push 0x1</div><div class="line">013E3417    E8 D8DDFFFF     call TestCode.013E11F4 //_ceecl</div><div class="line">013E341C    83C4 04         add esp,0x4 //esp += 4。平衡栈顶</div><div class="line">013E341F    33C0            xor eax,eax</div><div class="line">013E3421    5F              pop edi                                  ; kernel32.762D38F4</div><div class="line">013E3422    5E              pop esi                                  ; kernel32.762D38F4</div><div class="line">013E3423    5B              pop ebx                                  ; kernel32.762D38F4</div><div class="line">013E3424    81C4 C0000000   add esp,0xC0</div><div class="line">013E342A    3BEC            cmp ebp,esp</div><div class="line">013E342C    E8 AADDFFFF     call TestCode.013E11DB</div><div class="line">013E3431    8BE5            mov esp,ebp</div><div class="line">013E3433    5D              pop ebp                                  ; kernel32.762D38F4</div><div class="line">013E3434    C3              retn</div><div class="line"></div><div class="line">ShowStd函数</div><div class="line">013E2FA0 &gt;  55              push ebp</div><div class="line">013E2FA1    8BEC            mov ebp,esp</div><div class="line">013E2FA3    81EC C0000000   sub esp,0xC0</div><div class="line">013E2FA9    53              push ebx</div><div class="line">013E2FAA    56              push esi                                 ; TestCode.&lt;ModuleEntryPoint&gt;</div><div class="line">013E2FAB    57              push edi                                 ; TestCode.&lt;ModuleEntryPoint&gt;</div><div class="line">013E2FAC    8DBD 40FFFFFF   lea edi,dword ptr ss:[ebp-0xC0]</div><div class="line">013E2FB2    B9 30000000     mov ecx,0x30</div><div class="line">013E2FB7    B8 CCCCCCCC     mov eax,0xCCCCCCCC</div><div class="line">013E2FBC    F3:AB           rep stos dword ptr es:[edi]</div><div class="line">013E2FBE    8BF4            mov esi,esp</div><div class="line">013E2FC0    8B45 08         mov eax,dword ptr ss:[ebp+0x8]</div><div class="line">013E2FC3    50              push eax</div><div class="line">013E2FC4    68 A8583E01     push offset TestCode.??_C@_03PMGGPEJJ@?$&gt;; ASCII 25,&quot;d\n&quot;</div><div class="line">013E2FC9    FF15 14913E01   call dword ptr ds:[&lt;&amp;MSVCR120D.printf&gt;]  ; msvcr120.printf</div><div class="line">013E2FCF    83C4 08         add esp,0x8</div><div class="line">013E2FD2    3BF4            cmp esi,esp</div><div class="line">013E2FD4    E8 02E2FFFF     call TestCode.013E11DB</div><div class="line">013E2FD9    5F              pop edi                                  ; kernel32.762D38F4</div><div class="line">013E2FDA    5E              pop esi                                  ; kernel32.762D38F4</div><div class="line">013E2FDB    5B              pop ebx                                  ; kernel32.762D38F4</div><div class="line">013E2FDC    81C4 C0000000   add esp,0xC0</div><div class="line">013E2FE2    3BEC            cmp ebp,esp</div><div class="line">013E2FE4    E8 F2E1FFFF     call TestCode.013E11DB</div><div class="line">013E2FE9    8BE5            mov esp,ebp</div><div class="line">013E2FEB    5D              pop ebp                                  ; kernel32.762D38F4</div><div class="line">013E2FEC    C2 0400         retn 0x4 //return 4相当于esp += 4</div><div class="line"></div><div class="line"></div><div class="line">ShowCde函数</div><div class="line">013E29E0 &gt;  55              push ebp</div><div class="line">013E29E1    8BEC            mov ebp,esp</div><div class="line">013E29E3    81EC C0000000   sub esp,0xC0</div><div class="line">013E29E9    53              push ebx</div><div class="line">013E29EA    56              push esi                                         ; TestCode.&lt;ModuleEntryPoint&gt;</div><div class="line">013E29EB    57              push edi                                         ; TestCode.&lt;ModuleEntryPoint&gt;</div><div class="line">013E29EC    8DBD 40FFFFFF   lea edi,dword ptr ss:[ebp-0xC0]</div><div class="line">013E29F2    B9 30000000     mov ecx,0x30</div><div class="line">013E29F7    B8 CCCCCCCC     mov eax,0xCCCCCCCC</div><div class="line">013E29FC    F3:AB           rep stos dword ptr es:[edi]</div><div class="line">013E29FE    8BF4            mov esi,esp</div><div class="line">013E2A00    8B45 08         mov eax,dword ptr ss:[ebp+0x8]</div><div class="line">013E2A03    50              push eax</div><div class="line">013E2A04    68 A8583E01     push offset TestCode.??_C@_03PMGGPEJJ@?$CFd?6?$A&gt;; ASCII 25,&quot;d\n&quot;</div><div class="line">013E2A09    FF15 14913E01   call dword ptr ds:[&lt;&amp;MSVCR120D.printf&gt;]          ; msvcr120.printf</div><div class="line">013E2A0F    83C4 08         add esp,0x8</div><div class="line">013E2A12    3BF4            cmp esi,esp</div><div class="line">013E2A14    E8 C2E7FFFF     call TestCode.013E11DB</div><div class="line">013E2A19    5F              pop edi                                          ; kernel32.762D38F4</div><div class="line">013E2A1A    5E              pop esi                                          ; kernel32.762D38F4</div><div class="line">013E2A1B    5B              pop ebx                                          ; kernel32.762D38F4</div><div class="line">013E2A1C    81C4 C0000000   add esp,0xC0</div><div class="line">013E2A22    3BEC            cmp ebp,esp</div><div class="line">013E2A24    E8 B2E7FFFF     call TestCode.013E11DB</div><div class="line">013E2A29    8BE5            mov esp,ebp</div><div class="line">013E2A2B    5D              pop ebp                                          ; kernel32.762D38F4</div><div class="line">013E2A2C    C3              retn //直接返回没有平衡栈操作</div></pre></td></tr></table></figure>
+<h2 id="Printf函数在debug和release的区别："><a href="#Printf函数在debug和release的区别：" class="headerlink" title="Printf函数在debug和release的区别："></a>Printf函数在debug和release的区别：</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">C代码：</div><div class="line">int _tmain(int argc, _TCHAR* argv[])</div><div class="line">&#123;</div><div class="line">    printf(&quot;Hello&quot;);</div><div class="line">    printf(&quot;World&quot;);</div><div class="line">    printf(&quot;C++&quot;);</div><div class="line">    printf(&quot;\r\n&quot;);</div><div class="line">    return 0;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div></pre></td><td class="code"><pre><div class="line">对应反汇编Debug：</div><div class="line">013533F0 &gt;  55              push ebp</div><div class="line">013533F1    8BEC            mov ebp,esp</div><div class="line">013533F3    81EC C0000000   sub esp,0xC0</div><div class="line">013533F9    53              push ebx</div><div class="line">013533FA    56              push esi                                         ; TestCode.&lt;ModuleEntryPoint&gt;</div><div class="line">013533FB    57              push edi                                         ; TestCode.&lt;ModuleEntryPoint&gt;</div><div class="line">013533FC    8DBD 40FFFFFF   lea edi,dword ptr ss:[ebp-0xC0]</div><div class="line">01353402    B9 30000000     mov ecx,0x30</div><div class="line">01353407    B8 CCCCCCCC     mov eax,0xCCCCCCCC</div><div class="line">0135340C    F3:AB           rep stos dword ptr es:[edi]</div><div class="line">0135340E    8BF4            mov esi,esp</div><div class="line">01353410    68 AC583501     push offset TestCode.??_C@_05COLMCDPH@Hello?$AA@&gt;; ASCII 48,&quot;ello&quot;</div><div class="line">01353415    FF15 14913501   call dword ptr ds:[&lt;&amp;MSVCR120D.printf&gt;]          ; msvcr120.printf</div><div class="line">0135341B    83C4 04         add esp,0x4</div><div class="line">0135341E    3BF4            cmp esi,esp</div><div class="line">01353420    E8 B6DDFFFF     call TestCode.013511DB</div><div class="line">01353425    8BF4            mov esi,esp</div><div class="line">01353427    68 18593501     push offset TestCode.??_C@_05MFLOHCHP@World?$AA@&gt;</div><div class="line">0135342C    FF15 14913501   call dword ptr ds:[&lt;&amp;MSVCR120D.printf&gt;]          ; msvcr120.printf</div><div class="line">01353432    83C4 04         add esp,0x4</div><div class="line">01353435    3BF4            cmp esi,esp</div><div class="line">01353437    E8 9FDDFFFF     call TestCode.013511DB</div><div class="line">0135343C    8BF4            mov esi,esp</div><div class="line">0135343E    68 B4583501     push offset TestCode.??_C@_03BFHCIDFI@C?$CL?$CL?&gt;</div><div class="line">01353443    FF15 14913501   call dword ptr ds:[&lt;&amp;MSVCR120D.printf&gt;]          ; msvcr120.printf</div><div class="line">01353449    83C4 04         add esp,0x4</div><div class="line">0135344C    3BF4            cmp esi,esp</div><div class="line">0135344E    E8 88DDFFFF     call TestCode.013511DB</div><div class="line">01353453    8BF4            mov esi,esp</div><div class="line">01353455    68 20593501     push offset TestCode.??_C@_02PCIJFNDE@?$AN?6?$AA&gt;</div><div class="line">0135345A    FF15 14913501   call dword ptr ds:[&lt;&amp;MSVCR120D.printf&gt;]          ; msvcr120.printf</div><div class="line">01353460    83C4 04         add esp,0x4</div><div class="line">01353463    3BF4            cmp esi,esp</div><div class="line">01353465    E8 71DDFFFF     call TestCode.013511DB</div><div class="line">0135346A    33C0            xor eax,eax</div><div class="line">0135346C    5F              pop edi                                          ; kernel32.762D38F4</div><div class="line">0135346D    5E              pop esi                                          ; kernel32.762D38F4</div><div class="line">0135346E    5B              pop ebx                                          ; kernel32.762D38F4</div><div class="line">0135346F    81C4 C0000000   add esp,0xC0</div><div class="line">01353475    3BEC            cmp ebp,esp</div><div class="line">01353477    E8 5FDDFFFF     call TestCode.013511DB</div><div class="line">0135347C    8BE5            mov esp,ebp</div><div class="line">0135347E    5D              pop ebp                                          ; kernel32.762D38F4</div><div class="line">0135347F    C3              retn</div></pre></td></tr></table></figure>
+<p>这里可以看出来每次调用后都进行堆栈平衡。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">对应反汇编Release：</div><div class="line">00181000 &gt;/$  56            push esi                                                     ;  TestCode.&lt;ModuleEntryPoint&gt;</div><div class="line">00181001  |.  8B35 90201800 mov esi,dword ptr ds:[&lt;&amp;MSVCR120.printf&gt;]                    ;  msvcr120.printf</div><div class="line">00181007  |.  68 00211800   push offset TestCode.??_C@_05COLMCDPH@Hello?$AA@ime@4        ; /Hello</div><div class="line">0018100C  |.  FFD6          call esi                                                     ; \printf</div><div class="line">0018100E  |.  68 08211800   push offset TestCode.??_C@_05MFLOHCHP@World?$AA@2ptionFilter&gt;;  World</div><div class="line">00181013  |.  FFD6          call esi                                                     ;  TestCode.&lt;ModuleEntryPoint&gt;</div><div class="line">00181015  |.  68 10211800   push offset TestCode.??_C@_03BFHCIDFI@C?$CL?$CL?$AA@4        ;  C++</div><div class="line">0018101A  |.  FFD6          call esi                                                     ;  TestCode.&lt;ModuleEntryPoint&gt;</div><div class="line">0018101C  |.  68 14211800   push offset TestCode.??_C@_02PCIJFNDE@?$AN?6?$AA@ilter       ;  \r\n</div><div class="line">00181021  |.  FFD6          call esi                                                     ;  TestCode.&lt;ModuleEntryPoint&gt;</div><div class="line">00181023  |.  83C4 10       add esp,0x10</div><div class="line">00181026  |.  33C0          xor eax,eax</div><div class="line">00181028  |.  5E            pop esi                                                      ;  kernel32.762D38F4</div><div class="line">00181029  \.  C3            retn</div></pre></td></tr></table></figure></p>
+<p>这里可以看出来最后一个printf函数执行完后，一次对堆栈进行平衡，这种优化方式为复写传播。<br>因此在Release版本优化之后，由于_cdecl方式使用的函数外栈平衡，所以可以将多次平衡合并，会在效率上比_stdcall方式高一些。</p>
+<h2 id="fastcall调用方式："><a href="#fastcall调用方式：" class="headerlink" title="__fastcall调用方式："></a>__fastcall调用方式：</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">C代码：</div><div class="line"></div><div class="line">void _fastcall ShowFast(int n1,int n2,int n3,int n4)</div><div class="line">&#123;</div><div class="line">    printf(&quot;%d%d%d%d\n&quot;, n1,n2, n3, n4);</div><div class="line">&#125;</div><div class="line"></div><div class="line">int _tmain(int argc, _TCHAR* argv[])</div><div class="line">&#123;</div><div class="line">    ShowFast(1, 2, 3, 4);</div><div class="line">    return 0;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div></pre></td><td class="code"><pre><div class="line">对应反汇编Debug：</div><div class="line">Main函数</div><div class="line">00891790 &gt;  55              push ebp</div><div class="line">00891791    8BEC            mov ebp,esp</div><div class="line">00891793    81EC C0000000   sub esp,0xC0</div><div class="line">00891799    53              push ebx</div><div class="line">0089179A    56              push esi                                                     ; TestCode.&lt;ModuleEntryPoint&gt;</div><div class="line">0089179B    57              push edi                                                     ; TestCode.&lt;ModuleEntryPoint&gt;</div><div class="line">0089179C    8DBD 40FFFFFF   lea edi,dword ptr ss:[ebp-0xC0]</div><div class="line">008917A2    B9 30000000     mov ecx,0x30</div><div class="line">008917A7    B8 CCCCCCCC     mov eax,0xCCCCCCCC</div><div class="line">008917AC    F3:AB           rep stos dword ptr es:[edi]</div><div class="line">008917AE    6A 04           push 0x4//用栈传参</div><div class="line">008917B0    6A 03           push 0x3//用栈传参</div><div class="line">008917B2    BA 02000000     mov edx,0x2//寄存器传参</div><div class="line">008917B7    B9 01000000     mov ecx,0x1//寄存器传参</div><div class="line">008917BC    E8 38FAFFFF     call TestCode.008911F9</div><div class="line"></div><div class="line">ShowFast函数</div><div class="line">00892FA0 &gt;  55              push ebp</div><div class="line">00892FA1    8BEC            mov ebp,esp</div><div class="line">00892FA3    81EC D8000000   sub esp,0xD8</div><div class="line">00892FA9    53              push ebx</div><div class="line">00892FAA    56              push esi                                                     ; TestCode.&lt;ModuleEntryPoint&gt;</div><div class="line">00892FAB    57              push edi                                                     ; TestCode.&lt;ModuleEntryPoint&gt;</div><div class="line">00892FAC    51              push ecx                                                     ; TestCode.&lt;ModuleEntryPoint&gt;</div><div class="line">00892FAD    8DBD 28FFFFFF   lea edi,dword ptr ss:[ebp-0xD8]</div><div class="line">00892FB3    B9 36000000     mov ecx,0x36</div><div class="line">00892FB8    B8 CCCCCCCC     mov eax,0xCCCCCCCC</div><div class="line">00892FBD    F3:AB           rep stos dword ptr es:[edi]</div><div class="line">00892FBF    59              pop ecx                                                      ; kernel32.762D38F4</div><div class="line">00892FC0    8955 EC         mov dword ptr ss:[ebp-0x14],edx //保存参数                              ; TestCode.&lt;ModuleEntryPoint&gt;</div><div class="line">00892FC3    894D F8         mov dword ptr ss:[ebp-0x8],ecx //保存参数                              ; TestCode.&lt;ModuleEntryPoint&gt;</div><div class="line">00892FC6    8BF4            mov esi,esp</div><div class="line">00892FC8    8B45 0C         mov eax,dword ptr ss:[ebp+0xC] //参数给eax</div><div class="line">00892FCB    50              push eax</div><div class="line">00892FCC    8B4D 08         mov ecx,dword ptr ss:[ebp+0x8] ////参数给ecx</div><div class="line">00892FCF    51              push ecx                                                     ; TestCode.&lt;ModuleEntryPoint&gt;</div><div class="line">00892FD0    8B55 EC         mov edx,dword ptr ss:[ebp-0x14]</div><div class="line">00892FD3    52              push edx                                                     ; TestCode.&lt;ModuleEntryPoint&gt;</div><div class="line">00892FD4    8B45 F8         mov eax,dword ptr ss:[ebp-0x8]                               ; kernel32.BaseThreadInitThunk</div><div class="line">00892FD7    50              push eax</div><div class="line">00892FD8    68 E45A8900     push offset TestCode.??_C@_09GDOPBKAD@?$CFd?$CFd?$CFd?$CFd?6&gt;; ASCII &quot;%d%d%d%d\n&quot;</div><div class="line">00892FDD    FF15 14918900   call dword ptr ds:[&lt;&amp;MSVCR120D.printf&gt;]                      ; msvcr120.printf //调用printf</div><div class="line">00892FE3    83C4 14         add esp,0x14 //平衡堆栈，五个参数</div><div class="line">00892FE6    3BF4            cmp esi,esp</div><div class="line">00892FE8    E8 EEE1FFFF     call TestCode.008911DB</div><div class="line">00892FED    5F              pop edi                                                      ; kernel32.762D38F4</div><div class="line">00892FEE    5E              pop esi                                                      ; kernel32.762D38F4</div><div class="line">00892FEF    5B              pop ebx                                                      ; kernel32.762D38F4</div><div class="line">00892FF0    81C4 D8000000   add esp,0xD8</div><div class="line">00892FF6    3BEC            cmp ebp,esp</div><div class="line">00892FF8    E8 DEE1FFFF     call TestCode.008911DB</div><div class="line">00892FFD    8BE5            mov esp,ebp</div><div class="line">00892FFF    5D              pop ebp                                                      ; kernel32.762D38F4</div><div class="line">00893000    C2 0800         retn 0x8 //</div></pre></td></tr></table></figure>
+<p>函数有四个参数，只有两个用栈传递，所以平衡堆栈+8就可以了</p>
+<h2 id="使用ebp和esp寻址（栈的寻址）"><a href="#使用ebp和esp寻址（栈的寻址）" class="headerlink" title="使用ebp和esp寻址（栈的寻址）"></a>使用ebp和esp寻址（栈的寻址）</h2><p>寄存器ebp和esp分别用来存储当前函数的栈底和栈顶指针，而局部变量是存储在栈中的，因此可以利用这两个寄存器进行寻址来找到相应的局部变量。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">C代码：</div><div class="line">void InNumber()</div><div class="line">&#123;</div><div class="line">    int nInt = 1;</div><div class="line">    scanf_s(&quot;%d&quot;,&amp;nInt);</div><div class="line">    char cChar = 2;</div><div class="line">    scanf_s(&quot;%c&quot;,&amp;cChar);</div><div class="line">    printf(&quot;%d %c&quot;, nInt, cChar);</div><div class="line">&#125;</div><div class="line"></div><div class="line">int _tmain(int argc, _TCHAR* argv[])</div><div class="line">&#123;</div><div class="line">    InNumber();</div><div class="line">    return 0;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div></pre></td><td class="code"><pre><div class="line">对应反汇编Release：</div><div class="line">编译器优化掉了</div><div class="line">text:00401000 ; int __cdecl main(int argc, const char **argv, const char **envp)</div><div class="line">.text:00401000 _main           proc near               ; CODE XREF: ___tmainCRTStartup+F8p</div><div class="line">.text:00401000</div><div class="line">.text:00401000 var_C           = dword ptr -0Ch</div><div class="line">.text:00401000 var_5           = byte ptr -5</div><div class="line">.text:00401000 var_4           = dword ptr -4</div><div class="line">.text:00401000 argc            = dword ptr  8</div><div class="line">.text:00401000 argv            = dword ptr  0Ch</div><div class="line">.text:00401000 envp            = dword ptr  10h</div><div class="line">.text:00401000</div><div class="line">.text:00401000                 push    ebp</div><div class="line">.text:00401001                 mov     ebp, esp</div><div class="line">.text:00401003                 sub     esp, 0Ch</div><div class="line">.text:00401006                 mov     eax, ___security_cookie</div><div class="line">.text:0040100B                 xor     eax, ebp</div><div class="line">.text:0040100D                 mov     [ebp+var_4], eax</div><div class="line">.text:00401010                 lea     eax, [ebp+var_C] //取地址</div><div class="line">.text:00401013                 mov     [ebp+var_C], 1 //初始化变量1</div><div class="line">.text:0040101A                 push    eax</div><div class="line">.text:0040101B                 push    offset Format   ; &quot;%d&quot;</div><div class="line">.text:00401020                 call    ds:scanf_s</div><div class="line">.text:00401026                 lea     eax, [ebp+var_5] //取地址</div><div class="line">.text:00401029                 mov     [ebp+var_5], 2 //初始化变量2</div><div class="line">.text:0040102D                 push    eax</div><div class="line">.text:0040102E                 push    offset aC       ; &quot;%c&quot;</div><div class="line">.text:00401033                 call    ds:scanf_s</div><div class="line">.text:00401039                 movsx   eax, [ebp+var_5]</div><div class="line">.text:0040103D                 push    eax</div><div class="line">.text:0040103E                 push    [ebp+var_C]</div><div class="line">.text:00401041                 push    offset aDC      ; &quot;%d %c&quot;</div><div class="line">.text:00401046                 call    ds:printf</div><div class="line">.text:0040104C                 mov     ecx, [ebp+var_4]</div><div class="line">.text:0040104F                 add     esp, 1Ch //平衡堆栈</div><div class="line">.text:00401052                 xor     ecx, ebp</div><div class="line">.text:00401054                 xor     eax, eax</div><div class="line">.text:00401056                 call    @__security_check_cookie@4 ; __security_check_cookie(x)</div><div class="line">.text:0040105B                 mov     esp, ebp</div><div class="line">.text:0040105D                 pop     ebp</div><div class="line">.text:0040105E                 retn</div><div class="line">.text:0040105E _main           endp</div></pre></td></tr></table></figure>
+<p>这里用ebp寄存器来寻址。</p>
+<h2 id="函数的参数"><a href="#函数的参数" class="headerlink" title="函数的参数"></a>函数的参数</h2><p>函数参数通过栈结构进行传递，在C++代码中，其传参顺序为从右向左一次入栈，最先定义的参数最后入栈。参数也是函数中的一个变量，才用正数标号法来表示局部变量偏移标号时，函数的参数标号和局部变量的标号值都是正数，无法区分，不利于分析。如果使用负数标号法表示，则可以将两者区分，正数表示参数，负数表示局部变量，0值表示返回地址。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">C代码：</div><div class="line">void AddNum(int n1)</div><div class="line">&#123;</div><div class="line">    n1 += 1;</div><div class="line">    printf(&quot;%d\n&quot;, n1);</div><div class="line">&#125;</div><div class="line"></div><div class="line">int _tmain(int argc, _TCHAR* argv[])</div><div class="line">&#123;</div><div class="line">    int n1 = 0;</div><div class="line">    scanf_s(&quot;%d&quot;, &amp;n1);</div><div class="line">    AddNum(n1);</div><div class="line">    return 0;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div></pre></td><td class="code"><pre><div class="line">对应反汇编Release：</div><div class="line">编译器又把函数优化掉了，换个编译器。</div><div class="line">Main函数</div><div class="line">text:00401020 ; int __cdecl main(int argc, const char **argv, const char **envp)</div><div class="line">.text:00401020 _main           proc near               ; CODE XREF: start+AFp</div><div class="line">.text:00401020</div><div class="line">.text:00401020 var_4           = dword ptr -4 //局部变量，负数</div><div class="line">.text:00401020 argc            = dword ptr  4</div><div class="line">.text:00401020 argv            = dword ptr  8</div><div class="line">.text:00401020 envp            = dword ptr  0Ch</div><div class="line">.text:00401020</div><div class="line">.text:00401020                 push    ecx</div><div class="line">.text:00401021                 lea     eax, [esp+4+var_4] //取局部变量地址到eax</div><div class="line">.text:00401025                 mov     [esp+4+var_4], 0 //初始化</div><div class="line">.text:0040102D                 push    eax //参数压栈</div><div class="line">.text:0040102E                 push    offset aD_0     ; &quot;%d&quot;</div><div class="line">.text:00401033                 call    _scanf</div><div class="line">.text:00401038                 mov     ecx, [esp+0Ch+var_4] //取局部变量内容到ecx</div><div class="line">.text:0040103C                 push    ecx //参数压栈</div><div class="line">.text:0040103D                 call    sub_401000 //调用AddNum函数</div><div class="line">.text:00401042                 xor     eax, eax</div><div class="line">.text:00401044                 add     esp, 10h //堆栈平衡</div><div class="line">.text:00401047                 retn</div><div class="line">.text:00401047 _main           endp</div><div class="line"></div><div class="line">AddNum函数</div><div class="line">.text:00401000 sub_401000      proc near               ; CODE XREF: _main+1Dp</div><div class="line">.text:00401000</div><div class="line">.text:00401000 arg_0           = dword ptr  4 //参数，正数</div><div class="line">.text:00401000</div><div class="line">.text:00401000                 mov     eax, [esp+arg_0] 参数1给eax</div><div class="line">.text:00401004                 inc     eax //eax +=1</div><div class="line">.text:00401005                 push    eax //参数压栈</div><div class="line">.text:00401006                 push    offset aD       ; &quot;%d\n&quot;</div><div class="line">.text:0040100B                 call    _printf</div><div class="line">.text:00401010                 add     esp, 8 //堆栈平衡</div><div class="line">.text:00401013                 retn</div><div class="line">.text:00401013 sub_401000      endp</div></pre></td></tr></table></figure>
+<p>通过这两段代码的比较，可以看到局部变量和函数的参数定义是不一样的。局部变量是相对于栈顶指针的负数值，而参数则是正数偏移，我们知道内存是从大到小分配空间的，所以参数先于局部变量分配空间，并且先于调用函数。</p>
+<h1 id="函数的返回值"><a href="#函数的返回值" class="headerlink" title="函数的返回值"></a>函数的返回值</h1><h2 id="基本类型作为返回值"><a href="#基本类型作为返回值" class="headerlink" title="基本类型作为返回值"></a>基本类型作为返回值</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">C代码：</div><div class="line">int GetAddr(int nNum)</div><div class="line">&#123;</div><div class="line">    int nAddr = *(int *)(&amp;nNum - 1);</div><div class="line">    return nAddr;</div><div class="line">&#125;</div><div class="line"></div><div class="line">int _tmain(int argc, _TCHAR* argv[])</div><div class="line">&#123;</div><div class="line">    GetAddr(1);</div><div class="line">    return 0;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">对应反汇编Debug：</div><div class="line">00322FA0 &gt;  55              push ebp</div><div class="line">00322FA1    8BEC            mov ebp,esp</div><div class="line">00322FA3    81EC CC000000   sub esp,0xCC</div><div class="line">00322FA9    53              push ebx</div><div class="line">00322FAA    56              push esi                                                     ; TestCode.&lt;ModuleEntryPoint&gt;</div><div class="line">00322FAB    57              push edi                                                     ; TestCode.&lt;ModuleEntryPoint&gt;</div><div class="line">00322FAC    8DBD 34FFFFFF   lea edi,dword ptr ss:[ebp-0xCC]</div><div class="line">00322FB2    B9 33000000     mov ecx,0x33</div><div class="line">00322FB7    B8 CCCCCCCC     mov eax,0xCCCCCCCC</div><div class="line">00322FBC    F3:AB           rep stos dword ptr es:[edi]</div><div class="line">00322FBE    8D45 08         lea eax,dword ptr ss:[ebp+0x8] //取参数1的地址</div><div class="line">00322FC1    83E8 04         sub eax,0x4 //地址-4，相当于指针-1</div><div class="line">00322FC4    8B08            mov ecx,dword ptr ds:[eax] //取内容给ecx</div><div class="line">00322FC6    894D F8         mov dword ptr ss:[ebp-0x8],ecx                               ; TestCode.&lt;ModuleEntryPoint&gt;</div><div class="line">00322FC9    8B45 F8         mov eax,dword ptr ss:[ebp-0x8]    //把地址eax返回                           ; kernel32.BaseThreadInitThunk</div><div class="line">00322FCC    5F              pop edi                                                      ; kernel32.762D38F4</div><div class="line">00322FCD    5E              pop esi                                                      ; kernel32.762D38F4</div><div class="line">00322FCE    5B              pop ebx                                                      ; kernel32.762D38F4</div><div class="line">00322FCF    8BE5            mov esp,ebp</div><div class="line">00322FD1    5D              pop ebp                                                      ; kernel32.762D38F4</div><div class="line">00322FD2    C3              retn</div></pre></td></tr></table></figure>
+<h2 id="结构体作为返回值"><a href="#结构体作为返回值" class="headerlink" title="结构体作为返回值"></a>结构体作为返回值</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">C代码：</div><div class="line">struct tagTest</div><div class="line">&#123;</div><div class="line">    int m_nOne;</div><div class="line">    int m_nTwo;</div><div class="line">&#125;;</div><div class="line"></div><div class="line">tagTest RetSruct()</div><div class="line">&#123;</div><div class="line">    tagTest test;</div><div class="line">    test.m_nOne = 1;</div><div class="line">    test.m_nTwo = 2;</div><div class="line">    return test;</div><div class="line">&#125;</div><div class="line"></div><div class="line">int _tmain(int argc, _TCHAR* argv[])</div><div class="line">&#123;</div><div class="line">    tagTest test = RetSruct();</div><div class="line">    return 0;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div></pre></td><td class="code"><pre><div class="line">对应反汇编Debug：</div><div class="line">Main函数</div><div class="line">00953C20 &gt;  55              push ebp</div><div class="line">00953C21    8BEC            mov ebp,esp</div><div class="line">00953C23    81EC E0000000   sub esp,0xE0</div><div class="line">00953C29    53              push ebx</div><div class="line">00953C2A    56              push esi                                                          ; TestCode.&lt;ModuleEntryPoint&gt;</div><div class="line">00953C2B    57              push edi                                                          ; TestCode.&lt;ModuleEntryPoint&gt;</div><div class="line">00953C2C    8DBD 20FFFFFF   lea edi,dword ptr ss:[ebp-0xE0]</div><div class="line">00953C32    B9 38000000     mov ecx,0x38</div><div class="line">00953C37    B8 CCCCCCCC     mov eax,0xCCCCCCCC</div><div class="line">00953C3C    F3:AB           rep stos dword ptr es:[edi]</div><div class="line">00953C3E    E8 CFD5FFFF     call TestCode.00951212 //函数调用</div><div class="line">00953C43    8985 24FFFFFF   mov dword ptr ss:[ebp-0xDC],eax //eax给局部变量ebp-0xdc</div><div class="line">00953C49    8995 28FFFFFF   mov dword ptr ss:[ebp-0xD8],edx  //edx给局部变量ebp-0xd8                                 ; TestCode.&lt;ModuleEntryPoint&gt;</div><div class="line">00953C4F    8B85 24FFFFFF   mov eax,dword ptr ss:[ebp-0xDC]</div><div class="line">00953C55    8945 F4         mov dword ptr ss:[ebp-0xC],eax</div><div class="line">00953C58    8B8D 28FFFFFF   mov ecx,dword ptr ss:[ebp-0xD8]</div><div class="line">00953C5E    894D F8         mov dword ptr ss:[ebp-0x8],ecx                                    ; TestCode.&lt;ModuleEntryPoint&gt;</div><div class="line">00953C61    33C0            xor eax,eax</div><div class="line">00953C63    52              push edx                                                          ; TestCode.&lt;ModuleEntryPoint&gt;</div><div class="line">00953C64    8BCD            mov ecx,ebp</div><div class="line">00953C66    50              push eax</div><div class="line">00953C67    8D15 883C9500   lea edx,dword ptr ds:[0x953C88]</div><div class="line">00953C6D    E8 5AD5FFFF     call TestCode.009511CC</div><div class="line">00953C72    58              pop eax                                                           ; kernel32.762D38F4</div><div class="line">00953C73    5A              pop edx                                                           ; kernel32.762D38F4</div><div class="line">00953C74    5F              pop edi                                                           ; kernel32.762D38F4</div><div class="line">00953C75    5E              pop esi                                                           ; kernel32.762D38F4</div><div class="line">00953C76    5B              pop ebx                                                           ; kernel32.762D38F4</div><div class="line">00953C77    81C4 E0000000   add esp,0xE0</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">RetStruct函数</div><div class="line">009533F0 &gt;  55              push ebp</div><div class="line">009533F1    8BEC            mov ebp,esp</div><div class="line">009533F3    81EC D0000000   sub esp,0xD0</div><div class="line">009533F9    53              push ebx</div><div class="line">009533FA    56              push esi                                                          ; TestCode.&lt;ModuleEntryPoint&gt;</div><div class="line">009533FB    57              push edi                                                          ; TestCode.&lt;ModuleEntryPoint&gt;</div><div class="line">009533FC    8DBD 30FFFFFF   lea edi,dword ptr ss:[ebp-0xD0]</div><div class="line">00953402    B9 34000000     mov ecx,0x34</div><div class="line">00953407    B8 CCCCCCCC     mov eax,0xCCCCCCCC</div><div class="line">0095340C    F3:AB           rep stos dword ptr es:[edi]</div><div class="line">0095340E    C745 F4 0100000&gt;mov dword ptr ss:[ebp-0xC],0x1 //对结构体变量赋值</div><div class="line">00953415    C745 F8 0200000&gt;mov dword ptr ss:[ebp-0x8],0x2 //对结构体变量赋值</div><div class="line">0095341C    8B45 F4         mov eax,dword ptr ss:[ebp-0xC] //变量1给eax</div><div class="line">0095341F    8B55 F8         mov edx,dword ptr ss:[ebp-0x8] //变量2给edx                                   ; kernel32.BaseThreadInitThunk</div><div class="line">00953422    52              push edx                                                          ; TestCode.&lt;ModuleEntryPoint&gt;</div><div class="line">00953423    8BCD            mov ecx,ebp</div><div class="line">00953425    50              push eax</div><div class="line">00953426    8D15 3C349500   lea edx,dword ptr ds:[0x95343C]</div><div class="line">0095342C    E8 9BDDFFFF     call TestCode.009511CC</div><div class="line">00953431    58              pop eax                                                           ; kernel32.762D38F4</div><div class="line">00953432    5A              pop edx                                                           ; kernel32.762D38F4</div><div class="line">00953433    5F              pop edi                                                           ; kernel32.762D38F4</div><div class="line">00953434    5E              pop esi                                                           ; kernel32.762D38F4</div><div class="line">00953435    5B              pop ebx                                                           ; kernel32.762D38F4</div><div class="line">00953436    8BE5            mov esp,ebp</div><div class="line">00953438    5D              pop ebp                                                           ; kernel32.762D38F4</div><div class="line">00953439    C3              retn</div></pre></td></tr></table></figure>
+<p>由此可以看出大于4字节的返回值，可以用eax和edx两个寄存器来传递返回值。</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/逆向/">逆向</a><a href="/tags/反汇编/">反汇编</a><a href="/tags/C/">C++</a>
+  </div>
+
+
+
+
+<div class="article-share" id="share">
+
+  <div data-url="http://blog.injectxx.com/2016/11/22/逆向笔记（三）/" data-title="逆向笔记（三） | 岁月&#39;s Blog" data-tsina="null" class="share clearfix">
+  </div>
+
+</div>
+</footer>   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2016/11/23/逆向笔记（四）/" title="逆向笔记（四）">
+  <strong>PREVIOUS:</strong><br/>
+  <span>
+  逆向笔记（四）</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2016/11/22/逆向笔记（二）/"  title="逆向笔记（二）">
+ <strong>NEXT:</strong><br/> 
+ <span>逆向笔记（二）
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section class="comment">
+	<div class="ds-thread"></div>
+</section>
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+  <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#栈"><span class="toc-number">1.</span> <span class="toc-text">栈</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#cdecl与-stdcall两种调用的区别："><span class="toc-number">2.</span> <span class="toc-text">_cdecl与_stdcall两种调用的区别：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Printf函数在debug和release的区别："><span class="toc-number">3.</span> <span class="toc-text">Printf函数在debug和release的区别：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#fastcall调用方式："><span class="toc-number">4.</span> <span class="toc-text">__fastcall调用方式：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#使用ebp和esp寻址（栈的寻址）"><span class="toc-number">5.</span> <span class="toc-text">使用ebp和esp寻址（栈的寻址）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#函数的参数"><span class="toc-number">6.</span> <span class="toc-text">函数的参数</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#函数的返回值"><span class="toc-number"></span> <span class="toc-text">函数的返回值</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#基本类型作为返回值"><span class="toc-number">1.</span> <span class="toc-text">基本类型作为返回值</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#结构体作为返回值"><span class="toc-number">2.</span> <span class="toc-text">结构体作为返回值</span></a></li></ol>
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+
+  
+<div class="tagslist">
+	<p class="asidetitle">Tags</p>
+		<ul class="clearfix">
+		
+			<li><a href="/tags/Android/" title="Android">Android<sup>5</sup></a></li>
+		
+			<li><a href="/tags/C/" title="C++">C++<sup>7</sup></a></li>
+		
+			<li><a href="/tags/C-C/" title="C/C++">C/C++<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Cydia/" title="Cydia">Cydia<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Hexo/" title="Hexo">Hexo<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Hook/" title="Hook">Hook<sup>3</sup></a></li>
+		
+			<li><a href="/tags/Windows/" title="Windows">Windows<sup>2</sup></a></li>
+		
+			<li><a href="/tags/Xposed/" title="Xposed">Xposed<sup>1</sup></a></li>
+		
+			<li><a href="/tags/inject/" title="inject">inject<sup>2</sup></a></li>
+		
+			<li><a href="/tags/函数替换/" title="函数替换">函数替换<sup>1</sup></a></li>
+		
+			<li><a href="/tags/反汇编/" title="反汇编">反汇编<sup>7</sup></a></li>
+		
+			<li><a href="/tags/日常/" title="日常">日常<sup>1</sup></a></li>
+		
+			<li><a href="/tags/注入/" title="注入">注入<sup>1</sup></a></li>
+		
+			<li><a href="/tags/远程线程注入/" title="远程线程注入">远程线程注入<sup>1</sup></a></li>
+		
+			<li><a href="/tags/逆向/" title="逆向">逆向<sup>7</sup></a></li>
+		
+			<li><a href="/tags/驱动/" title="驱动">驱动<sup>1</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  <div class="rsspart">
+	<a href="undefined" target="_blank" title="rss">RSS</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<div class="social-font clearfix">
+		
+		
+		
+		
+		
+	</div>
+		<p class="copyright">Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/A-limon/pacman" target="_blank" title="Pacman">Pacman</a> © 2016 
+		
+		<a href="http://blog.injectxx.com" target="_blank" title="岁月。">岁月。</a>
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.1.0.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else
+    {
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      h  = $('article h2')
+      ah = $('article h2'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  if(ah.length==0){
+    t.css('display','none');
+  }else{
+    c.click(function(){
+      ta.css('display', 'block').addClass('fadeIn');
+    });
+    o.click(function(){
+      ta.css('display', 'none');
+    });
+    $(window).scroll(function(){
+      ta.css("top",Math.max(140,320-$(this).scrollTop()));
+    });
+  };
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#share"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="#textlogo" class="article-back-to-top" title="Top"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="QRcode"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="Weibo"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"Kernel32Sun"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+  </body>
+</html>

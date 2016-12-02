@@ -1,0 +1,368 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>逆向笔记（四） | 岁月&#39;s Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
+    
+    <meta name="author" content="岁月。">
+    
+    <meta name="description" content="最近闲了下来，总结一下之前的知识，这些东西都是好久之前留下的了，现在在回味一遍，梳理梳理。
+逆向笔记之变量在内存中位置。">
+    
+    
+    
+    
+    
+    <link rel="icon" href="/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/pacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/pacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      <div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.svg" alt="岁月&#39;s Blog" title="岁月&#39;s Blog"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="岁月&#39;s Blog">岁月&#39;s Blog</a></h1>
+				<h2 class="blog-motto">一只奋斗的猿</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+					<li>
+					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="text" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search" />
+						<input type="hidden" name="q" value="site:blog.injectxx.com">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2016/11/23/逆向笔记（四）/" title="逆向笔记（四）" itemprop="url">逆向笔记（四）</a>
+  </h1>
+  <p class="article-author">By
+    
+      <a href="http://blog.injectxx.com" title="岁月。">岁月。</a>
+    </p>
+  <p class="article-time">
+    <time datetime="2016-11-23T08:01:04.000Z" itemprop="datePublished">2016-11-23</time>
+    Updated:<time datetime="2016-11-23T08:10:38.000Z" itemprop="dateModified">2016-11-23</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#全局变量和局部变量的区别"><span class="toc-number">1.</span> <span class="toc-text">全局变量和局部变量的区别</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#局部静态变量"><span class="toc-number">2.</span> <span class="toc-text">局部静态变量</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#堆变量"><span class="toc-number">3.</span> <span class="toc-text">堆变量</span></a></li></ol>
+		</div>
+		
+		<p>最近闲了下来，总结一下之前的知识，这些东西都是好久之前留下的了，现在在回味一遍，梳理梳理。</p>
+<p>逆向笔记之变量在内存中位置。<br><a id="more"></a></p>
+<p>变量的作用域：是指变量在源码中可以被访问到的范围。全局变量属于进程作用域，也就是说在整个进程中都可以访问到这个全局变量；静态变量属于文件作用域，在当前源码文件内可以访问到；局部变量属于函数作用域，在函数内可以访问到；在“{}”语句块内定义的变量，属于块作用域，只能在定义变量的“{}”块内访问到。<br>变量的生命周期：是指变量所在的内存从分配到释放的这段时间。</p>
+<h2 id="全局变量和局部变量的区别"><a href="#全局变量和局部变量的区别" class="headerlink" title="全局变量和局部变量的区别"></a>全局变量和局部变量的区别</h2><p>具有初始值的全局变量在源代码链接时就被写入所创建的PE文件，当该文件被执行时操作系统分析各个节中的数据填入对应的内存地址中，这时全局变量就已经存在了，等PE文件的分析和加载工作完成之后才执行入口点的代码。所以全局变量不受作用域的影响，程序的任何位置都可以访问。下面就来具体讲述不同点。<br>全局变量和常量类似都是被写入文件中，因此生命周期和模块相同，而其与局部变量最大的不同之处便是生命周期。按照上面所说，全局变量在执行第一条代码前便存在，知道程序退出销毁，而局部变量的生命周期则仅限于函数作用域内，超出作用域便会由栈平衡操作来释放其空间。在访问方式上，局部变量是通过栈指针来访问的，但是全部变量不在栈中，就无法用栈指针访问。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">C代码：</div><div class="line">int g_Var = 1234567;</div><div class="line"></div><div class="line">int _tmain(int argc, _TCHAR* argv[])</div><div class="line">&#123;</div><div class="line">    scanf_s(&quot;%d&quot;,&amp;g_Var);</div><div class="line">    printf(&quot;%d\n&quot;, g_Var);</div><div class="line">    return 0;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line">对应反汇编Debug：</div><div class="line">012D3CB0 &gt;  55              push ebp</div><div class="line">012D3CB1    8BEC            mov ebp,esp</div><div class="line">012D3CB3    81EC C0000000   sub esp,0xC0</div><div class="line">012D3CB9    53              push ebx</div><div class="line">012D3CBA    56              push esi                                 ; TestCode.&lt;ModuleEntryPoint&gt;</div><div class="line">012D3CBB    57              push edi                                 ; TestCode.&lt;ModuleEntryPoint&gt;</div><div class="line">012D3CBC    8DBD 40FFFFFF   lea edi,dword ptr ss:[ebp-0xC0]</div><div class="line">012D3CC2    B9 30000000     mov ecx,0x30</div><div class="line">012D3CC7    B8 CCCCCCCC     mov eax,0xCCCCCCCC</div><div class="line">012D3CCC    F3:AB           rep stos dword ptr es:[edi]</div><div class="line">012D3CCE    8BF4            mov esi,esp</div><div class="line">012D3CD0    68 28802D01     push offset TestCode.g_Var //将全局变量压入堆栈</div><div class="line">012D3CD5    68 A8582D01     push offset TestCode.??_C@_02DPKJAMEF@?$&gt;</div><div class="line">012D3CDA    FF15 18912D01   call dword ptr ds:[&lt;&amp;MSVCR120D.scanf_s&gt;] ; msvcr120.scanf_s</div><div class="line">012D3CE0    83C4 08         add esp,0x8</div><div class="line">012D3CE3    3BF4            cmp esi,esp</div><div class="line">012D3CE5    E8 F1D4FFFF     call TestCode.012D11DB</div><div class="line">012D3CEA    8BF4            mov esi,esp</div><div class="line">012D3CEC    A1 28802D01     mov eax,dword ptr ds:[g_Var] //取全局变量的内容给eax</div><div class="line">012D3CF1    50              push eax</div><div class="line">012D3CF2    68 E45A2D01     push offset TestCode.??_C@_03PMGGPEJJ@?$&gt;; ASCII &quot;%d\n&quot;</div><div class="line">012D3CF7    FF15 14912D01   call dword ptr ds:[&lt;&amp;MSVCR120D.printf&gt;]  ; msvcr120.printf</div><div class="line">012D3CFD    83C4 08         add esp,0x8 //平衡堆栈</div><div class="line">012D3D00    3BF4            cmp esi,esp</div><div class="line">012D3D02    E8 D4D4FFFF     call TestCode.012D11DB</div><div class="line">012D3D07    33C0            xor eax,eax</div><div class="line">012D3D09    5F              pop edi                                  ; kernel32.756A38F4</div><div class="line">012D3D0A    5E              pop esi                                  ; kernel32.756A38F4</div><div class="line">012D3D0B    5B              pop ebx                                  ; kernel32.756A38F4</div></pre></td></tr></table></figure>
+<p>由此可以很清楚的看到全局变量是用直接寻址来访问的，这是因为全局变量存储在文件中，加载至内存时也会随着文件加载到内存的固定偏移位置，所以编译器可以决定其用直接寻址找到它。而局部变量是存储在栈中的，无法确定其地址，故无法使用直接寻址方式，应采用相对寻址。</p>
+<p>再看看多个全局变量的情况<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">C代码：</div><div class="line">int g_Var1 = 1234567;</div><div class="line">int g_Var2 = 7654321;</div><div class="line"></div><div class="line">int _tmain(int argc, _TCHAR* argv[])</div><div class="line">&#123;</div><div class="line">    scanf_s(&quot;%d %d&quot;,&amp;g_Var1,&amp;g_Var2);</div><div class="line">    printf(&quot;%d %d\n&quot;, g_Var1,g_Var2);</div><div class="line">    int n1 = 1, n2 = 2;</div><div class="line">    scanf_s(&quot;%d %d&quot;, &amp;n1, &amp;n2);</div><div class="line">    printf(&quot;%d %d\n&quot;, n1, n2);</div><div class="line">    return 0;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div></pre></td><td class="code"><pre><div class="line">对应反汇编Debug：</div><div class="line">012C3CB0 &gt;  55              push ebp</div><div class="line">012C3CB1    8BEC            mov ebp,esp</div><div class="line">012C3CB3    81EC DC000000   sub esp,0xDC</div><div class="line">012C3CB9    53              push ebx</div><div class="line">012C3CBA    56              push esi                                 ; TestCode.&lt;ModuleEntryPoint&gt;</div><div class="line">012C3CBB    57              push edi                                 ; TestCode.&lt;ModuleEntryPoint&gt;</div><div class="line">012C3CBC    8DBD 24FFFFFF   lea edi,dword ptr ss:[ebp-0xDC]</div><div class="line">012C3CC2    B9 37000000     mov ecx,0x37</div><div class="line">012C3CC7    B8 CCCCCCCC     mov eax,0xCCCCCCCC</div><div class="line">012C3CCC    F3:AB           rep stos dword ptr es:[edi]</div><div class="line">012C3CCE    A1 0C802C01     mov eax,dword ptr ds:[__security_cookied&gt;</div><div class="line">012C3CD3    33C5            xor eax,ebp</div><div class="line">012C3CD5    8945 FC         mov dword ptr ss:[ebp-0x4],eax</div><div class="line">012C3CD8    8BF4            mov esi,esp</div><div class="line">012C3CDA    68 2C802C01     push offset TestCode.g_Var2amerReportFun&gt; //全局变量2压入堆栈，push 0x12C802C</div><div class="line">012C3CDF    68 28802C01     push offset TestCode.g_Var1deorReportFun&gt; //全局变量1压入堆栈，push 0x12C8028</div><div class="line"></div><div class="line">012C3CE4    68 A8582C01     push offset TestCode.??_C@_05OKMLJOMC@?$&gt;; ASCII 25,&quot;d %d&quot;</div><div class="line">012C3CE9    FF15 18912C01   call dword ptr ds:[&lt;&amp;MSVCR120D.scanf_s&gt;] ;  //调用msvcr120.scanf_s</div><div class="line">012C3CEF    83C4 0C         add esp,0xC //堆栈平衡</div><div class="line">012C3CF2    3BF4            cmp esi,esp</div><div class="line">012C3CF4    E8 E2D4FFFF     call TestCode.012C11DB</div><div class="line">012C3CF9    8BF4            mov esi,esp</div><div class="line">012C3CFB    A1 2C802C01     mov eax,dword ptr ds:[g_Var2amerReportFu&gt; //全局变量2给eax</div><div class="line">012C3D00    50              push eax</div><div class="line">012C3D01    8B0D 28802C01   mov ecx,dword ptr ds:[g_Var1deorReportFu&gt; //全局变量1给ecx</div><div class="line">012C3D07    51              push ecx                                 ; TestCode.&lt;ModuleEntryPoint&gt;</div><div class="line">012C3D08    68 E45A2C01     push offset TestCode.??_C@_06IPGPIAII@?$&gt;; ASCII &quot;%d %d\n&quot;</div><div class="line">012C3D0D    FF15 14912C01   call dword ptr ds:[&lt;&amp;MSVCR120D.printf&gt;]  ; msvcr120.printf</div><div class="line">012C3D13    83C4 0C         add esp,0xC</div><div class="line">012C3D16    3BF4            cmp esi,esp</div><div class="line">012C3D18    E8 BED4FFFF     call TestCode.012C11DB</div><div class="line">012C3D1D    C745 F4 0100000&gt;mov dword ptr ss:[ebp-0xC],0x1 //初始化局部变量1</div><div class="line">012C3D24    C745 E8 0200000&gt;mov dword ptr ss:[ebp-0x18],0x2 //初始化局部变量2</div><div class="line">012C3D2B    8BF4            mov esi,esp</div><div class="line">012C3D2D    8D45 E8         lea eax,dword ptr ss:[ebp-0x18] //取地址</div><div class="line">012C3D30    50              push eax</div><div class="line">012C3D31    8D4D F4         lea ecx,dword ptr ss:[ebp-0xC] //取地址</div><div class="line">012C3D34    51              push ecx                                 ; TestCode.&lt;ModuleEntryPoint&gt;</div><div class="line">012C3D35    68 A8582C01     push offset TestCode.??_C@_05OKMLJOMC@?$&gt;; ASCII 25,&quot;d %d&quot;</div><div class="line">012C3D3A    FF15 18912C01   call dword ptr ds:[&lt;&amp;MSVCR120D.scanf_s&gt;] ; //调用msvcr120.scanf_s</div><div class="line">012C3D40    83C4 0C         add esp,0xC</div><div class="line">012C3D43    3BF4            cmp esi,esp</div><div class="line">012C3D45    E8 91D4FFFF     call TestCode.012C11DB</div><div class="line">012C3D4A    8BF4            mov esi,esp</div><div class="line">012C3D4C    8B45 E8         mov eax,dword ptr ss:[ebp-0x18] //取局部变量2的内容给eax</div><div class="line">012C3D4F    50              push eax</div><div class="line">012C3D50    8B4D F4         mov ecx,dword ptr ss:[ebp-0xC] //取局部变量1的内容给ecx</div><div class="line">012C3D53    51              push ecx                                 ; TestCode.&lt;ModuleEntryPoint&gt;</div><div class="line">012C3D54    68 E45A2C01     push offset TestCode.??_C@_06IPGPIAII@?$&gt;; ASCII &quot;%d %d\n&quot;</div><div class="line">012C3D59    FF15 14912C01   call dword ptr ds:[&lt;&amp;MSVCR120D.printf&gt;]  ; msvcr120.printf</div><div class="line">012C3D5F    83C4 0C         add esp,0xC</div><div class="line">012C3D62    3BF4            cmp esi,esp</div><div class="line">012C3D64    E8 72D4FFFF     call TestCode.012C11DB</div><div class="line">012C3D69    33C0            xor eax,eax</div><div class="line">012C3D6B    52              push edx                                 ; TestCode.&lt;ModuleEntryPoint&gt;</div><div class="line">012C3D6C    8BCD            mov ecx,ebp</div><div class="line">012C3D6E    50              push eax</div><div class="line">012C3D6F    8D15 9C3D2C01   lea edx,dword ptr ds:[0x12C3D9C]</div><div class="line">012C3D75    E8 52D4FFFF     call TestCode.012C11CC</div><div class="line">012C3D7A    58              pop eax                                  ; kernel32.756A38F4</div><div class="line">012C3D7B    5A              pop edx                                  ; kernel32.756A38F4</div><div class="line">012C3D7C    5F              pop edi                                  ; kernel32.756A38F4</div><div class="line">012C3D7D    5E              pop esi                                  ; kernel32.756A38F4</div><div class="line">012C3D7E    5B              pop ebx                                  ; kernel32.756A38F4</div></pre></td></tr></table></figure>
+<p>由此可以看出全局变量在内存中的地址顺序是先定义的变量在低地址，后定义的变量在高地址。由此特性可以根据反汇编代码中全局变量所在的地址，还原出高级代码中被定义的先后顺序。<br>全局变量的特征：<br>1）所在的地址为数据区，生命周期与所在模块一致<br>2）使用立即数间接访问（这里我认为是直接寻址一样，好像也没有什么区别）<br>局部变量的特征：<br>1）所在的地址为栈区，生命周期与所在的函数作用域一致<br>2）使用ebp或者esp间接访问</p>
+<h2 id="局部静态变量"><a href="#局部静态变量" class="headerlink" title="局部静态变量"></a>局部静态变量</h2><p>静态变量分为全局静态变量和局部静态变量，全局静态变量与全局变量类似，只是全局静态变量只能在本文件内使用。全局静态变量的访问及生命周期也和全局变量相同。反汇编代码中也无二样，因此这里不做介绍。<br>局部静态变量的生命周期和全局变量相同，并且都是在编译链接时就写入文件之中，但是其作用域确是和局部变量相同。事实上，局部静态变量刚开始是作为全局变量处理，而它的初始化仅仅是对它进行赋值操作。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">C代码：</div><div class="line">void ShowStatic(int nNum)</div><div class="line">&#123;</div><div class="line">    static int g_nNum = nNum;</div><div class="line">    printf(&quot;%d\n&quot;, g_nNum);</div><div class="line">&#125;</div><div class="line"></div><div class="line">int _tmain(int argc, _TCHAR* argv[])</div><div class="line">&#123;</div><div class="line">    for (int i = 0; i &lt; 5;i++)</div><div class="line">    &#123;</div><div class="line">        ShowStatic(i);</div><div class="line">    &#125;</div><div class="line">    return 0;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div></pre></td><td class="code"><pre><div class="line">对应反汇编Debug：</div><div class="line">Main函数</div><div class="line">00121790 &gt;  55              push ebp</div><div class="line">00121791    8BEC            mov ebp,esp</div><div class="line">00121793    81EC CC000000   sub esp,0xCC</div><div class="line">00121799    53              push ebx</div><div class="line">0012179A    56              push esi                                 ; TestCode.&lt;ModuleEntryPoint&gt;</div><div class="line">0012179B    57              push edi                                 ; TestCode.&lt;ModuleEntryPoint&gt;</div><div class="line">0012179C    8DBD 34FFFFFF   lea edi,dword ptr ss:[ebp-0xCC]</div><div class="line">001217A2    B9 33000000     mov ecx,0x33</div><div class="line">001217A7    B8 CCCCCCCC     mov eax,0xCCCCCCCC</div><div class="line">001217AC    F3:AB           rep stos dword ptr es:[edi]</div><div class="line">001217AE    C745 F8 0000000&gt;mov dword ptr ss:[ebp-0x8],0x0</div><div class="line">001217B5    EB 09           jmp short TestCode.001217C0</div><div class="line">001217B7    8B45 F8         mov eax,dword ptr ss:[ebp-0x8]           ; kernel32.BaseThreadInitThunk</div><div class="line">001217BA    83C0 01         add eax,0x1</div><div class="line">001217BD    8945 F8         mov dword ptr ss:[ebp-0x8],eax</div><div class="line">001217C0    837D F8 05      cmp dword ptr ss:[ebp-0x8],0x5</div><div class="line">001217C4    7D 0E           jge short TestCode.001217D4</div><div class="line">001217C6    8B45 F8         mov eax,dword ptr ss:[ebp-0x8]           ; kernel32.BaseThreadInitThunk</div><div class="line">001217C9    50              push eax</div><div class="line">001217CA    E8 48FAFFFF     call TestCode.00121217</div><div class="line">001217CF    83C4 04         add esp,0x4</div><div class="line">001217D2  ^ EB E3           jmp short TestCode.001217B7</div><div class="line">001217D4    33C0            xor eax,eax</div><div class="line">001217D6    5F              pop edi                                  ; kernel32.756A38F4</div><div class="line">001217D7    5E              pop esi                                  ; kernel32.756A38F4</div><div class="line">001217D8    5B              pop ebx                                  ; kernel32.756A38F4</div><div class="line">001217D9    81C4 CC000000   add esp,0xCC</div><div class="line"></div><div class="line">ShowStatic函数</div><div class="line">00123CB0 &gt;  55              push ebp</div><div class="line">00123CB1    8BEC            mov ebp,esp</div><div class="line">00123CB3    81EC C0000000   sub esp,0xC0</div><div class="line">00123CB9    53              push ebx</div><div class="line">00123CBA    56              push esi                                 ; TestCode.&lt;ModuleEntryPoint&gt;</div><div class="line">00123CBB    57              push edi                                 ; TestCode.&lt;ModuleEntryPoint&gt;</div><div class="line">00123CBC    8DBD 40FFFFFF   lea edi,dword ptr ss:[ebp-0xC0]</div><div class="line">00123CC2    B9 30000000     mov ecx,0x30</div><div class="line">00123CC7    B8 CCCCCCCC     mov eax,0xCCCCCCCC</div><div class="line">00123CCC    F3:AB           rep stos dword ptr es:[edi]</div><div class="line">00123CCE    A1 5C811200     mov eax,dword ptr ds:[0x12815C] //0x12815C这里为标志位</div><div class="line">00123CD3    83E0 01         and eax,0x1 //进行与运算判断标志中的第一位是否为1，为1则表示初始化</div><div class="line">00123CD6    75 15           jnz short TestCode.00123CED</div><div class="line">00123CD8    A1 5C811200     mov eax,dword ptr ds:[0x12815C]</div><div class="line">00123CDD    83C8 01         or eax,0x1 //进行或运算若标志位不为1则置1</div><div class="line">00123CE0    A3 5C811200     mov dword ptr ds:[0x12815C],eax //把标志位写回</div><div class="line">00123CE5    8B45 08         mov eax,dword ptr ss:[ebp+0x8]</div><div class="line">00123CE8    A3 58811200     mov dword ptr ds:[g_nNumterListeningRIPT&gt;,eax //初始化</div><div class="line">00123CED    8BF4            mov esi,esp</div><div class="line">00123CEF    A1 58811200     mov eax,dword ptr ds:[g_nNumterListening&gt;</div><div class="line">00123CF4    50              push eax</div><div class="line">00123CF5    68 A8581200     push offset TestCode.??_C@_03PMGGPEJJ@?$&gt;; ASCII 25,&quot;d\n&quot;</div><div class="line">00123CFA    FF15 14911200   call dword ptr ds:[&lt;&amp;MSVCR120D.printf&gt;]  ; msvcr120.printf</div><div class="line">00123D00    83C4 08         add esp,0x8 //堆栈平衡</div><div class="line">00123D03    3BF4            cmp esi,esp</div><div class="line">00123D05    E8 D1D4FFFF     call TestCode.001211DB</div><div class="line">00123D0A    5F              pop edi                                  ; kernel32.756A38F4</div><div class="line">00123D0B    5E              pop esi                                  ; kernel32.756A38F4</div><div class="line">00123D0C    5B              pop ebx                                  ; kernel32.756A38F4</div><div class="line">00123D0D    81C4 C0000000   add esp,0xC0 //堆栈平衡</div><div class="line">00123D13    3BEC            cmp ebp,esp</div><div class="line">00123D15    E8 C1D4FFFF     call TestCode.001211DB</div><div class="line">00123D1A    8BE5            mov esp,ebp</div><div class="line">00123D1C    5D              pop ebp                                  ; kernel32.756A38F4</div><div class="line">00123D1D    C3              retn</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div></pre></td><td class="code"><pre><div class="line">多个局部静态变量对应反汇编Debug：</div><div class="line">00273CB0 &gt;  55              push ebp</div><div class="line">00273CB1    8BEC            mov ebp,esp</div><div class="line">00273CB3    81EC C0000000   sub esp,0xC0</div><div class="line">00273CB9    53              push ebx</div><div class="line">00273CBA    56              push esi                                                            ; TestCode.&lt;ModuleEntryPoint&gt;</div><div class="line">00273CBB    57              push edi</div><div class="line">00273CBC    8DBD 40FFFFFF   lea edi,dword ptr ss:[ebp-0xC0]</div><div class="line">00273CC2    B9 30000000     mov ecx,0x30</div><div class="line">00273CC7    B8 CCCCCCCC     mov eax,0xCCCCCCCC</div><div class="line">00273CCC    F3:AB           rep stos dword ptr es:[edi]</div><div class="line">00273CCE    A1 AC842700     mov eax,dword ptr ds:[0x2784AC]</div><div class="line">00273CD3    83E0 01         and eax,0x1//进行与运算判断标志中的第一位是否为1，为1则表示初始化</div><div class="line">00273CD6    75 15           jnz short TestCode.00273CED</div><div class="line">00273CD8    A1 AC842700     mov eax,dword ptr ds:[0x2784AC]</div><div class="line">00273CDD    83C8 01         or eax,0x1//进行或运算若标志位不为1则置1</div><div class="line">00273CE0    A3 AC842700     mov dword ptr ds:[0x2784AC],eax</div><div class="line">00273CE5    8B45 08         mov eax,dword ptr ss:[ebp+0x8]</div><div class="line">00273CE8    A3 A8842700     mov dword ptr ds:[g_nNum2erListeningRIPTORW@12y?$AA@?5being?5used?5&gt;</div><div class="line">00273CED    A1 AC842700     mov eax,dword ptr ds:[0x2784AC]</div><div class="line">00273CF2    83E0 02         and eax,0x2//进行与运算判断标志中的第二位是否为1，为1则表示初始化</div><div class="line"></div><div class="line">00273CF5    75 15           jnz short TestCode.00273D0C</div><div class="line">00273CF7    A1 AC842700     mov eax,dword ptr ds:[0x2784AC]</div><div class="line">00273CFC    83C8 02         or eax,0x2 //进行或运算若标志位不为1则置1</div><div class="line">00273CFF    A3 AC842700     mov dword ptr ds:[0x2784AC],eax</div><div class="line">00273D04    8B45 08         mov eax,dword ptr ss:[ebp+0x8]</div><div class="line">00273D07    A3 B0842700     mov dword ptr ds:[g_nNum2erListeningRIPTORW@12y?$AA@?5being?5used?5&gt;</div><div class="line">00273D0C    8BF4            mov esi,esp</div><div class="line">00273D0E    A1 A8842700     mov eax,dword ptr ds:[g_nNum2erListeningRIPTORW@12y?$AA@?5being?5us&gt;</div><div class="line">00273D13    50              push eax</div><div class="line">00273D14    68 A8582700     push offset TestCode.??_C@_03PMGGPEJJ@?$CFd?6?$AA@s?$AA?$AA@?$CFld?&gt;; ASCII 25,&quot;d\n&quot;</div><div class="line">00273D19    FF15 14912700   call dword ptr ds:[&lt;&amp;MSVCR120D.printf&gt;]                             ; msvcr120.printf</div><div class="line">00273D1F    83C4 08         add esp,0x8</div><div class="line">00273D22    3BF4            cmp esi,esp</div><div class="line">00273D24    E8 B2D4FFFF     call TestCode.002711DB</div><div class="line">00273D29    8BF4            mov esi,esp</div><div class="line">00273D2B    A1 B0842700     mov eax,dword ptr ds:[g_nNum2erListeningRIPTORW@12y?$AA@?5being?5us&gt;</div><div class="line">00273D30    50              push eax</div><div class="line">00273D31    68 A8582700     push offset TestCode.??_C@_03PMGGPEJJ@?$CFd?6?$AA@s?$AA?$AA@?$CFld?&gt;; ASCII 25,&quot;d\n&quot;</div><div class="line">00273D36    FF15 14912700   call dword ptr ds:[&lt;&amp;MSVCR120D.printf&gt;]                             ; msvcr120.printf</div><div class="line">00273D3C    83C4 08         add esp,0x8</div><div class="line">00273D3F    3BF4            cmp esi,esp</div><div class="line">00273D41    E8 95D4FFFF     call TestCode.002711DB</div><div class="line">00273D46    5F              pop edi                                                             ; 0018F8BC</div><div class="line">00273D47    5E              pop esi                                                             ; 0018F8BC</div><div class="line">00273D48    5B              pop ebx                                                             ; 0018F8BC</div><div class="line">00273D49    81C4 C0000000   add esp,0xC0</div><div class="line">00273D4F    3BEC            cmp ebp,esp</div><div class="line">00273D51    E8 85D4FFFF     call TestCode.002711DB</div><div class="line">00273D56    8BE5            mov esp,ebp</div><div class="line">00273D58    5D              pop ebp                                                             ; 0018F8BC</div><div class="line">00273D59    C3              retn</div></pre></td></tr></table></figure>
+<p>这里两个变量都初始化完成后标志位为3，也就是0x00000011，表示前两个静态局部变量均已被初始化。<br>002784AC  03 00 00 00                                      …</p>
+<p>为了区分全局变量和局部静态变量，这里采用了一个标志，这个标志占一个字节。通过位运算，将标志位中的一位数据置1，以此判断局部静态变量是否已经初始化。由于一个静态变量只使用一位，而一个字节占八位，因此这个标志可以同时表示8个局部静态变量的初始化状态。如果变量超过了8个，那么再定义一个标志字节，这个字节一般在第9个变量的附近。</p>
+<p>当局部静态变量被初始化一个常量时，这个局部变量在初始化过程中不会产生任何代码。</p>
+<p>由于初始化的数值为常量，即多次初始化不会产生变化。这样无需初始化标志，编译器才用了直接以全局变量方式处理。虽然转换为了全局变量，但仍然不可以超出作用域访问。编译器通过名称粉碎，在编译期间将静态变量重新命名。通过名称粉碎后，在原有名称中加入了所在作用域，以及类型等信息。</p>
+<p>总结：<br>Reg_flag 表示存放初始化标志的寄存器<br>Init_flag  表示初始化标志<br>Mov Reg_flag,Init_flag<br>Reg_data 表示存放静态变量初值的寄存器<br>Mov Reg_data,mem<br>And Reg_flag,1<br>Jxx Init_End<br>Or Reg_flag,1<br>Mov Init_flag,Reg_flag<br>Static_Data 表示静态变量<br>Mov Static_Data,Reg_data<br>Init_End<br>注意：在分析过程中应注意对测试标志的操作，其立即数只能为1，2，8这样的2的幂。</p>
+<h2 id="堆变量"><a href="#堆变量" class="headerlink" title="堆变量"></a>堆变量</h2><p>堆变量应该是最简单的了。C/C++中使用malloc/free或new/delete来分配和释放堆空间。在申请空间时会返回堆空间的首地址，若堆空间没有得到及时地释放，则会造成内存泄漏。只要在程序的反汇编代码中发现有如下特点的代码，那么就很容易识别出堆变量。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">C代码：</div><div class="line">int _tmain(int argc, _TCHAR* argv[])</div><div class="line">&#123;</div><div class="line">    char *pMalloc = (char*)malloc(10);</div><div class="line">    char *pNew = new char[10];</div><div class="line">    free(pMalloc);</div><div class="line">    delete[] pNew;</div><div class="line">    return 0;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>对应反汇编Debug：<br><img src="http://oc7zh19yb.bkt.clouddn.com/image/jpg/5.jpg" alt="" title=""></p>
+<p>了解了堆变量的申请及销毁，再来看看编译器是如何管理堆空间的。堆结构的每一次分配形成一个结点，每个节点都是使用双向链表存储的，结点的数据结构如下定义：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">typedef struct _CrtMemBlockHeader</div><div class="line">&#123;</div><div class="line">        struct_CrtMemBlockHeader * pBlockHeaderNext; //下一块堆空间首地址</div><div class="line">        struct_CrtMemBlockHeader * pBlockHeaderPrev; //上一块堆空间首地址</div><div class="line">        char*                      szFileName;</div><div class="line">        int                         nLine;</div><div class="line">#ifdef _WIN64</div><div class="line">        /* Theseitems are reversed on Win64 to eliminate gaps in the struct</div><div class="line">         * and ensure that sizeof(struct)%16 ==0, so 16-byte alignment is</div><div class="line">         * maintained in the debug heap.</div><div class="line">         */</div><div class="line">        int                         nBlockUse;</div><div class="line">        size_t                      nDataSize;</div><div class="line">#else  /* _WIN64 */</div><div class="line">        size_t                      nDataSize;//堆空间的数据大小</div><div class="line">        int                         nBlockUse;</div><div class="line">#endif  /* _WIN64 */</div><div class="line">        long                        lRequest;//堆空间的申请次数</div><div class="line">        unsignedchar               gap[nNoMansLandSize];//堆空间数据，第一个数据的指针就是//申请的变量的指针</div><div class="line">        /* followedby:</div><div class="line">         * unsigned char          data[nDataSize];</div><div class="line">         * unsigned char          anotherGap[nNoMansLandSize];</div><div class="line">         */</div><div class="line">&#125;_CrtMemBlockHeader;</div></pre></td></tr></table></figure></p>
+<p><img src="http://oc7zh19yb.bkt.clouddn.com/image/jpg/6.jpg" alt="" title=""><br>0xadefc0处为分配的数据。这段空间的前后都有0xfdfdfdfd数据，这是在Debug版本下的越界检查标志。往前八个字节是0x00000080表示的是堆的申请次数，0xadefb处的数据是堆空间的大小，这里是10所以为0x0a，0xadefa0为上一个的堆空间首地址，后面四字节为0表示没有下一个堆空间。</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/逆向/">逆向</a><a href="/tags/反汇编/">反汇编</a><a href="/tags/C/">C++</a>
+  </div>
+
+
+
+
+<div class="article-share" id="share">
+
+  <div data-url="http://blog.injectxx.com/2016/11/23/逆向笔记（四）/" data-title="逆向笔记（四） | 岁月&#39;s Blog" data-tsina="null" class="share clearfix">
+  </div>
+
+</div>
+</footer>   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2016/11/23/逆向笔记（五）/" title="逆向笔记（五）">
+  <strong>PREVIOUS:</strong><br/>
+  <span>
+  逆向笔记（五）</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2016/11/22/逆向笔记（三）/"  title="逆向笔记（三）">
+ <strong>NEXT:</strong><br/> 
+ <span>逆向笔记（三）
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section class="comment">
+	<div class="ds-thread"></div>
+</section>
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+  <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#全局变量和局部变量的区别"><span class="toc-number">1.</span> <span class="toc-text">全局变量和局部变量的区别</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#局部静态变量"><span class="toc-number">2.</span> <span class="toc-text">局部静态变量</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#堆变量"><span class="toc-number">3.</span> <span class="toc-text">堆变量</span></a></li></ol>
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+
+  
+<div class="tagslist">
+	<p class="asidetitle">Tags</p>
+		<ul class="clearfix">
+		
+			<li><a href="/tags/Android/" title="Android">Android<sup>5</sup></a></li>
+		
+			<li><a href="/tags/C/" title="C++">C++<sup>7</sup></a></li>
+		
+			<li><a href="/tags/C-C/" title="C/C++">C/C++<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Cydia/" title="Cydia">Cydia<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Hexo/" title="Hexo">Hexo<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Hook/" title="Hook">Hook<sup>3</sup></a></li>
+		
+			<li><a href="/tags/Windows/" title="Windows">Windows<sup>2</sup></a></li>
+		
+			<li><a href="/tags/Xposed/" title="Xposed">Xposed<sup>1</sup></a></li>
+		
+			<li><a href="/tags/inject/" title="inject">inject<sup>2</sup></a></li>
+		
+			<li><a href="/tags/函数替换/" title="函数替换">函数替换<sup>1</sup></a></li>
+		
+			<li><a href="/tags/反汇编/" title="反汇编">反汇编<sup>7</sup></a></li>
+		
+			<li><a href="/tags/日常/" title="日常">日常<sup>1</sup></a></li>
+		
+			<li><a href="/tags/注入/" title="注入">注入<sup>1</sup></a></li>
+		
+			<li><a href="/tags/远程线程注入/" title="远程线程注入">远程线程注入<sup>1</sup></a></li>
+		
+			<li><a href="/tags/逆向/" title="逆向">逆向<sup>7</sup></a></li>
+		
+			<li><a href="/tags/驱动/" title="驱动">驱动<sup>1</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  <div class="rsspart">
+	<a href="undefined" target="_blank" title="rss">RSS</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<div class="social-font clearfix">
+		
+		
+		
+		
+		
+	</div>
+		<p class="copyright">Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/A-limon/pacman" target="_blank" title="Pacman">Pacman</a> © 2016 
+		
+		<a href="http://blog.injectxx.com" target="_blank" title="岁月。">岁月。</a>
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.1.0.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else
+    {
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      h  = $('article h2')
+      ah = $('article h2'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  if(ah.length==0){
+    t.css('display','none');
+  }else{
+    c.click(function(){
+      ta.css('display', 'block').addClass('fadeIn');
+    });
+    o.click(function(){
+      ta.css('display', 'none');
+    });
+    $(window).scroll(function(){
+      ta.css("top",Math.max(140,320-$(this).scrollTop()));
+    });
+  };
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#share"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="#textlogo" class="article-back-to-top" title="Top"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="QRcode"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="Weibo"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"Kernel32Sun"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+  </body>
+</html>
