@@ -1,0 +1,776 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.useso.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="逆向,反汇编,C++," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="要努力了，在不努力就废了。
+这是最后一篇了，大体就是这样，有遗漏的部分后续会继续补充，接下来在整理一些常用算法识别的相关内容。如果碰巧有各位大大看到了欢迎指点一二，谢谢。
+逆向笔记之虚函数，继承与多重继承。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="逆向笔记（八）">
+<meta property="og:url" content="http://blog.injectxx.com/2016/12/06/逆向笔记（八）/index.html">
+<meta property="og:site_name" content="岁月's Blog">
+<meta property="og:description" content="要努力了，在不努力就废了。
+这是最后一篇了，大体就是这样，有遗漏的部分后续会继续补充，接下来在整理一些常用算法识别的相关内容。如果碰巧有各位大大看到了欢迎指点一二，谢谢。
+逆向笔记之虚函数，继承与多重继承。">
+<meta property="og:image" content="http://oc7zh19yb.bkt.clouddn.com/image/jpg/15.jpg">
+<meta property="og:image" content="http://oc7zh19yb.bkt.clouddn.com/image/jpg/16.jpg">
+<meta property="og:image" content="http://oc7zh19yb.bkt.clouddn.com/image/jpg/17.jpg">
+<meta property="og:image" content="http://oc7zh19yb.bkt.clouddn.com/image/jpg/18.jpg">
+<meta property="og:updated_time" content="2016-12-06T14:20:54.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="逆向笔记（八）">
+<meta name="twitter:description" content="要努力了，在不努力就废了。
+这是最后一篇了，大体就是这样，有遗漏的部分后续会继续补充，接下来在整理一些常用算法识别的相关内容。如果碰巧有各位大大看到了欢迎指点一二，谢谢。
+逆向笔记之虚函数，继承与多重继承。">
+<meta name="twitter:image" content="http://oc7zh19yb.bkt.clouddn.com/image/jpg/15.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: 'Author'
+    }
+  };
+</script>
+
+
+
+
+  <link rel="canonical" href="http://blog.injectxx.com/2016/12/06/逆向笔记（八）/"/>
+
+  <title> 逆向笔记（八） | 岁月's Blog </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?b1d70a29b3f59b8638bc9305a50cc2f6";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+  <div style="display: none;">
+    <script src="//s6.cnzz.com/stat.php?id=1260188451&web_id=1260188451" type="text/javascript"></script>
+  </div>
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">岁月's Blog</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">一只奋斗的猿</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-board">
+          <a href="/board" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-book"></i> <br />
+            
+            留言板
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-neighbor">
+          <a href="/neighbor" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-heart"></i> <br />
+            
+            邻居
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                逆向笔记（八）
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-12-06T22:11:11+08:00" content="2016-12-06">
+              2016-12-06
+            </time>
+          </span>
+
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/12/06/逆向笔记（八）/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/12/06/逆向笔记（八）/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+              &nbsp; | &nbsp;
+              <span class="page-pv"><i class="fa fa-file-o"></i>
+              <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+              </span>
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>要努力了，在不努力就废了。</p>
+<p>这是最后一篇了，大体就是这样，有遗漏的部分后续会继续补充，接下来在整理一些常用算法识别的相关内容。<br>如果碰巧有各位大大看到了欢迎指点一二，谢谢。</p>
+<p>逆向笔记之虚函数，继承与多重继承。<br><a id="more"></a></p>
+<h2 id="虚函数"><a href="#虚函数" class="headerlink" title="虚函数"></a>虚函数</h2><p>对象的多态性需要通过虚表和虚表指针来完成，虚表指针被定义在对象首地址的前4字节处，因此虚函数必须作为函数成员函数使用。因为非成员函数没有this指针，无法获取虚表指针，也就无法获取虚表，也就无法访问虚函数。</p>
+<h3 id="虚函数的机制"><a href="#虚函数的机制" class="headerlink" title="虚函数的机制"></a>虚函数的机制</h3><p>在C++中，使用关键字virtual声明函数为虚函数。当类中定义有虚函数时，编译器会将该类中所有虚函数的首地址保存在一张地址表中，这张表被称为虚函数地址表，简称虚表。同时编译器还会在类中添加一个隐藏数据成员，称为虚表指针。该指针保存着虚表首地址，用于记录和查找虚函数。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">C代码：</div><div class="line">class CVirtual</div><div class="line">&#123;</div><div class="line">public:</div><div class="line">    virtual int GetNum()</div><div class="line">    &#123;</div><div class="line">        return m_nNum;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    virtual void SetNum(int nNum)</div><div class="line">    &#123;</div><div class="line">        m_nNum = nNum;</div><div class="line">    &#125;</div><div class="line">private:</div><div class="line">    int m_nNum;</div><div class="line">&#125;;</div><div class="line"></div><div class="line"></div><div class="line">int _tmain(int argc, _TCHAR* argv[])</div><div class="line">&#123;</div><div class="line">    int nSize = sizeof(CVirtual);</div><div class="line">CVirtual ogj;</div><div class="line">    return 0;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>这里定义了两个虚函数和一个数据成员。这里类的的大小为8，因为定义了虚函数后，含有虚表指针。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div></pre></td><td class="code"><pre><div class="line">对应反汇编Debug：</div><div class="line">Main函数</div><div class="line">01111B20 &gt;  55              push ebp</div><div class="line">01111B21    8BEC            mov ebp,esp</div><div class="line">01111B23    81EC DC000000   sub esp,0xDC</div><div class="line">01111B29    53              push ebx</div><div class="line">01111B2A    56              push esi</div><div class="line">01111B2B    57              push edi</div><div class="line">01111B2C    8DBD 24FFFFFF   lea edi,dword ptr ss:[ebp-0xDC]</div><div class="line">01111B32    B9 37000000     mov ecx,0x37</div><div class="line">01111B37    B8 CCCCCCCC     mov eax,0xCCCCCCCC</div><div class="line">01111B3C    F3:AB           rep stos dword ptr es:[edi]</div><div class="line">01111B3E    C745 F8 0800000&gt;mov dword ptr ss:[ebp-0x8],0x8</div><div class="line">01111B45    8D4D E8         lea ecx,dword ptr ss:[ebp-0x18] //获取对象首地址</div><div class="line">01111B48    E8 CFF6FFFF     call TestCode.0111121C //调用构造函数，这里调用的是编译器提供的默认构造函数</div><div class="line">01111B4D    33C0            xor eax,eax</div><div class="line">01111B4F    52              push edx</div><div class="line">01111B50    8BCD            mov ecx,ebp</div><div class="line">01111B52    50              push eax</div><div class="line">01111B53    8D15 741B1101   lea edx,dword ptr ds:[0x1111B74]</div><div class="line">01111B59    E8 42F5FFFF     call TestCode.011110A0</div><div class="line">01111B5E    58              pop eax</div><div class="line">01111B5F    5A              pop edx</div><div class="line">01111B60    5F              pop edi</div><div class="line">01111B61    5E              pop esi</div><div class="line">01111B62    5B              pop ebx</div><div class="line">01111B63    81C4 DC000000   add esp,0xDC</div><div class="line">01111B69    3BEC            cmp ebp,esp</div><div class="line">01111B6B    E8 11F6FFFF     call TestCode.01111181</div><div class="line">01111B70    8BE5            mov esp,ebp</div><div class="line">01111B72    5D              pop ebp</div><div class="line">01111B73    C3              retn</div><div class="line"></div><div class="line">默认构造函数</div><div class="line">011115A0 &gt;  55              push ebp</div><div class="line">011115A1    8BEC            mov ebp,esp</div><div class="line">011115A3    81EC CC000000   sub esp,0xCC</div><div class="line">011115A9    53              push ebx</div><div class="line">011115AA    56              push esi</div><div class="line">011115AB    57              push edi</div><div class="line">011115AC    51              push ecx</div><div class="line">011115AD    8DBD 34FFFFFF   lea edi,dword ptr ss:[ebp-0xCC]</div><div class="line">011115B3    B9 33000000     mov ecx,0x33</div><div class="line">011115B8    B8 CCCCCCCC     mov eax,0xCCCCCCCC</div><div class="line">011115BD    F3:AB           rep stos dword ptr es:[edi]</div><div class="line">011115BF    59              pop ecx //还原this指针</div><div class="line">011115C0    894D F8         mov dword ptr ss:[ebp-0x8],ecx </div><div class="line">011115C3    8B45 F8         mov eax,dword ptr ss:[ebp-0x8] //eax为this指针</div><div class="line">011115C6    C700 88781101   mov dword ptr ds:[eax],offset TestCode.CVirtual::`vftable&apos; //保存虚表指针</div><div class="line">011115CC    8B45 F8         mov eax,dword ptr ss:[ebp-0x8] //返回this指针</div><div class="line">011115CF    5F              pop edi</div><div class="line">011115D0    5E              pop esi</div><div class="line">011115D1    5B              pop ebx</div><div class="line">011115D2    8BE5            mov esp,ebp</div><div class="line">011115D4    5D              pop ebp</div><div class="line">011115D5    C3              retn</div></pre></td></tr></table></figure></p>
+<p>虚函数的识别<br>在判断是否为虚函数时，我们需要鉴别类中是否出现这样的特征：<br>1）类中隐式定义了一个数据成员<br>2）该数据成员在首地址处，占4个字节<br>3）构造函数会将此数据成员初始化为某个数组的首地址<br>4）这个地址属于数据区，是相对固定的地址<br>5）在这个数组内，每个元素都是函数指针<br>6）这些函数在调用时第一个参数必然为this指针<br>7）在这些函数内部，很有可能会对this指针使用相对间接寻址的访问方式</p>
+<h2 id="从内存角度看继承和多重继承"><a href="#从内存角度看继承和多重继承" class="headerlink" title="从内存角度看继承和多重继承"></a>从内存角度看继承和多重继承</h2><h3 id="识别类和类之间的关系"><a href="#识别类和类之间的关系" class="headerlink" title="识别类和类之间的关系"></a>识别类和类之间的关系</h3><p>在C++的继承关系中，子类具备父类所有的成员数据和成员函数。子类对象可以直接使用父类中声明为公有和保护的数据成员和成员函数。在父类中声明为私有（private）的成员，虽然子类对象无法直接访问，但是在子类对象的内存结构中，父类私有的成员数据依然存在。C++语法规定的访问控制仅限于编译层面，在编译的过程中由编译器进行语法检查，因此访问控制不会影响对象的内存结构。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div></pre></td><td class="code"><pre><div class="line">C代码：</div><div class="line">class CBase</div><div class="line">&#123;</div><div class="line">public:</div><div class="line">    CBase()</div><div class="line">    &#123;</div><div class="line">        printf(&quot;CBase\n&quot;);</div><div class="line">    &#125;</div><div class="line">    ~CBase()</div><div class="line">    &#123;</div><div class="line">        printf(&quot;~CBase\n&quot;);</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    void SetNum(int nNum)</div><div class="line">    &#123;</div><div class="line">        m_nBase = nNum;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    int GetNum()</div><div class="line">    &#123;</div><div class="line">        return m_nBase;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    int m_nBase;</div><div class="line">&#125;;</div><div class="line"></div><div class="line">class CDervie : public CBase</div><div class="line">&#123;</div><div class="line">public:</div><div class="line">    void ShowNum(int nNum)</div><div class="line">    &#123;</div><div class="line">        SetNum(nNum);</div><div class="line">        m_nDervie = nNum + 1;</div><div class="line">        printf(&quot;%d\n&quot;, GetNum());</div><div class="line">        printf(&quot;%d\n&quot;, m_nDervie);</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    int m_nDervie;</div><div class="line"></div><div class="line">&#125;;</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">int _tmain(int argc, _TCHAR* argv[])</div><div class="line">&#123;</div><div class="line">    CDervie obj;</div><div class="line">    obj.ShowNum(argc);</div><div class="line">    return 0;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div></pre></td><td class="code"><pre><div class="line">对应反汇编Debug:</div><div class="line">Main函数</div><div class="line">00AF1D10 &gt;  55              push ebp</div><div class="line">00AF1D11    8BEC            mov ebp,esp</div><div class="line">00AF1D13    6A FF           push -0x1</div><div class="line">00AF1D15    68 A855AF00     push TestCode.00AF55A8</div><div class="line">00AF1D1A    64:A1 00000000  mov eax,dword ptr fs:[0]</div><div class="line">00AF1D20    50              push eax</div><div class="line">00AF1D21    81EC DC000000   sub esp,0xDC</div><div class="line">00AF1D27    53              push ebx</div><div class="line">00AF1D28    56              push esi</div><div class="line">00AF1D29    57              push edi</div><div class="line">00AF1D2A    8DBD 18FFFFFF   lea edi,dword ptr ss:[ebp-0xE8]</div><div class="line">00AF1D30    B9 37000000     mov ecx,0x37</div><div class="line">00AF1D35    B8 CCCCCCCC     mov eax,0xCCCCCCCC</div><div class="line">00AF1D3A    F3:AB           rep stos dword ptr es:[edi]</div><div class="line">00AF1D3C    A1 04A0AF00     mov eax,dword ptr ds:[__security_cookie]</div><div class="line">00AF1D41    33C5            xor eax,ebp</div><div class="line">00AF1D43    50              push eax</div><div class="line">00AF1D44    8D45 F4         lea eax,dword ptr ss:[ebp-0xC]</div><div class="line">00AF1D47    64:A3 00000000  mov dword ptr fs:[0],eax</div><div class="line">00AF1D4D    8D4D E8         lea ecx,dword ptr ss:[ebp-0x18]//取对象首地址</div><div class="line">00AF1D50    E8 E7F2FFFF     call TestCode.00AF103C//调用子类构造函数</div><div class="line">00AF1D55    C745 FC 0000000&gt;mov dword ptr ss:[ebp-0x4],0x0</div><div class="line">00AF1D5C    8B45 08         mov eax,dword ptr ss:[ebp+0x8]</div><div class="line">00AF1D5F    50              push eax</div><div class="line">00AF1D60    8D4D E8         lea ecx,dword ptr ss:[ebp-0x18] //取对象首地址</div><div class="line">00AF1D63    E8 B1F2FFFF     call TestCode.00AF1019 //调用ShowNum函数</div><div class="line">00AF1D68    C785 1CFFFFFF 0&gt;mov dword ptr ss:[ebp-0xE4],0x0</div><div class="line">00AF1D72    C745 FC FFFFFFF&gt;mov dword ptr ss:[ebp-0x4],-0x1</div><div class="line">00AF1D79    8D4D E8         lea ecx,dword ptr ss:[ebp-0x18]</div><div class="line">00AF1D7C    E8 B6F2FFFF     call TestCode.00AF1037 //调用子类析构函数</div><div class="line">00AF1D81    8B85 1CFFFFFF   mov eax,dword ptr ss:[ebp-0xE4]</div><div class="line">00AF1D87    52              push edx</div><div class="line">00AF1D88    8BCD            mov ecx,ebp</div><div class="line">00AF1D8A    50              push eax</div><div class="line">00AF1D8B    8D15 B81DAF00   lea edx,dword ptr ds:[0xAF1DB8]</div><div class="line">00AF1D91    E8 19F3FFFF     call TestCode.00AF10AF</div><div class="line">00AF1D96    58              pop eax</div><div class="line">00AF1D97    5A              pop edx</div><div class="line">00AF1D98    8B4D F4         mov ecx,dword ptr ss:[ebp-0xC]</div><div class="line">00AF1D9B    64:890D 0000000&gt;mov dword ptr fs:[0],ecx</div><div class="line">00AF1DA2    59              pop ecx</div><div class="line">00AF1DA3    5F              pop edi</div><div class="line">00AF1DA4    5E              pop esi</div><div class="line">00AF1DA5    5B              pop ebx</div><div class="line">00AF1DA6    81C4 E8000000   add esp,0xE8</div><div class="line">00AF1DAC    3BEC            cmp ebp,esp</div><div class="line">00AF1DAE    E8 D3F3FFFF     call TestCode.00AF1186</div><div class="line">00AF1DB3    8BE5            mov esp,ebp</div><div class="line">00AF1DB5    5D              pop ebp</div><div class="line">00AF1DB6    C3              retn</div><div class="line"></div><div class="line"></div><div class="line">构造函数</div><div class="line">00AF1500 &gt;  55              push ebp</div><div class="line">00AF1501    8BEC            mov ebp,esp</div><div class="line">00AF1503    81EC CC000000   sub esp,0xCC</div><div class="line">00AF1509    53              push ebx</div><div class="line">00AF150A    56              push esi</div><div class="line">00AF150B    57              push edi</div><div class="line">00AF150C    51              push ecx</div><div class="line">00AF150D    8DBD 34FFFFFF   lea edi,dword ptr ss:[ebp-0xCC]</div><div class="line">00AF1513    B9 33000000     mov ecx,0x33</div><div class="line">00AF1518    B8 CCCCCCCC     mov eax,0xCCCCCCCC</div><div class="line">00AF151D    F3:AB           rep stos dword ptr es:[edi]</div><div class="line">00AF151F    59              pop ecx //还原this指针</div><div class="line">00AF1520    894D F8         mov dword ptr ss:[ebp-0x8],ecx</div><div class="line">00AF1523    8B4D F8         mov ecx,dword ptr ss:[ebp-0x8] //this指针给ecx </div><div class="line">00AF1526    E8 6FFCFFFF     call TestCode.00AF119A //调用父类构造函数</div><div class="line">00AF152B    8B45 F8         mov eax,dword ptr ss:[ebp-0x8]</div><div class="line">00AF152E    5F              pop edi</div><div class="line">00AF152F    5E              pop esi</div><div class="line">00AF1530    5B              pop ebx</div><div class="line">00AF1531    81C4 CC000000   add esp,0xCC</div><div class="line">00AF1537    3BEC            cmp ebp,esp</div><div class="line">00AF1539    E8 48FCFFFF     call TestCode.00AF1186</div><div class="line">00AF153E    8BE5            mov esp,ebp</div><div class="line">00AF1540    5D              pop ebp</div><div class="line">00AF1541    C3              retn</div><div class="line"></div><div class="line"></div><div class="line">析构函数</div><div class="line">00AF16D0 &gt;  55              push ebp</div><div class="line">00AF16D1    8BEC            mov ebp,esp</div><div class="line">00AF16D3    81EC CC000000   sub esp,0xCC</div><div class="line">00AF16D9    53              push ebx</div><div class="line">00AF16DA    56              push esi</div><div class="line">00AF16DB    57              push edi</div><div class="line">00AF16DC    51              push ecx</div><div class="line">00AF16DD    8DBD 34FFFFFF   lea edi,dword ptr ss:[ebp-0xCC]</div><div class="line">00AF16E3    B9 33000000     mov ecx,0x33</div><div class="line">00AF16E8    B8 CCCCCCCC     mov eax,0xCCCCCCCC</div><div class="line">00AF16ED    F3:AB           rep stos dword ptr es:[edi]</div><div class="line">00AF16EF    59              pop ecx</div><div class="line">00AF16F0    894D F8         mov dword ptr ss:[ebp-0x8],ecx</div><div class="line">00AF16F3    8B4D F8         mov ecx,dword ptr ss:[ebp-0x8]//this指针给ecx </div><div class="line">00AF16F6    E8 32F9FFFF     call TestCode.00AF102D //调用父类析构函数</div><div class="line">00AF16FB    5F              pop edi</div><div class="line">00AF16FC    5E              pop esi</div><div class="line">00AF16FD    5B              pop ebx</div><div class="line">00AF16FE    81C4 CC000000   add esp,0xCC</div><div class="line">00AF1704    3BEC            cmp ebp,esp</div><div class="line">00AF1706    E8 7BFAFFFF     call TestCode.00AF1186</div><div class="line">00AF170B    8BE5            mov esp,ebp</div><div class="line">00AF170D    5D              pop ebp</div><div class="line">00AF170E    C3              retn</div></pre></td></tr></table></figure>
+<p>由此可以看出当子类中没有构造函数或析构函数，而其父类却需要构造函数与析构函数时，编译器会为该父类的子类提供默认的构造函数与析构函数。还可以看出子类对象在内存中的数据排列方式，先安排父类的数据，然后安排子类新定义的数据。</p>
+<p>接着来看一下当类中定义了其他对象作为成员，并在初始化列表中指定了某个成员的初始化值时构造的顺序。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div></pre></td><td class="code"><pre><div class="line">C代码：</div><div class="line">class CBase</div><div class="line">&#123;</div><div class="line">public:</div><div class="line">    CBase()</div><div class="line">        &#123;</div><div class="line">            printf(&quot;CBase\n&quot;);</div><div class="line">        &#125;</div><div class="line">        ~CBase()</div><div class="line">        &#123;</div><div class="line">            printf(&quot;~CBase\n&quot;);</div><div class="line">        &#125;</div><div class="line">        </div><div class="line">    void SetNum(int nNum)</div><div class="line">    &#123;</div><div class="line">        m_nBase = nNum;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    int GetNum()</div><div class="line">    &#123;</div><div class="line">        return m_nBase;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    int m_nBase;</div><div class="line">&#125;;</div><div class="line"></div><div class="line">class CInit</div><div class="line">&#123;</div><div class="line">public:</div><div class="line">    CInit()</div><div class="line">    &#123;</div><div class="line">        m_nNum = 0;</div><div class="line">    &#125;</div><div class="line">    int m_nNum;</div><div class="line"></div><div class="line">&#125;;</div><div class="line"></div><div class="line"></div><div class="line">class CDervie : public CBase</div><div class="line">&#123;</div><div class="line">public:</div><div class="line">CDervie() : m_nDervie(1)//初始化列表</div><div class="line">    &#123;</div><div class="line">        printf(&quot;CDervie\n&quot;);</div><div class="line">    &#125;</div><div class="line">    CInit m_Init;</div><div class="line">    int m_nDervie;</div><div class="line"></div><div class="line">&#125;;</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">int _tmain(int argc, _TCHAR* argv[])</div><div class="line">&#123;</div><div class="line">    CDervie obj;</div><div class="line">    obj.ShowNum(argc);</div><div class="line">    return 0;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div></pre></td><td class="code"><pre><div class="line">对应反汇编Debug：</div><div class="line">子类构造函数</div><div class="line">00051C90 &gt;  55              push ebp</div><div class="line">00051C91    8BEC            mov ebp,esp</div><div class="line">00051C93    6A FF           push -0x1</div><div class="line">00051C95    68 78550500     push TestCode.00055578</div><div class="line">00051C9A    64:A1 00000000  mov eax,dword ptr fs:[0]</div><div class="line">00051CA0    50              push eax</div><div class="line">00051CA1    81EC CC000000   sub esp,0xCC</div><div class="line">00051CA7    53              push ebx</div><div class="line">00051CA8    56              push esi</div><div class="line">00051CA9    57              push edi</div><div class="line">00051CAA    51              push ecx</div><div class="line">00051CAB    8DBD 28FFFFFF   lea edi,dword ptr ss:[ebp-0xD8]</div><div class="line">00051CB1    B9 33000000     mov ecx,0x33</div><div class="line">00051CB6    B8 CCCCCCCC     mov eax,0xCCCCCCCC</div><div class="line">00051CBB    F3:AB           rep stos dword ptr es:[edi]</div><div class="line">00051CBD    59              pop ecx  //还原this指针</div><div class="line">00051CBE    A1 04A00500     mov eax,dword ptr ds:[__security_cookie]</div><div class="line">00051CC3    33C5            xor eax,ebp</div><div class="line">00051CC5    50              push eax</div><div class="line">00051CC6    8D45 F4         lea eax,dword ptr ss:[ebp-0xC]</div><div class="line">00051CC9    64:A3 00000000  mov dword ptr fs:[0],eax</div><div class="line">00051CCF    894D EC         mov dword ptr ss:[ebp-0x14],ecx</div><div class="line">00051CD2    8B4D EC         mov ecx,dword ptr ss:[ebp-0x14] //this指针给ecx</div><div class="line">00051CD5    E8 74F5FFFF     call TestCode.0005124E //调用父类构造函数</div><div class="line">00051CDA    C745 FC 0000000&gt;mov dword ptr ss:[ebp-0x4],0x0</div><div class="line">00051CE1    8B4D EC         mov ecx,dword ptr ss:[ebp-0x14] //this指针给ecx</div><div class="line">00051CE4    83C1 04         add ecx,0x4 //ecx + 4</div><div class="line">00051CE7    E8 58F5FFFF     call TestCode.00051244 //调用CInit构造函数</div><div class="line">00051CEC    8B45 EC         mov eax,dword ptr ss:[ebp-0x14]</div><div class="line">00051CEF    C740 08 0100000&gt;mov dword ptr ds:[eax+0x8],0x1 //初始化数据成员</div><div class="line">00051CF6    8BF4            mov esi,esp</div><div class="line">00051CF8    68 98780500     push TestCode.00057898                   ; ASCII &quot;CDervie\n&quot;</div><div class="line">00051CFD    FF15 1CB10500   call dword ptr ds:[&lt;&amp;MSVCR120D.printf&gt;]  ; MSVCR120.printf</div><div class="line">00051D03    83C4 04         add esp,0x4</div><div class="line">00051D06    3BF4            cmp esi,esp</div><div class="line">00051D08    E8 79F4FFFF     call TestCode.00051186</div><div class="line">00051D0D    C745 FC FFFFFFF&gt;mov dword ptr ss:[ebp-0x4],-0x1</div><div class="line">00051D14    8B45 EC         mov eax,dword ptr ss:[ebp-0x14]</div><div class="line">00051D17    8B4D F4         mov ecx,dword ptr ss:[ebp-0xC]</div><div class="line">00051D1A    64:890D 0000000&gt;mov dword ptr fs:[0],ecx</div><div class="line">00051D21    59              pop ecx</div><div class="line">00051D22    5F              pop edi</div><div class="line">00051D23    5E              pop esi</div><div class="line">00051D24    5B              pop ebx</div><div class="line">00051D25    81C4 D8000000   add esp,0xD8</div><div class="line">00051D2B    3BEC            cmp ebp,esp</div><div class="line">00051D2D    E8 54F4FFFF     call TestCode.00051186</div><div class="line">00051D32    8BE5            mov esp,ebp</div><div class="line">00051D34    5D              pop ebp</div><div class="line">00051D35    C3              retn</div></pre></td></tr></table></figure>
+<p>由此可以看出在有初始化列表的情况下，将会优先执行初始化列表中的操作，其次才是自身的构造函数。构造的顺序为：先构造父类，然后按声明顺序构造成员对象和初始化列表中的指定成员，最后才是自身的构造函数。</p>
+<p>因为有虚表指针，调用虚函数的方式改为查表并间接调用，在虚表中得到函数首地址并跳转到此地址处执行代码。利用此特性即可通过父类指针访问不同的派生类。在调用父类中定义的虚函数时，根据指针所指向的对象中的虚表指针，可得到虚表信息，间接调用虚函数，即构成多态。具体看个例子吧。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div></pre></td><td class="code"><pre><div class="line">C代码：</div><div class="line">class CPerson</div><div class="line">&#123;</div><div class="line">public:</div><div class="line">    CPerson()&#123;&#125;</div><div class="line">    virtual ~CPerson()&#123;&#125;</div><div class="line">    virtual void ShowSpeak()&#123;&#125;</div><div class="line">&#125;;</div><div class="line"></div><div class="line">class CChinese : public CPerson</div><div class="line">&#123;</div><div class="line">public:</div><div class="line">    CChinese()&#123;&#125;</div><div class="line">    virtual ~CChinese()&#123;&#125;</div><div class="line">    virtual void ShowSpeak()</div><div class="line">    &#123;</div><div class="line">        printf(&quot;chinese\n&quot;);</div><div class="line">    &#125;</div><div class="line">&#125;;</div><div class="line"></div><div class="line">class CAmerican : public CPerson</div><div class="line">&#123;</div><div class="line">public:</div><div class="line">    CAmerican()&#123;&#125;</div><div class="line">    virtual ~CAmerican()&#123;&#125;</div><div class="line">    virtual void ShowSpeak()</div><div class="line">    &#123;</div><div class="line">        printf(&quot;CAmerican\n&quot;);</div><div class="line">    &#125;</div><div class="line">&#125;;</div><div class="line"></div><div class="line">void Speak(CPerson *obj)</div><div class="line">&#123;</div><div class="line">    obj-&gt;ShowSpeak();</div><div class="line">&#125;</div><div class="line"></div><div class="line">int _tmain(int argc, _TCHAR* argv[])</div><div class="line">&#123;</div><div class="line">    CChinese chinese;</div><div class="line">    CAmerican american;</div><div class="line">    Speak(&amp;chinese);</div><div class="line">    Speak(&amp;american);</div><div class="line">    return 0;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div></pre></td><td class="code"><pre><div class="line">对应反汇编Debug：</div><div class="line">Speak入口</div><div class="line">00A61FF8    8D45 EC         lea eax,dword ptr ss:[ebp-0x14] //取对象首地址</div><div class="line">00A61FFB    50              push eax //压栈</div><div class="line">00A61FFC    E8 26F1FFFF     call TestCode.00A61127 //调用</div><div class="line">00A62001    83C4 04         add esp,0x4 //堆栈平衡</div><div class="line"></div><div class="line">Speak函数实现</div><div class="line">00A61F40 &gt;  55              push ebp</div><div class="line">00A61F41    8BEC            mov ebp,esp</div><div class="line">00A61F43    81EC C0000000   sub esp,0xC0</div><div class="line">00A61F49    53              push ebx</div><div class="line">00A61F4A    56              push esi</div><div class="line">00A61F4B    57              push edi</div><div class="line">00A61F4C    8DBD 40FFFFFF   lea edi,dword ptr ss:[ebp-0xC0]</div><div class="line">00A61F52    B9 30000000     mov ecx,0x30</div><div class="line">00A61F57    B8 CCCCCCCC     mov eax,0xCCCCCCCC</div><div class="line">00A61F5C    F3:AB           rep stos dword ptr es:[edi]</div><div class="line">00A61F5E    8B45 08         mov eax,dword ptr ss:[ebp+0x8] //参数给eax</div><div class="line">00A61F61    8B10            mov edx,dword ptr ds:[eax] //取eax内容给edx，也就是虚表首地址</div><div class="line">00A61F63    8BF4            mov esi,esp</div><div class="line">00A61F65    8B4D 08         mov ecx,dword ptr ss:[ebp+0x8]</div><div class="line">00A61F68    8B42 04         mov eax,dword ptr ds:[edx+0x4] //寻址虚表第二项</div><div class="line">00A61F6B    FFD0            call eax //调用speak</div><div class="line">00A61F6D    3BF4            cmp esi,esp</div><div class="line">00A61F6F    E8 49F2FFFF     call TestCode.00A611BD</div><div class="line">00A61F74    5F              pop edi</div><div class="line">00A61F75    5E              pop esi</div><div class="line">00A61F76    5B              pop ebx</div><div class="line">00A61F77    81C4 C0000000   add esp,0xC0</div><div class="line">00A61F7D    3BEC            cmp ebp,esp</div><div class="line">00A61F7F    E8 39F2FFFF     call TestCode.00A611BD</div><div class="line">00A61F84    8BE5            mov esp,ebp</div><div class="line">00A61F86    5D              pop ebp</div><div class="line">00A61F87    C3              retn</div></pre></td></tr></table></figure>
+<p>由此可以看出虚函数的调用过程使用了间接寻找方式 。还有要将析构函数定义为虚函数，因为父类指针保存子类对象的首地址，因此当使用父类指针指向子类堆对象时会出问题。当使用delete释放对象空间时，如果析构函数没有被定义为虚函数，编译器将会按指针的类型调用父类析构函数也会出问题。而使用虚析构函数后会访问虚表并调用对象的析构函数。</p>
+<h3 id="多重继承"><a href="#多重继承" class="headerlink" title="多重继承"></a>多重继承</h3><p>直接看例子。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div></pre></td><td class="code"><pre><div class="line">C代码：</div><div class="line">class CSofa</div><div class="line">&#123;</div><div class="line">public:</div><div class="line">    CSofa()</div><div class="line">    &#123;</div><div class="line">        m_nColor = 2;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    virtual ~CSofa()</div><div class="line">    &#123;</div><div class="line">        printf(&quot;virtual ~CSofa\n&quot;);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    virtual int GetColor()</div><div class="line">    &#123;</div><div class="line">        return m_nColor;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    virtual int SitDowm()</div><div class="line">    &#123;</div><div class="line">        return printf(&quot;SitDowm\n&quot;);</div><div class="line">    &#125;</div><div class="line">    int m_nColor;</div><div class="line">&#125;;</div><div class="line"></div><div class="line">class CBed</div><div class="line">&#123;</div><div class="line">public:</div><div class="line">    CBed()</div><div class="line">    &#123;</div><div class="line">        m_nLength = 4;</div><div class="line">        m_nWidth = 5;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    virtual ~CBed()</div><div class="line">    &#123;</div><div class="line">        printf(&quot;virtual ~CBed\n&quot;);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    virtual int GetArea()</div><div class="line">    &#123;</div><div class="line">        return m_nLength * m_nWidth;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    virtual int Sleep()</div><div class="line">    &#123;</div><div class="line">        return printf(&quot;goto sleep\n&quot;);</div><div class="line">    &#125;</div><div class="line">    int m_nLength;</div><div class="line">    int m_nWidth;</div><div class="line">&#125;;</div><div class="line"></div><div class="line">class CSofaBed : public CSofa,public CBed</div><div class="line">&#123;</div><div class="line">public:</div><div class="line">    CSofaBed()</div><div class="line">    &#123;</div><div class="line">        m_nHeight = 6;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    virtual ~CSofaBed()</div><div class="line">    &#123;</div><div class="line">        printf(&quot;virtual ~CSofaBed\n&quot;);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    virtual int SitDowm()</div><div class="line">    &#123;</div><div class="line">        return printf(&quot;SitDowm\n&quot;);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    virtual int Sleep()</div><div class="line">    &#123;</div><div class="line">        return printf(&quot;goto sleep\n&quot;);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    virtual int GetHeight()</div><div class="line">    &#123;</div><div class="line">        return m_nHeight;</div><div class="line">    &#125;</div><div class="line">    int m_nHeight;</div><div class="line">&#125;;</div><div class="line"></div><div class="line">int _tmain(int argc, _TCHAR* argv[])</div><div class="line">&#123;</div><div class="line">    CSofaBed obj;</div><div class="line">    int n = sizeof(obj); </div><div class="line">    return 0;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>这里对象大小为24,内存布局如下<br><img src="http://oc7zh19yb.bkt.clouddn.com/image/jpg/15.jpg" alt="" title=""></p>
+<p>由此可以看出数据成员的排列顺序由继承父类的先后顺序决定，从左向右依次排列。此外内存中的两个地址是虚表指针。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div></pre></td><td class="code"><pre><div class="line">对应反汇编Debug：</div><div class="line">CSofaBed构造函数</div><div class="line">00C149E0 &gt;  55              push ebp</div><div class="line">00C149E1    8BEC            mov ebp,esp</div><div class="line">00C149E3    6A FF           push -0x1</div><div class="line">00C149E5    68 A85AC100     push TestCode.00C15AA8</div><div class="line">00C149EA    64:A1 00000000  mov eax,dword ptr fs:[0]</div><div class="line">00C149F0    50              push eax</div><div class="line">00C149F1    81EC CC000000   sub esp,0xCC</div><div class="line">00C149F7    53              push ebx</div><div class="line">00C149F8    56              push esi</div><div class="line">00C149F9    57              push edi</div><div class="line">00C149FA    51              push ecx</div><div class="line">00C149FB    8DBD 28FFFFFF   lea edi,dword ptr ss:[ebp-0xD8]</div><div class="line">00C14A01    B9 33000000     mov ecx,0x33</div><div class="line">00C14A06    B8 CCCCCCCC     mov eax,0xCCCCCCCC</div><div class="line">00C14A0B    F3:AB           rep stos dword ptr es:[edi]</div><div class="line">00C14A0D    59              pop ecx //还原this指针</div><div class="line">00C14A0E    A1 04A0C100     mov eax,dword ptr ds:[__security_cookie]</div><div class="line">00C14A13    33C5            xor eax,ebp</div><div class="line">00C14A15    50              push eax</div><div class="line">00C14A16    8D45 F4         lea eax,dword ptr ss:[ebp-0xC]</div><div class="line">00C14A19    64:A3 00000000  mov dword ptr fs:[0],eax</div><div class="line">00C14A1F    894D EC         mov dword ptr ss:[ebp-0x14],ecx</div><div class="line">00C14A22    8B4D EC         mov ecx,dword ptr ss:[ebp-0x14]</div><div class="line">00C14A25    E8 ABC8FFFF     call TestCode.00C112D5 //调用父类CSofa构造函数</div><div class="line">00C14A2A    C745 FC 0000000&gt;mov dword ptr ss:[ebp-0x4],0x0</div><div class="line">00C14A31    8B4D EC         mov ecx,dword ptr ss:[ebp-0x14]</div><div class="line">00C14A34    83C1 08         add ecx,0x8 //调整this指针到第二个虚表指针地址处</div><div class="line">00C14A37    E8 B2C8FFFF     call TestCode.00C112EE //调用父类CBed构造函数</div><div class="line">00C14A3C    8B45 EC         mov eax,dword ptr ss:[ebp-0x14] //this指针给eax</div><div class="line">00C14A3F    C700 507AC100   mov dword ptr ds:[eax],offset TestCode.CSofaBed::`vftable&apos; //写入虚表指针</div><div class="line">00C14A45    8B45 EC         mov eax,dword ptr ss:[ebp-0x14]</div><div class="line">00C14A48    C740 08 A479C10&gt;mov dword ptr ds:[eax+0x8],offset TestCode.CSofaBed::`vftable&apos; //写入虚表指针</div><div class="line">00C14A4F    8B45 EC         mov eax,dword ptr ss:[ebp-0x14]</div><div class="line">00C14A52    C740 14 0600000&gt;mov dword ptr ds:[eax+0x14],0x6</div><div class="line">00C14A59    C745 FC FFFFFFF&gt;mov dword ptr ss:[ebp-0x4],-0x1</div><div class="line">00C14A60    8B45 EC         mov eax,dword ptr ss:[ebp-0x14]</div><div class="line">00C14A63    8B4D F4         mov ecx,dword ptr ss:[ebp-0xC]</div><div class="line">00C14A66    64:890D 0000000&gt;mov dword ptr fs:[0],ecx</div><div class="line">00C14A6D    59              pop ecx</div><div class="line">00C14A6E    5F              pop edi</div><div class="line">00C14A6F    5E              pop esi</div><div class="line">00C14A70    5B              pop ebx</div><div class="line">00C14A71    81C4 D8000000   add esp,0xD8</div><div class="line">00C14A77    3BEC            cmp ebp,esp</div><div class="line">00C14A79    E8 3FC7FFFF     call TestCode.00C111BD</div><div class="line">00C14A7E    8BE5            mov esp,ebp</div><div class="line">00C14A80    5D              pop ebp</div><div class="line">00C14A81    C3              retn</div></pre></td></tr></table></figure></p>
+<p>由此可以看出根据继承关系的顺序首先调用父类CSofa构造函数，在调用另一个父类CBed时，并不是直接将对象首地址做this指针传递，而是向后调整父类CSofa大小，用调整后的值做this指针调用构造。由于有两个父类，因此子类在继承时也将他们的虚表指针一起继承过来，也就有了两个虚表指针。可见，在多重继承中，子类虚表指针的个数取决于所继承父类的个数。</p>
+<p>再来看看析构过程。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div></pre></td><td class="code"><pre><div class="line">对应反汇编Debug：</div><div class="line">00C11E70 &gt;  55              push ebp</div><div class="line">00C11E71    8BEC            mov ebp,esp</div><div class="line">00C11E73    6A FF           push -0x1</div><div class="line">00C11E75    68 085BC100     push TestCode.00C15B08</div><div class="line">00C11E7A    64:A1 00000000  mov eax,dword ptr fs:[0]</div><div class="line">00C11E80    50              push eax</div><div class="line">00C11E81    81EC CC000000   sub esp,0xCC</div><div class="line">00C11E87    53              push ebx</div><div class="line">00C11E88    56              push esi</div><div class="line">00C11E89    57              push edi</div><div class="line">00C11E8A    51              push ecx</div><div class="line">00C11E8B    8DBD 28FFFFFF   lea edi,dword ptr ss:[ebp-0xD8]</div><div class="line">00C11E91    B9 33000000     mov ecx,0x33</div><div class="line">00C11E96    B8 CCCCCCCC     mov eax,0xCCCCCCCC</div><div class="line">00C11E9B    F3:AB           rep stos dword ptr es:[edi]</div><div class="line">00C11E9D    59              pop ecx //还原this指针</div><div class="line">00C11E9E    A1 04A0C100     mov eax,dword ptr ds:[__security_cookie]</div><div class="line">00C11EA3    33C5            xor eax,ebp</div><div class="line">00C11EA5    50              push eax</div><div class="line">00C11EA6    8D45 F4         lea eax,dword ptr ss:[ebp-0xC]</div><div class="line">00C11EA9    64:A3 00000000  mov dword ptr fs:[0],eax</div><div class="line">00C11EAF    894D EC         mov dword ptr ss:[ebp-0x14],ecx</div><div class="line">00C11EB2    8B45 EC         mov eax,dword ptr ss:[ebp-0x14]</div><div class="line">00C11EB5    C700 507AC100   mov dword ptr ds:[eax],offset TestCode.CSofaBed::`vftable&apos; </div><div class="line">00C11EBB    8B45 EC         mov eax,dword ptr ss:[ebp-0x14]</div><div class="line">00C11EBE    C740 08 A479C10&gt;mov dword ptr ds:[eax+0x8],offset TestCode.CSofaBed::`vftable&apos; //将两个虚表指针设置为各个父类的虚表首地址</div><div class="line">00C11EC5    C745 FC 0000000&gt;mov dword ptr ss:[ebp-0x4],0x0</div><div class="line">00C11ECC    8BF4            mov esi,esp</div><div class="line">00C11ECE    68 507BC100     push TestCode.00C17B50                                                          ; ASCII &quot;virtual ~CSofaBed\n&quot;</div><div class="line">00C11ED3    FF15 20B1C100   call dword ptr ds:[&lt;&amp;MSVCR120D.printf&gt;]                                         ; MSVCR120.printf</div><div class="line">00C11ED9    83C4 04         add esp,0x4</div><div class="line">00C11EDC    3BF4            cmp esi,esp</div><div class="line">00C11EDE    E8 DAF2FFFF     call TestCode.00C111BD</div><div class="line">00C11EE3    8B4D EC         mov ecx,dword ptr ss:[ebp-0x14]</div><div class="line">00C11EE6    83C1 08         add ecx,0x8 //调整this指针</div><div class="line">00C11EE9    E8 D3F3FFFF     call TestCode.00C112C1 //调用CBed析构</div><div class="line">00C11EEE    C745 FC FFFFFFF&gt;mov dword ptr ss:[ebp-0x4],-0x1</div><div class="line">00C11EF5    8B4D EC         mov ecx,dword ptr ss:[ebp-0x14]</div><div class="line">00C11EF8    E8 ECF3FFFF     call TestCode.00C112E9 //调用CSofa析构</div><div class="line">00C11EFD    8B4D F4         mov ecx,dword ptr ss:[ebp-0xC]</div><div class="line">00C11F00    64:890D 0000000&gt;mov dword ptr fs:[0],ecx</div><div class="line">00C11F07    59              pop ecx</div><div class="line">00C11F08    5F              pop edi</div><div class="line">00C11F09    5E              pop esi</div><div class="line">00C11F0A    5B              pop ebx</div><div class="line">00C11F0B    81C4 D8000000   add esp,0xD8</div><div class="line">00C11F11    3BEC            cmp ebp,esp</div><div class="line">00C11F13    E8 A5F2FFFF     call TestCode.00C111BD</div><div class="line">00C11F18    8BE5            mov esp,ebp</div><div class="line">00C11F1A    5D              pop ebp</div><div class="line">00C11F1B    C3              retn</div></pre></td></tr></table></figure></p>
+<p>由此可以看出具有多个同级父类，因此在子类中产生多个虚表指针。在对父类进行析构时，需要设置this指针用于调用父类析构函数。由于具有多个父类，当在析构的过程中调用哥哥父类的析构函数时，传递的首地址将有所不同，编译器会根据每个父类在对象中占用的空间位置，对应传入各个父类部分的首地址作为this指针。</p>
+<h3 id="单继承类与多继承类特征总结："><a href="#单继承类与多继承类特征总结：" class="headerlink" title="单继承类与多继承类特征总结："></a>单继承类与多继承类特征总结：</h3><p>单继承类<br>在类对象占用的内存空间中，只保存一份虚表指针<br>由于只有一个虚表指针，对应的只有一个虚表<br>虚表中各项保存了类中虚函数的首地址<br>构造时先构造父类，在构造自身，并且只调用一次父类构造函数<br>析构时先析构自身，在析构父类，并且只调用一次父类析构函数</p>
+<p>多重继承类<br>在类对象所占用的内存空间中，根据继承父类的个数保存对应的虚表指针<br>根据所保存的虚表指针个数，对应产生相应个数的虚表<br>转换父类指针时，需要跳转到对象的首地址<br>构造时需要调用多个父类构造函数<br>构造时先构造继承列表中第一个父类，然后依次调用到最后一个继承的父类构造函数<br>析构时先析构自身，然后以与构造函数相反的顺序调用所有父类的析构函数<br>当对象作为成员时，整个类对象的内存结构和多重继承很相似。当类中无虚函数时，整个类    对象内存结构和多重继承完全一样，当父类或成员对象存在虚函数时，通过观察虚表指针的    位置和构造函数，析构函数中填写虚表指针的数目及目标地址，来还原继承或成员关系。</p>
+<h3 id="虚基类"><a href="#虚基类" class="headerlink" title="虚基类"></a>虚基类</h3><p>虚基类也被称为抽象类。虚基类的定义需要配合虚函数使用，在虚函数的声明结尾处添加“=0”，这种虚函数被称为纯虚函数，纯虚函数是一个没有实现只有声明的函数，他的存在是为了让类具有虚基类的功能，让继承虚基类的子类都具有虚表以及虚表指针。</p>
+<p>直接看例子。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">C代码：</div><div class="line">class CVirtualBase</div><div class="line">&#123;</div><div class="line">public:</div><div class="line">    virtual void Show() = 0;</div><div class="line">&#125;;</div><div class="line"></div><div class="line">class CVirtualChild : public CVirtualBase</div><div class="line">&#123;</div><div class="line">public:</div><div class="line">    virtual void Show()</div><div class="line">    &#123;</div><div class="line">        printf(&quot;CVirtualBase&quot;);</div><div class="line">    &#125;</div><div class="line">&#125;;</div><div class="line"></div><div class="line">int _tmain(int argc, _TCHAR* argv[])</div><div class="line">&#123;</div><div class="line">    CVirtualChild obj;</div><div class="line">    obj.Show();</div><div class="line">    return 0;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">对应反汇编Debug：</div><div class="line">CVirtualBase构造</div><div class="line">00CF15E0 &gt;  55              push ebp</div><div class="line">00CF15E1    8BEC            mov ebp,esp</div><div class="line">00CF15E3    81EC CC000000   sub esp,0xCC</div><div class="line">00CF15E9    53              push ebx</div><div class="line">00CF15EA    56              push esi</div><div class="line">00CF15EB    57              push edi</div><div class="line">00CF15EC    51              push ecx</div><div class="line">00CF15ED    8DBD 34FFFFFF   lea edi,dword ptr ss:[ebp-0xCC]</div><div class="line">00CF15F3    B9 33000000     mov ecx,0x33</div><div class="line">00CF15F8    B8 CCCCCCCC     mov eax,0xCCCCCCCC</div><div class="line">00CF15FD    F3:AB           rep stos dword ptr es:[edi]</div><div class="line">00CF15FF    59              pop ecx</div><div class="line">00CF1600    894D F8         mov dword ptr ss:[ebp-0x8],ecx</div><div class="line">00CF1603    8B45 F8         mov eax,dword ptr ss:[ebp-0x8]</div><div class="line">00CF1606    C700 8878CF00   mov dword ptr ds:[eax],offset TestCode.CVirtualBase::`vftable&apos; //设置虚表指针</div><div class="line">00CF160C    8B45 F8         mov eax,dword ptr ss:[ebp-0x8]</div><div class="line">00CF160F    5F              pop edi</div><div class="line">00CF1610    5E              pop esi</div><div class="line">00CF1611    5B              pop ebx</div><div class="line">00CF1612    8BE5            mov esp,ebp</div><div class="line">00CF1614    5D              pop ebp</div><div class="line">00CF1615    C3              retn</div></pre></td></tr></table></figure>
+<p>虚表中第一项所指向的函数地址<br><img src="http://oc7zh19yb.bkt.clouddn.com/image/jpg/16.jpg" alt="" title=""></p>
+<p>由此可以看出在虚基类CVirtualBase的虚表信息中，由于虚函数没有实现代码，因此没有首地址，编译器为了防止误调用纯虚函数，将虚表中保存的纯虚函数首地址替换成函数_purecall，用于结束程序，并发出错误信息0x19。根据这个特性但凡在虚表中发现_purecall函数地址时，就可以高度怀疑此虚表对应的是一个虚基类。</p>
+<h3 id="菱形继承"><a href="#菱形继承" class="headerlink" title="菱形继承"></a>菱形继承</h3><p>菱形继承是最复杂的对象结构，菱形结构会将单一继承与多重继承进行组合，如下图所示</p>
+<p><img src="http://oc7zh19yb.bkt.clouddn.com/image/jpg/17.jpg" alt="" title=""><br>直接看例子。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div></pre></td><td class="code"><pre><div class="line">C代码：</div><div class="line">class CFurniture</div><div class="line">&#123;</div><div class="line">public:</div><div class="line">    CFurniture()</div><div class="line">    &#123;</div><div class="line">        m_nPrice = 0;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    virtual ~CFurniture()</div><div class="line">    &#123;</div><div class="line">        printf(&quot;virtual ~CFurniture\n&quot;);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    virtual int GetPrice()</div><div class="line">    &#123;</div><div class="line">        return m_nPrice;</div><div class="line">    &#125;</div><div class="line">    int m_nPrice;</div><div class="line">&#125;;</div><div class="line"></div><div class="line">class CSofa : virtual public CFurniture</div><div class="line">&#123;</div><div class="line">public:</div><div class="line">    CSofa()</div><div class="line">    &#123;</div><div class="line">        m_nPrice = 1;</div><div class="line">        m_nColor = 2;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    virtual ~CSofa()</div><div class="line">    &#123;</div><div class="line">        printf(&quot;virtual ~CSofa\n&quot;);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    virtual int GetColor()</div><div class="line">    &#123;</div><div class="line">        return m_nColor;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    virtual int SitDowm()</div><div class="line">    &#123;</div><div class="line">        return printf(&quot;SitDowm\n&quot;);</div><div class="line">    &#125;</div><div class="line">    int m_nColor;</div><div class="line">&#125;;</div><div class="line"></div><div class="line">class CBed : virtual public CFurniture</div><div class="line">&#123;</div><div class="line">public:</div><div class="line">    CBed()</div><div class="line">    &#123;</div><div class="line">        m_nPrice = 3;</div><div class="line">        m_nLength = 4;</div><div class="line">        m_nWidth = 5;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    virtual ~CBed()</div><div class="line">    &#123;</div><div class="line">        printf(&quot;virtual ~CBed\n&quot;);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    virtual int GetArea()</div><div class="line">    &#123;</div><div class="line">        return m_nLength * m_nWidth;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    virtual int Sleep()</div><div class="line">    &#123;</div><div class="line">        return printf(&quot;goto sleep\n&quot;);</div><div class="line">    &#125;</div><div class="line">    int m_nLength;</div><div class="line">    int m_nWidth;</div><div class="line">&#125;;</div><div class="line"></div><div class="line">class CSofaBed : public CSofa,public CBed</div><div class="line">&#123;</div><div class="line">public:</div><div class="line">    CSofaBed()</div><div class="line">    &#123;</div><div class="line">        m_nHeight = 6;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    virtual ~CSofaBed()</div><div class="line">    &#123;</div><div class="line">        printf(&quot;virtual ~CSofaBed\n&quot;);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    virtual int SitDowm()</div><div class="line">    &#123;</div><div class="line">        return printf(&quot;SitDowm\n&quot;);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    virtual int Sleep()</div><div class="line">    &#123;</div><div class="line">        return printf(&quot;goto sleep\n&quot;);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    virtual int GetHeight()</div><div class="line">    &#123;</div><div class="line">        return m_nHeight;</div><div class="line">    &#125;</div><div class="line">    int m_nHeight;</div><div class="line">&#125;;</div><div class="line">int _tmain(int argc, _TCHAR* argv[])</div><div class="line">&#123;</div><div class="line">    CSofaBed obj;</div><div class="line">    return 0;</div><div class="line">&#125;</div><div class="line">//加入父类指针转换后</div><div class="line">int _tmain(int argc, _TCHAR* argv[])</div><div class="line">&#123;</div><div class="line">    CSofaBed sofabed;</div><div class="line">    CFurniture *pFurniture = &amp;sofabed;</div><div class="line">    CSofa *pSofa = &amp;sofabed;</div><div class="line">    CBed *pBed = &amp;sofabed;</div><div class="line">    return 0;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>首先看一下内存结构。<br><img src="http://oc7zh19yb.bkt.clouddn.com/image/jpg/18.jpg" alt="" title=""></p>
+<p>依次为基类未定义的虚函数，基类定义虚函数偏移，数据成员，基类未定义的虚函数，基类定义虚函数偏移，数据成员，数据成员，数据成员，CFurniture定义，数据成员</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div><div class="line">142</div><div class="line">143</div><div class="line">144</div><div class="line">145</div><div class="line">146</div><div class="line">147</div><div class="line">148</div><div class="line">149</div><div class="line">150</div><div class="line">151</div><div class="line">152</div><div class="line">153</div><div class="line">154</div><div class="line">155</div><div class="line">156</div><div class="line">157</div><div class="line">158</div><div class="line">159</div><div class="line">160</div><div class="line">161</div><div class="line">162</div><div class="line">163</div><div class="line">164</div><div class="line">165</div><div class="line">166</div><div class="line">167</div><div class="line">168</div><div class="line">169</div><div class="line">170</div><div class="line">171</div><div class="line">172</div><div class="line">173</div><div class="line">174</div><div class="line">175</div><div class="line">176</div><div class="line">177</div><div class="line">178</div><div class="line">179</div><div class="line">180</div><div class="line">181</div><div class="line">182</div><div class="line">183</div><div class="line">184</div><div class="line">185</div><div class="line">186</div><div class="line">187</div><div class="line">188</div><div class="line">189</div><div class="line">190</div><div class="line">191</div><div class="line">192</div><div class="line">193</div><div class="line">194</div><div class="line">195</div><div class="line">196</div><div class="line">197</div><div class="line">198</div><div class="line">199</div><div class="line">200</div><div class="line">201</div><div class="line">202</div><div class="line">203</div><div class="line">204</div><div class="line">205</div><div class="line">206</div><div class="line">207</div><div class="line">208</div><div class="line">209</div><div class="line">210</div><div class="line">211</div><div class="line">212</div><div class="line">213</div><div class="line">214</div><div class="line">215</div><div class="line">216</div><div class="line">217</div><div class="line">218</div></pre></td><td class="code"><pre><div class="line">对应反汇编Debug：</div><div class="line">Main函数</div><div class="line">01214D20 &gt;  55              push ebp</div><div class="line">01214D21    8BEC            mov ebp,esp</div><div class="line">01214D23    81EC 24010000   sub esp,0x124</div><div class="line">01214D29    53              push ebx</div><div class="line">01214D2A    56              push esi</div><div class="line">01214D2B    57              push edi</div><div class="line">01214D2C    8DBD DCFEFFFF   lea edi,dword ptr ss:[ebp-0x124]</div><div class="line">01214D32    B9 49000000     mov ecx,0x49</div><div class="line">01214D37    B8 CCCCCCCC     mov eax,0xCCCCCCCC</div><div class="line">01214D3C    F3:AB           rep stos dword ptr es:[edi]</div><div class="line">01214D3E    6A 01           push 0x1 //是否构造祖父类的标志，true表示构造，false表示不构造</div><div class="line">01214D40    8D4D D4         lea ecx,dword ptr ss:[ebp-0x2C] //取对象首地址</div><div class="line">01214D43    E8 C9C5FFFF     call TestCode.01211311 //调用CSofaBed构造</div><div class="line">01214D48    8D45 D4         lea eax,dword ptr ss:[ebp-0x2C] //取对象首地址</div><div class="line">01214D4B    85C0            test eax,eax //检查</div><div class="line">01214D4D    75 0C           jnz short TestCode.01214D5B</div><div class="line">01214D4F    C785 DCFEFFFF 0&gt;mov dword ptr ss:[ebp-0x124],0x0</div><div class="line">01214D59    EB 10           jmp short TestCode.01214D6B</div><div class="line"></div><div class="line">01214D5B    8B4D D8         mov ecx,dword ptr ss:[ebp-0x28] //取对象第二项数据vt_offset给ecx</div><div class="line">01214D5E    8B51 04         mov edx,dword ptr ds:[ecx+0x4] //取出偏移值给edx</div><div class="line">01214D61    8D4415 D8       lea eax,dword ptr ss:[ebp+edx-0x28] //得到祖父类数据所在地址</div><div class="line">01214D65    8985 DCFEFFFF   mov dword ptr ss:[ebp-0x124],eax //保存</div><div class="line">01214D6B    8B8D DCFEFFFF   mov ecx,dword ptr ss:[ebp-0x124] //赋值pFurniture</div><div class="line">01214D71    894D C8         mov dword ptr ss:[ebp-0x38],ecx</div><div class="line">01214D74    8D45 D4         lea eax,dword ptr ss:[ebp-0x2C] //直接转换SofaBed对象首地址为父类CSofa的指针</div><div class="line">01214D77    8945 BC         mov dword ptr ss:[ebp-0x44],eax</div><div class="line">01214D7A    8D45 D4         lea eax,dword ptr ss:[ebp-0x2C] //取对象首地址</div><div class="line">01214D7D    85C0            test eax,eax</div><div class="line">01214D7F    74 0E           je short TestCode.01214D8F</div><div class="line">01214D81    8D4D D4         lea ecx,dword ptr ss:[ebp-0x2C] //取第二个指针</div><div class="line">01214D84    83C1 0C         add ecx,0xC</div><div class="line">01214D87    898D DCFEFFFF   mov dword ptr ss:[ebp-0x124],ecx</div><div class="line">01214D8D    EB 0A           jmp short TestCode.01214D99</div><div class="line">01214D8F    C785 DCFEFFFF 0&gt;mov dword ptr ss:[ebp-0x124],0x0</div><div class="line">01214D99    8B95 DCFEFFFF   mov edx,dword ptr ss:[ebp-0x124]</div><div class="line">01214D9F    8955 B0         mov dword ptr ss:[ebp-0x50],edx</div><div class="line">01214DA2    C785 E4FEFFFF 0&gt;mov dword ptr ss:[ebp-0x11C],0x0</div><div class="line">01214DAC    8D4D D4         lea ecx,dword ptr ss:[ebp-0x2C]</div><div class="line">01214DAF    E8 62C5FFFF     call TestCode.01211316 //析构</div><div class="line">01214DB4    8B85 E4FEFFFF   mov eax,dword ptr ss:[ebp-0x11C]</div><div class="line">01214DBA    52              push edx</div><div class="line">01214DBB    8BCD            mov ecx,ebp</div><div class="line">01214DBD    50              push eax</div><div class="line">01214DBE    8D15 E04D2101   lea edx,dword ptr ds:[0x1214DE0]</div><div class="line">01214DC4    E8 EBC2FFFF     call TestCode.012110B4</div><div class="line">01214DC9    58              pop eax</div><div class="line">01214DCA    5A              pop edx</div><div class="line">01214DCB    5F              pop edi</div><div class="line">01214DCC    5E              pop esi</div><div class="line">01214DCD    5B              pop ebx</div><div class="line">01214DCE    81C4 24010000   add esp,0x124</div><div class="line">01214DD4    3BEC            cmp ebp,esp</div><div class="line">01214DD6    E8 E2C3FFFF     call TestCode.012111BD</div><div class="line">01214DDB    8BE5            mov esp,ebp</div><div class="line">01214DDD    5D              pop ebp</div><div class="line">01214DDE    C3              retn</div><div class="line"></div><div class="line">CSofaBed构造函数</div><div class="line">01211BF0 &gt;  55              push ebp</div><div class="line">01211BF1    8BEC            mov ebp,esp</div><div class="line">01211BF3    6A FF           push -0x1</div><div class="line">01211BF5    68 CD5A2101     push TestCode.01215ACD</div><div class="line">01211BFA    64:A1 00000000  mov eax,dword ptr fs:[0]</div><div class="line">01211C00    50              push eax</div><div class="line">01211C01    81EC D8000000   sub esp,0xD8</div><div class="line">01211C07    53              push ebx</div><div class="line">01211C08    56              push esi</div><div class="line">01211C09    57              push edi</div><div class="line">01211C0A    51              push ecx</div><div class="line">01211C0B    8DBD 1CFFFFFF   lea edi,dword ptr ss:[ebp-0xE4]</div><div class="line">01211C11    B9 36000000     mov ecx,0x36</div><div class="line">01211C16    B8 CCCCCCCC     mov eax,0xCCCCCCCC</div><div class="line">01211C1B    F3:AB           rep stos dword ptr es:[edi]</div><div class="line">01211C1D    59              pop ecx //还原this指针</div><div class="line">01211C1E    A1 04A02101     mov eax,dword ptr ds:[__security_cookie]</div><div class="line">01211C23    33C5            xor eax,ebp</div><div class="line">01211C25    50              push eax</div><div class="line">01211C26    8D45 F4         lea eax,dword ptr ss:[ebp-0xC]</div><div class="line">01211C29    64:A3 00000000  mov dword ptr fs:[0],eax</div><div class="line">01211C2F    894D EC         mov dword ptr ss:[ebp-0x14],ecx</div><div class="line">01211C32    C785 20FFFFFF 0&gt;mov dword ptr ss:[ebp-0xE0],0x0 //传入构造标记</div><div class="line">01211C3C    837D 08 00      cmp dword ptr ss:[ebp+0x8],0x0 //检查参数，防止重复构造</div><div class="line">01211C40    74 35           je short TestCode.01211C77</div><div class="line">01211C42    8B45 EC         mov eax,dword ptr ss:[ebp-0x14]</div><div class="line">01211C45    C740 04 AC7C210&gt;mov dword ptr ds:[eax+0x4],offset TestCode.CSofaBed::`vbtable&apos; //设置CSofa中的vt_offset</div><div class="line">01211C4C    8B45 EC         mov eax,dword ptr ss:[ebp-0x14]</div><div class="line">01211C4F    C740 10 B47C210&gt;mov dword ptr ds:[eax+0x10],offset TestCode.CSofaBed::`vbtable&apos;//设置CBed中的vt_offset</div><div class="line">01211C56    8B4D EC         mov ecx,dword ptr ss:[ebp-0x14]</div><div class="line">01211C59    83C1 20         add ecx,0x20 //调整this指针</div><div class="line">01211C5C    E8 D3F6FFFF     call TestCode.01211334 //调用CFurniture构造</div><div class="line">01211C61    C745 FC 0000000&gt;mov dword ptr ss:[ebp-0x4],0x0</div><div class="line">01211C68    8B85 20FFFFFF   mov eax,dword ptr ss:[ebp-0xE0]//获取构造标志</div><div class="line">01211C6E    83C8 01         or eax,0x1 //标志置1</div><div class="line">01211C71    8985 20FFFFFF   mov dword ptr ss:[ebp-0xE0],eax //修改标志</div><div class="line">01211C77    6A 00           push 0x0</div><div class="line">01211C79    8B4D EC         mov ecx,dword ptr ss:[ebp-0x14]</div><div class="line">01211C7C    E8 EFF6FFFF     call TestCode.01211370 //调用CSofa构造</div><div class="line">01211C81    C745 FC 0100000&gt;mov dword ptr ss:[ebp-0x4],0x1</div><div class="line">01211C88    6A 00           push 0x0</div><div class="line">01211C8A    8B4D EC         mov ecx,dword ptr ss:[ebp-0x14]</div><div class="line">01211C8D    83C1 0C         add ecx,0xC //调整this指针</div><div class="line">01211C90    E8 EFF6FFFF     call TestCode.01211384 //调用CBed构造</div><div class="line">01211C95    8B45 EC         mov eax,dword ptr ss:[ebp-0x14]</div><div class="line">01211C98    C700 647B2101   mov dword ptr ds:[eax],offset TestCode.CSofaBed::`vftable&apos; //CSofaBed对应CSofa的虚表指针</div><div class="line">01211C9E    8B45 EC         mov eax,dword ptr ss:[ebp-0x14]</div><div class="line">01211CA1    C740 0C 747B210&gt;mov dword ptr ds:[eax+0xC],offset TestCode.CSofaBed::`vftable&apos;//CSofaBed对应CBed的虚表指针</div><div class="line">01211CA8    8B45 EC         mov eax,dword ptr ss:[ebp-0x14] //通过this指针和vt_offset定位到祖父类虚表指针</div><div class="line">01211CAB    8B48 04         mov ecx,dword ptr ds:[eax+0x4] //vt_offset给ecx</div><div class="line">01211CAE    8B51 04         mov edx,dword ptr ds:[ecx+0x4] //父类虚表指针相对于vt_offset的偏移给edx</div><div class="line">01211CB1    8B45 EC         mov eax,dword ptr ss:[ebp-0x14]</div><div class="line">01211CB4    C74410 04 A47C2&gt;mov dword ptr ds:[eax+edx+0x4],offset TestCode.CSofaBed::`vftable&apos; //CSofaBed对应CFurniture的虚表指针</div><div class="line">01211CBC    8B45 EC         mov eax,dword ptr ss:[ebp-0x14]</div><div class="line">01211CBF    C740 1C 0600000&gt;mov dword ptr ds:[eax+0x1C],0x6</div><div class="line">01211CC6    C745 FC FFFFFFF&gt;mov dword ptr ss:[ebp-0x4],-0x1</div><div class="line">01211CCD    8B45 EC         mov eax,dword ptr ss:[ebp-0x14]</div><div class="line">01211CD0    8B4D F4         mov ecx,dword ptr ss:[ebp-0xC]</div><div class="line">01211CD3    64:890D 0000000&gt;mov dword ptr fs:[0],ecx</div><div class="line">01211CDA    59              pop ecx</div><div class="line">01211CDB    5F              pop edi</div><div class="line">01211CDC    5E              pop esi</div><div class="line">01211CDD    5B              pop ebx</div><div class="line">01211CDE    81C4 E4000000   add esp,0xE4</div><div class="line">01211CE4    3BEC            cmp ebp,esp</div><div class="line">01211CE6    E8 D2F4FFFF     call TestCode.012111BD</div><div class="line">01211CEB    8BE5            mov esp,ebp</div><div class="line">01211CED    5D              pop ebp</div><div class="line">01211CEE    C2 0400         retn 0x4</div><div class="line"></div><div class="line">析构代理函数</div><div class="line">01211AD0 &gt;  55              push ebp</div><div class="line">01211AD1    8BEC            mov ebp,esp</div><div class="line">01211AD3    81EC CC000000   sub esp,0xCC</div><div class="line">01211AD9    53              push ebx</div><div class="line">01211ADA    56              push esi</div><div class="line">01211ADB    57              push edi</div><div class="line">01211ADC    51              push ecx</div><div class="line">01211ADD    8DBD 34FFFFFF   lea edi,dword ptr ss:[ebp-0xCC]</div><div class="line">01211AE3    B9 33000000     mov ecx,0x33</div><div class="line">01211AE8    B8 CCCCCCCC     mov eax,0xCCCCCCCC</div><div class="line">01211AED    F3:AB           rep stos dword ptr es:[edi]</div><div class="line">01211AEF    59              pop ecx</div><div class="line">01211AF0    894D F8         mov dword ptr ss:[ebp-0x8],ecx</div><div class="line">01211AF3    8B4D F8         mov ecx,dword ptr ss:[ebp-0x8]</div><div class="line">01211AF6    83C1 20         add ecx,0x20 //调整this指针</div><div class="line">01211AF9    E8 63F8FFFF     call TestCode.01211361 //调用CSofaBed的析构</div><div class="line">01211AFE    8B4D F8         mov ecx,dword ptr ss:[ebp-0x8]</div><div class="line">01211B01    83C1 20         add ecx,0x20</div><div class="line">01211B04    E8 3AF8FFFF     call TestCode.01211343 //调用祖父类析构</div><div class="line">01211B09    5F              pop edi</div><div class="line">01211B0A    5E              pop esi</div><div class="line">01211B0B    5B              pop ebx</div><div class="line">01211B0C    81C4 CC000000   add esp,0xCC</div><div class="line">01211B12    3BEC            cmp ebp,esp</div><div class="line">01211B14    E8 A4F6FFFF     call TestCode.012111BD</div><div class="line">01211B19    8BE5            mov esp,ebp</div><div class="line">01211B1B    5D              pop ebp</div><div class="line">01211B1C    C3              retn</div><div class="line">CSofaBed的析构</div><div class="line">01211D00 &gt;  55              push ebp</div><div class="line">01211D01    8BEC            mov ebp,esp</div><div class="line">01211D03    6A FF           push -0x1</div><div class="line">01211D05    68 FB5A2101     push TestCode.01215AFB</div><div class="line">01211D0A    64:A1 00000000  mov eax,dword ptr fs:[0]</div><div class="line">01211D10    50              push eax</div><div class="line">01211D11    81EC CC000000   sub esp,0xCC</div><div class="line">01211D17    53              push ebx</div><div class="line">01211D18    56              push esi</div><div class="line">01211D19    57              push edi</div><div class="line">01211D1A    51              push ecx</div><div class="line">01211D1B    8DBD 28FFFFFF   lea edi,dword ptr ss:[ebp-0xD8]</div><div class="line">01211D21    B9 33000000     mov ecx,0x33</div><div class="line">01211D26    B8 CCCCCCCC     mov eax,0xCCCCCCCC</div><div class="line">01211D2B    F3:AB           rep stos dword ptr es:[edi]</div><div class="line">01211D2D    59              pop ecx</div><div class="line">01211D2E    A1 04A02101     mov eax,dword ptr ds:[__security_cookie]</div><div class="line">01211D33    33C5            xor eax,ebp</div><div class="line">01211D35    50              push eax</div><div class="line">01211D36    8D45 F4         lea eax,dword ptr ss:[ebp-0xC]</div><div class="line">01211D39    64:A3 00000000  mov dword ptr fs:[0],eax</div><div class="line">01211D3F    894D EC         mov dword ptr ss:[ebp-0x14],ecx</div><div class="line">01211D42    8B45 EC         mov eax,dword ptr ss:[ebp-0x14]</div><div class="line">01211D45    C740 E0 647B210&gt;mov dword ptr ds:[eax-0x20],offset TestCode.CSofaBed::`vftable&apos; //设置虚表</div><div class="line">01211D4C    8B45 EC         mov eax,dword ptr ss:[ebp-0x14]</div><div class="line">01211D4F    C740 EC 747B210&gt;mov dword ptr ds:[eax-0x14],offset TestCode.CSofaBed::`vftable&apos;//设置虚表</div><div class="line">01211D56    8B45 EC         mov eax,dword ptr ss:[ebp-0x14]</div><div class="line">01211D59    8B48 E4         mov ecx,dword ptr ds:[eax-0x1C]</div><div class="line">01211D5C    8B51 04         mov edx,dword ptr ds:[ecx+0x4]</div><div class="line">01211D5F    8B45 EC         mov eax,dword ptr ss:[ebp-0x14]</div><div class="line">01211D62    C74410 E4 A47C2&gt;mov dword ptr ds:[eax+edx-0x1C],offset TestCode.CSofaBed::`vftable&apos; //设置虚表</div><div class="line">01211D6A    C745 FC 0000000&gt;mov dword ptr ss:[ebp-0x4],0x0</div><div class="line">01211D71    8BF4            mov esi,esp</div><div class="line">01211D73    68 BC7C2101     push TestCode.01217CBC                                                          ; ASCII &quot;virtual ~CSofaBed\n&quot;</div><div class="line">01211D78    FF15 20B12101   call dword ptr ds:[&lt;&amp;MSVCR120D.printf&gt;]                                         ; MSVCR120.printf</div><div class="line">01211D7E    83C4 04         add esp,0x4</div><div class="line">01211D81    3BF4            cmp esi,esp</div><div class="line">01211D83    E8 35F4FFFF     call TestCode.012111BD</div><div class="line">01211D88    8B4D EC         mov ecx,dword ptr ss:[ebp-0x14]</div><div class="line">01211D8B    83E9 04         sub ecx,0x4</div><div class="line">01211D8E    E8 BFF5FFFF     call TestCode.01211352 //调用析构</div><div class="line">01211D93    C745 FC FFFFFFF&gt;mov dword ptr ss:[ebp-0x4],-0x1</div><div class="line">01211D9A    8B4D EC         mov ecx,dword ptr ss:[ebp-0x14]</div><div class="line">01211D9D    83E9 14         sub ecx,0x14</div><div class="line">01211DA0    E8 DAF5FFFF     call TestCode.0121137F //调用析构</div><div class="line">01211DA5    8B4D F4         mov ecx,dword ptr ss:[ebp-0xC]</div><div class="line">01211DA8    64:890D 0000000&gt;mov dword ptr fs:[0],ecx</div><div class="line">01211DAF    59              pop ecx</div><div class="line">01211DB0    5F              pop edi</div><div class="line">01211DB1    5E              pop esi</div><div class="line">01211DB2    5B              pop ebx</div><div class="line">01211DB3    81C4 D8000000   add esp,0xD8</div><div class="line">01211DB9    3BEC            cmp ebp,esp</div><div class="line">01211DBB    E8 FDF3FFFF     call TestCode.012111BD</div><div class="line">01211DC0    8BE5            mov esp,ebp</div><div class="line">01211DC2    5D              pop ebp</div><div class="line">01211DC3    C3              retn</div></pre></td></tr></table></figure>
+<p>由此可以看出vt_offset指向的内存地址中保存的数据为偏移数据。Vt_offset对应的数据有两项，vt_offset所属类对象的虚表指针相对于vt_offset的偏移值，父类虚表指针相对于vt_offset的偏移值。</p>
+<p>CSofaBed的构造过程中的特别之处是在调用时要传入一个参数，这个参数是标志信息。构造过程中要先构造父类，在构造自己。</p>
+<p>菱形结构中子类的析构函数执行流程并没有像构造函数那样使用标记来防止重复析构，而是将祖父类放在最后调用。先依次执行两个父类的析构，然后执行祖父类的析构。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/逆向/" rel="tag">#逆向</a>
+          
+            <a href="/tags/反汇编/" rel="tag">#反汇编</a>
+          
+            <a href="/tags/C/" rel="tag">#C++</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/11/27/逆向笔记（七）/" rel="next" title="逆向笔记（七）">
+                <i class="fa fa-chevron-left"></i> 逆向笔记（七）
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/12/06/逆向笔记（八）/"
+           data-title="逆向笔记（八）" data-url="http://blog.injectxx.com/2016/12/06/逆向笔记（八）/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpg"
+               alt="岁月。" />
+          <p class="site-author-name" itemprop="name">岁月。</p>
+          <p class="site-description motion-element" itemprop="description">志之所向，金石为开，谁能御之？</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">22</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">16</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/Kernel32Sun" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://weibo.com" target="_blank" title="Weibo">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                  Weibo
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="mailto:s.allure.love@gmail.com" target="_blank" title="Email">
+                  
+                    <i class="fa fa-fw fa-envelope"></i>
+                  
+                  Email
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-block">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              小伙伴儿
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.injectxx.com/" title="岁月's Blog" target="_blank">岁月's Blog</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.wangzhixian.org/" title="wnagzihxain’s Blog" target="_blank">wnagzihxain’s Blog</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#虚函数"><span class="nav-number">1.</span> <span class="nav-text">虚函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#虚函数的机制"><span class="nav-number">1.1.</span> <span class="nav-text">虚函数的机制</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#从内存角度看继承和多重继承"><span class="nav-number">2.</span> <span class="nav-text">从内存角度看继承和多重继承</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#识别类和类之间的关系"><span class="nav-number">2.1.</span> <span class="nav-text">识别类和类之间的关系</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#多重继承"><span class="nav-number">2.2.</span> <span class="nav-text">多重继承</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#单继承类与多继承类特征总结："><span class="nav-number">2.3.</span> <span class="nav-text">单继承类与多继承类特征总结：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#虚基类"><span class="nav-number">2.4.</span> <span class="nav-text">虚基类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#菱形继承"><span class="nav-number">2.5.</span> <span class="nav-text">菱形继承</span></a></li></ol></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+
+
+<div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">岁月。</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+        
+
+<div class="busuanzi-count">
+
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv"><i class="fa fa-user"></i><span class="busuanzi-value" id="busuanzi_value_site_uv"></span></span>
+  
+
+  
+    <span class="site-pv"><i class="fa fa-eye"></i><span class="busuanzi-value" id="busuanzi_value_site_pv"></span></span>
+  
+  
+</div>
+
+
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"kernel32sun"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+<script type="text/javascript" async src="//push.zhanzhang.baidu.com/push.js">
+</script>
+
+
+</body>
+</html>
