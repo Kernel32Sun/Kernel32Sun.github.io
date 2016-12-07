@@ -1,0 +1,970 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.useso.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="算法,逆向," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="先来谈谈最熟悉的MD5吧，小时候就知道这个加密算法了。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="算法识别之M都">
+<meta property="og:url" content="http://blog.injectxx.com/2016/12/08/算法识别之Md5/index.html">
+<meta property="og:site_name" content="岁月's Blog">
+<meta property="og:description" content="先来谈谈最熟悉的MD5吧，小时候就知道这个加密算法了。">
+<meta property="og:updated_time" content="2016-12-07T16:27:41.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="算法识别之M都">
+<meta name="twitter:description" content="先来谈谈最熟悉的MD5吧，小时候就知道这个加密算法了。">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: 'Author'
+    }
+  };
+</script>
+
+
+
+
+  <link rel="canonical" href="http://blog.injectxx.com/2016/12/08/算法识别之Md5/"/>
+
+  <title> 算法识别之M都 | 岁月's Blog </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?b1d70a29b3f59b8638bc9305a50cc2f6";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+  <div style="display: none;">
+    <script src="//s6.cnzz.com/stat.php?id=1260188451&web_id=1260188451" type="text/javascript"></script>
+  </div>
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">岁月's Blog</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">一只奋斗的猿</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-board">
+          <a href="/board" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-book"></i> <br />
+            
+            留言板
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-neighbor">
+          <a href="/neighbor" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-heart"></i> <br />
+            
+            邻居
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                算法识别之M都
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-12-08T00:17:11+08:00" content="2016-12-08">
+              2016-12-08
+            </time>
+          </span>
+
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/12/08/算法识别之Md5/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/12/08/算法识别之Md5/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+              &nbsp; | &nbsp;
+              <span class="page-pv"><i class="fa fa-file-o"></i>
+              <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+              </span>
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>先来谈谈最熟悉的MD5吧，小时候就知道这个加密算法了。<br><a id="more"></a></p>
+<h2 id="Md5算法简介"><a href="#Md5算法简介" class="headerlink" title="Md5算法简介"></a>Md5算法简介</h2><h3 id="一、MD5概念"><a href="#一、MD5概念" class="headerlink" title="一、MD5概念"></a>一、MD5概念</h3><pre><code>MD5，全名Message Digest Algorithm 5 ，中文名为消息摘要算法第五版，为计算机安全领域广泛使用的一种散列函数，用以提供消息的完整性保护。上面这段话话引用自百度百科，我的理解MD5是一种信息摘要算法，主要是通过特定的hash散列方法将文本信息转换成简短的信息摘要，压缩+加密+hash算法的结合体，是绝对不可逆的。
+</code></pre><h3 id="二、MD5计算步骤"><a href="#二、MD5计算步骤" class="headerlink" title="二、MD5计算步骤"></a>二、MD5计算步骤</h3><p>MD5以512位分组来处理输入的信息，且每一分组又被划分为16个32位子分组，经过了一系列的处理后，算法的输出由四个32位分组组成，将这四个32位分组级联后将生成一个128位散列值。<br>第一步、填充<br>如果输入信息的长度(bit)对512求余的结果不等于448，就需要填充使得对512求余的结果等于448。填充的方法是填充一个1和n个0。填充完后，信息的长度就为N*512+448(bit)；</p>
+<p>第二步、记录信息长度<br>用64位来存储填充前信息长度。这64位加在第一步结果的后面，这样信息长度就变为N<em>512+448+64=(N+1)</em>512位。</p>
+<p>第三步、装入标准的幻数（四个整数）<br>标准的幻数（物理顺序）是（A=(01234567)16，B=(89ABCDEF)16，C=(FEDCBA98)16，D=(76543210)16）。如果在程序中定义应该是（A=0X67452301L，B=0XEFCDAB89L，C=0X98BADCFEL，D=0X10325476L）。</p>
+<p>第四步、四轮循环运算</p>
+<p>循环的次数是分组的个数（N+1）<br>1）将每一512字节细分成16个小组，每个小组64位（8个字节）<br>2）先认识四个线性函数(&amp;是与,|是或,~是非,^是异或)<br>F(X,Y,Z)=(X&amp;Y)|((~X)&amp;Z)<br>G(X,Y,Z)=(X&amp;Z)|(Y&amp;(~Z))<br>H(X,Y,Z)=X^Y^Z<br>I(X,Y,Z)=Y^(X|(~Z))  </p>
+<p>3）设Mj表示消息的第j个子分组（从0到15），&lt;&lt;&lt; s表示循环左移s位，则四种操作为：<br>FF(a,b,c,d,Mj,s,ti)表示a=b+((a+F(b,c,d)+Mj+ti)&lt;&lt; &lt;s)<br>GG(a,b,c,d,Mj,s,ti)表示a=b+((a+G(b,c,d)+Mj+ti)&lt;&lt; &lt;s)<br>HH(a,b,c,d,Mj,s,ti)表示a=b+((a+H(b,c,d)+Mj+ti)&lt;&lt; &lt;s)<br>II(a,b,c,d,Mj,s,ti)表示a=b+((a+I(b,c,d)+Mj+ti)&lt;&lt; &lt;s)   </p>
+<p>4）四轮运算</p>
+<p>第一轮<br>a=FF(a,b,c,d,M0,7,0xd76aa478)<br>b=FF(d,a,b,c,M1,12,0xe8c7b756)<br>c=FF(c,d,a,b,M2,17,0x242070db)<br>d=FF(b,c,d,a,M3,22,0xc1bdceee)<br>a=FF(a,b,c,d,M4,7,0xf57c0faf)<br>b=FF(d,a,b,c,M5,12,0x4787c62a)<br>c=FF(c,d,a,b,M6,17,0xa8304613)<br>d=FF(b,c,d,a,M7,22,0xfd469501)<br>a=FF(a,b,c,d,M8,7,0x698098d8)<br>b=FF(d,a,b,c,M9,12,0x8b44f7af)<br>c=FF(c,d,a,b,M10,17,0xffff5bb1)<br>d=FF(b,c,d,a,M11,22,0x895cd7be)<br>a=FF(a,b,c,d,M12,7,0x6b901122)<br>b=FF(d,a,b,c,M13,12,0xfd987193)<br>c=FF(c,d,a,b,M14,17,0xa679438e)<br>d=FF(b,c,d,a,M15,22,0x49b40821)</p>
+<p>第二轮<br>a=GG(a,b,c,d,M1,5,0xf61e2562)<br>b=GG(d,a,b,c,M6,9,0xc040b340)<br>c=GG(c,d,a,b,M11,14,0x265e5a51)<br>d=GG(b,c,d,a,M0,20,0xe9b6c7aa)<br>a=GG(a,b,c,d,M5,5,0xd62f105d)<br>b=GG(d,a,b,c,M10,9,0x02441453)<br>c=GG(c,d,a,b,M15,14,0xd8a1e681)<br>d=GG(b,c,d,a,M4,20,0xe7d3fbc8)<br>a=GG(a,b,c,d,M9,5,0x21e1cde6)<br>b=GG(d,a,b,c,M14,9,0xc33707d6)<br>c=GG(c,d,a,b,M3,14,0xf4d50d87)<br>d=GG(b,c,d,a,M8,20,0x455a14ed)<br>a=GG(a,b,c,d,M13,5,0xa9e3e905)<br>b=GG(d,a,b,c,M2,9,0xfcefa3f8)<br>c=GG(c,d,a,b,M7,14,0x676f02d9)<br>d=GG(b,c,d,a,M12,20,0x8d2a4c8a)</p>
+<p>第三轮<br>a=HH(a,b,c,d,M5,4,0xfffa3942)<br>b=HH(d,a,b,c,M8,11,0x8771f681)<br>c=HH(c,d,a,b,M11,16,0x6d9d6122)<br>d=HH(b,c,d,a,M14,23,0xfde5380c)<br>a=HH(a,b,c,d,M1,4,0xa4beea44)<br>b=HH(d,a,b,c,M4,11,0x4bdecfa9)<br>c=HH(c,d,a,b,M7,16,0xf6bb4b60)<br>d=HH(b,c,d,a,M10,23,0xbebfbc70)<br>a=HH(a,b,c,d,M13,4,0x289b7ec6)<br>b=HH(d,a,b,c,M0,11,0xeaa127fa)<br>c=HH(c,d,a,b,M3,16,0xd4ef3085)<br>d=HH(b,c,d,a,M6,23,0x04881d05)<br>a=HH(a,b,c,d,M9,4,0xd9d4d039)<br>b=HH(d,a,b,c,M12,11,0xe6db99e5)<br>c=HH(c,d,a,b,M15,16,0x1fa27cf8)<br>d=HH(b,c,d,a,M2,23,0xc4ac5665)</p>
+<p>第四轮<br>a=II(a,b,c,d,M0,6,0xf4292244)<br>b=II(d,a,b,c,M7,10,0x432aff97)<br>c=II(c,d,a,b,M14,15,0xab9423a7)<br>d=II(b,c,d,a,M5,21,0xfc93a039)<br>a=II(a,b,c,d,M12,6,0x655b59c3)<br>b=II(d,a,b,c,M3,10,0x8f0ccc92)<br>c=II(c,d,a,b,M10,15,0xffeff47d)<br>d=II(b,c,d,a,M1,21,0x85845dd1)<br>a=II(a,b,c,d,M8,6,0x6fa87e4f)<br>b=II(d,a,b,c,M15,10,0xfe2ce6e0)<br>c=II(c,d,a,b,M6,15,0xa3014314)<br>d=II(b,c,d,a,M13,21,0x4e0811a1)<br>a=II(a,b,c,d,M4,6,0xf7537e82)<br>b=II(d,a,b,c,M11,10,0xbd3af235)<br>c=II(c,d,a,b,M2,15,0x2ad7d2bb)<br>d=II(b,c,d,a,M9,21,0xeb86d391)<br>5）每轮循环后，将A，B，C，D分别加上a，b，c，d，然后进入下一循环。</p>
+<h3 id="应用"><a href="#应用" class="headerlink" title="应用"></a>应用</h3><p>简单了解了一下MD5的实现原理，直接来个例子分析一下，例子有很多，就直接拿加密与解密这本书中的例子来说吧。</p>
+<p>例子很简单直接GetWindowTextA断点，回溯找到验证函数。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div></pre></td><td class="code"><pre><div class="line">0040114A  |.  68 C9000000   push 0xC9                                        ; /Count = C9 (201.)</div><div class="line">0040114F  |.  A4            movs byte ptr es:[edi],byte ptr ds:[esi]         ; |</div><div class="line">00401150  |.  8BB424 E00300&gt;mov esi,dword ptr ss:[esp+0x3E0]                 ; |</div><div class="line">00401157  |.  894424 21     mov dword ptr ss:[esp+0x21],eax                  ; |</div><div class="line">0040115B  |.  51            push ecx                                         ; |Buffer = NULL</div><div class="line">0040115C  |.  66:894424 29  mov word ptr ss:[esp+0x29],ax                    ; |</div><div class="line">00401161  |.  68 E8030000   push 0x3E8                                       ; |ControlID = 3E8 (1000.)</div><div class="line">00401166  |.  56            push esi                                         ; |hWnd = 00090812 (&apos;MD5 *KeyGenMe*&apos;,class=&apos;#32770&apos;)</div><div class="line">00401167  |.  885C24 20     mov byte ptr ss:[esp+0x20],bl                    ; |</div><div class="line">0040116B  |.  884424 33     mov byte ptr ss:[esp+0x33],al                    ; |</div><div class="line">0040116F  |.  FFD5          call ebp                                         ; \GetDlgItemTextA</div><div class="line">00401171  |.  8BF8          mov edi,eax</div><div class="line">00401173  |.  3BFB          cmp edi,ebx</div><div class="line">00401175  |.  0F84 0E010000 je MD5KeyGe.00401289</div><div class="line">0040117B  |.  8D5424 60     lea edx,dword ptr ss:[esp+0x60]</div><div class="line">0040117F  |.  68 C9000000   push 0xC9                                        ; /Count = C9 (201.)</div><div class="line">00401184  |.  52            push edx                                         ; |Buffer = 0019F674</div><div class="line">00401185  |.  68 E9030000   push 0x3E9                                       ; |ControlID = 3E9 (1001.)</div><div class="line">0040118A  |.  56            push esi                                         ; |hWnd = 00090812 (&apos;MD5 *KeyGenMe*&apos;,class=&apos;#32770&apos;)</div><div class="line">0040118B  |.  FFD5          call ebp                                         ; \GetDlgItemTextA</div><div class="line">0040118D  |.  83F8 13       cmp eax,0x13                                     ;  判断序列号长度是否为0x13</div><div class="line">00401190  |.  0F85 F3000000 jnz MD5KeyGe.00401289</div><div class="line">00401196  |.  8A4C24 64     mov cl,byte ptr ss:[esp+0x64]</div><div class="line">0040119A  |.  B0 2D         mov al,0x2D</div><div class="line">0040119C  |.  3AC8          cmp cl,al                                        ;  判断第五位是否为-</div><div class="line">0040119E  |.  0F85 E5000000 jnz MD5KeyGe.00401289</div><div class="line">004011A4  |.  384424 69     cmp byte ptr ss:[esp+0x69],al                    ;  判断第十位是否为-</div><div class="line">004011A8  |.  0F85 DB000000 jnz MD5KeyGe.00401289</div><div class="line">004011AE  |.  384424 6E     cmp byte ptr ss:[esp+0x6E],al                    ;  判断第十五位是否为-</div><div class="line">004011B2  |.  0F85 D1000000 jnz MD5KeyGe.00401289</div><div class="line">004011B8  |.  8B4C24 65     mov ecx,dword ptr ss:[esp+0x65]</div><div class="line">004011BC  |.  8B4424 60     mov eax,dword ptr ss:[esp+0x60]</div><div class="line">004011C0  |.  8B5424 6A     mov edx,dword ptr ss:[esp+0x6A]</div><div class="line">004011C4  |.  894C24 14     mov dword ptr ss:[esp+0x14],ecx</div><div class="line">004011C8  |.  894424 10     mov dword ptr ss:[esp+0x10],eax</div><div class="line">004011CC  |.  8B4424 6F     mov eax,dword ptr ss:[esp+0x6F]</div><div class="line">004011D0  |.  8D8C24 280100&gt;lea ecx,dword ptr ss:[esp+0x128]</div><div class="line">004011D7  |.  895424 18     mov dword ptr ss:[esp+0x18],edx</div><div class="line">004011DB  |.  51            push ecx</div><div class="line">004011DC  |.  894424 20     mov dword ptr ss:[esp+0x20],eax</div><div class="line">004011E0  |.  E8 CB000000   call MD5KeyGe.004012B0                           ;  Md5_Init</div><div class="line">004011E5  |.  8D9424 4C0200&gt;lea edx,dword ptr ss:[esp+0x24C]                 ;  取用户名存放地址</div><div class="line">004011EC  |.  57            push edi                                         ;  长度</div><div class="line">004011ED  |.  8D8424 300100&gt;lea eax,dword ptr ss:[esp+0x130]</div><div class="line">004011F4  |.  52            push edx</div><div class="line">004011F5  |.  50            push eax</div><div class="line">004011F6  |.  E8 E5000000   call MD5KeyGe.004012E0 ;函数内进行循环运算</div><div class="line">004011FB  |.  83C4 10       add esp,0x10</div><div class="line">004011FE  |.  8D4C24 24     lea ecx,dword ptr ss:[esp+0x24]</div><div class="line">00401202  |.  51            push ecx                                         ; /String = NULL</div><div class="line">00401203  |.  FF15 04604000 call dword ptr ds:[&lt;&amp;KERNEL32.lstrlenA&gt;]         ; \lstrlenA</div><div class="line">00401209  |.  50            push eax</div><div class="line">0040120A  |.  8D5424 28     lea edx,dword ptr ss:[esp+0x28]</div><div class="line">0040120E  |.  8D8424 2C0100&gt;lea eax,dword ptr ss:[esp+0x12C]</div><div class="line">00401215  |.  52            push edx</div><div class="line">00401216  |.  50            push eax</div><div class="line">00401217  |.  E8 C4000000   call MD5KeyGe.004012E0</div><div class="line">0040121C  |.  8D8C24 340100&gt;lea ecx,dword ptr ss:[esp+0x134]</div><div class="line">00401223  |.  8D9424 8C0100&gt;lea edx,dword ptr ss:[esp+0x18C]</div><div class="line">0040122A  |.  51            push ecx</div><div class="line">0040122B  |.  52            push edx</div><div class="line">0040122C  |.  E8 5F010000   call MD5KeyGe.00401390</div><div class="line">00401231  |.  83C4 14       add esp,0x14</div><div class="line">00401234  |.  33C0          xor eax,eax</div><div class="line">00401236  |&gt;  8A8C04 800100&gt;/mov cl,byte ptr ss:[esp+eax+0x180]</div><div class="line">0040123D  |.  83E1 1F       |and ecx,0x1F</div><div class="line">00401240  |.  40            |inc eax</div><div class="line">00401241  |.  83F8 10       |cmp eax,0x10</div><div class="line">00401244  |.  8A540C 3C     |mov dl,byte ptr ss:[esp+ecx+0x3C]</div><div class="line">00401248  |.  889404 0F0300&gt;|mov byte ptr ss:[esp+eax+0x30F],dl</div><div class="line">0040124F  |.^ 7C E5         \jl short MD5KeyGe.00401236</div><div class="line">00401251  |.  8D8424 100300&gt;lea eax,dword ptr ss:[esp+0x310]</div><div class="line">00401258  |.  8D4C24 10     lea ecx,dword ptr ss:[esp+0x10]</div><div class="line">0040125C  |.  50            push eax                                         ; /String2 = &quot;#Eg壂惋簶vT2&quot;</div><div class="line">0040125D  |.  51            push ecx                                         ; |String1 = NULL</div><div class="line">0040125E  |.  FF15 00604000 call dword ptr ds:[&lt;&amp;KERNEL32.lstrcmpA&gt;]         ; \lstrcmpA</div><div class="line">00401264  |.  85C0          test eax,eax</div><div class="line">00401266  |.  75 21         jnz short MD5KeyGe.00401289</div><div class="line">00401268  |.  68 80704000   push MD5KeyGe.00407080                           ; /Text = &quot;Success!&quot;</div><div class="line">0040126D  |.  68 E9030000   push 0x3E9                                       ; |ControlID = 3E9 (1001.)</div><div class="line">00401272  |.  56            push esi                                         ; |hWnd = 00090812 (&apos;MD5 *KeyGenMe*&apos;,class=&apos;#32770&apos;)</div><div class="line">00401273  |.  FF15 A8604000 call dword ptr ds:[&lt;&amp;USER32.SetDlgItemTextA&gt;]    ; \SetDlgItemTextA</div><div class="line">00401279  |.  5F            pop edi                                          ;  0019F554</div><div class="line">0040127A  |.  5E            pop esi                                          ;  0019F554</div><div class="line">0040127B  |.  5D            pop ebp                                          ;  0019F554</div><div class="line">0040127C  |.  B8 01000000   mov eax,0x1</div><div class="line">00401281  |.  5B            pop ebx                                          ;  0019F554</div><div class="line">00401282  |.  81C4 C8030000 add esp,0x3C8</div><div class="line">00401288  |.  C3            retn</div><div class="line">00401289  |&gt;  68 70704000   push MD5KeyGe.00407070                           ; /Text = &quot;Wrong Serial!&quot;</div><div class="line">0040128E  |.  68 E9030000   push 0x3E9                                       ; |ControlID = 3E9 (1001.)</div><div class="line">00401293  |.  56            push esi                                         ; |hWnd = 00090812 (&apos;MD5 *KeyGenMe*&apos;,class=&apos;#32770&apos;)</div><div class="line">00401294  |.  FF15 A8604000 call dword ptr ds:[&lt;&amp;USER32.SetDlgItemTextA&gt;]    ; \SetDlgItemTextA</div><div class="line">0040129A  |.  5F            pop edi                                          ;  0019F554</div><div class="line">0040129B  |.  5E            pop esi                                          ;  0019F554</div><div class="line">0040129C  |.  5D            pop ebp                                          ;  0019F554</div><div class="line">0040129D  |.  33C0          xor eax,eax</div><div class="line">0040129F  |.  5B            pop ebx                                          ;  0019F554</div><div class="line">004012A0  |.  81C4 C8030000 add esp,0x3C8</div><div class="line">004012A6  \.  C3            retn</div><div class="line"></div><div class="line"></div><div class="line">Md5 Init函数：</div><div class="line">004012B0  /$  8B4424 04     mov eax,dword ptr ss:[esp+0x4]</div><div class="line">004012B4  |.  33C9          xor ecx,ecx</div><div class="line">004012B6  |.  8948 14       mov dword ptr ds:[eax+0x14],ecx</div><div class="line">004012B9  |.  8948 10       mov dword ptr ds:[eax+0x10],ecx</div><div class="line">004012BC  |.  C700 01234567 mov dword ptr ds:[eax],0x67452301</div><div class="line">004012C2  |.  C740 04 89ABC&gt;mov dword ptr ds:[eax+0x4],0xEFCDAB89</div><div class="line">004012C9  |.  C740 08 FEDCB&gt;mov dword ptr ds:[eax+0x8],0x98BADCFE</div><div class="line">004012D0  |.  C740 0C 76543&gt;mov dword ptr ds:[eax+0xC],0x10325476</div><div class="line">004012D7  \.  C3            retn</div></pre></td></tr></table></figure></p>
+<p>由此可看出这里初始化了几个常量，可以高度怀疑是Md5算法了。</p>
+<p>这里差不多就分析完了，写个注册机测试一下。</p>
+<p>// MD5.cpp : 定义控制台应用程序的入口点。<br>//</p>
+<p>#include “stdafx.h”</p>
+<p>#include <string.h></string.h></p>
+<p>#include <stdio.h></stdio.h></p>
+<p>#include <stdlib.h><br>//! 定义MD5状态数据结构类型<br>typedef struct{<br>    unsigned long int    state[4];        // 初始链接变量;保存16字节摘要<br>    unsigned long int    count[2];        // 明文位数<br>    unsigned char        PADDING[64];    // 填充位，最大64*8位<br>    unsigned char        buffer[64];        // 输入缓冲<br>}MD5_State;</stdlib.h></p>
+<p>//! MD5转换常量</p>
+<p>#define S11 7</p>
+<p>#define S12 12</p>
+<p>#define S13 17</p>
+<p>#define S14 22</p>
+<p>#define S21 5</p>
+<p>#define S22 9</p>
+<p>#define S23 14</p>
+<p>#define S24 20</p>
+<p>#define S31 4</p>
+<p>#define S32 11</p>
+<p>#define S33 16</p>
+<p>#define S34 23</p>
+<p>#define S41 6</p>
+<p>#define S42 10</p>
+<p>#define S43 15</p>
+<p>#define S44 21</p>
+<p>//! F, G, H and I 基本MD5函数</p>
+<p>#define F(x, y, z) (((x) &amp; (y)) | ((~x) &amp; (z)))</p>
+<p>#define G(x, y, z) (((x) &amp; (z)) | ((y) &amp; (~z)))</p>
+<p>#define H(x, y, z) ((x) ^ (y) ^ (z))</p>
+<p>#define I(x, y, z) ((y) ^ ((x) | (~z)))</p>
+<p>//! 将x循环左移n位</p>
+<p>#define ROTATE_LEFT(x, n) (((x) &lt;&lt; (n)) | ((x) &gt;&gt; (32-(n))))</p>
+<p>//! 4轮运算中FF(第1轮), GG(第2轮), HH(第3轮), and II(第4轮)转换</p>
+<p>#define FF(a, b, c, d, x, s, ac) { \<br>    (a) += F ((b), (c), (d)) + (x) + (unsigned long int)(ac); \<br>    (a) = ROTATE_LEFT ((a), (s)); \<br>    (a) += (b); \<br>    }</p>
+<p>#define GG(a, b, c, d, x, s, ac) { \<br>    (a) += G ((b), (c), (d)) + (x) + (unsigned long int)(ac); \<br>    (a) = ROTATE_LEFT ((a), (s)); \<br>    (a) += (b); \<br>    }</p>
+<p>#define HH(a, b, c, d, x, s, ac) { \<br>    (a) += H ((b), (c), (d)) + (x) + (unsigned long int)(ac); \<br>    (a) = ROTATE_LEFT ((a), (s)); \<br>    (a) += (b); \<br>    }</p>
+<p>#define II(a, b, c, d, x, s, ac) { \<br>    (a) += I ((b), (c), (d)) + (x) + (unsigned long int)(ac); \<br>    (a) = ROTATE_LEFT ((a), (s)); \<br>    (a) += (b); \<br>    }</p>
+<p>/<strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong>**</strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong>/<br>//    名称：MD5_memcpy<br>//    功能：输入输出字节拷贝<br>//  参数：output:    指向unsigned char类型输出缓冲区<br>//          input:    指向unsigned char类型输入缓冲区<br>//          len:        输入数据长度(字节)<br>//    返回：无</p>
+<p>/<strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong>**</strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong>/<br>void MD5_memcpy(unsigned char <em>output, unsigned char </em>input, unsigned int len)<br>{<br>    unsigned int i;</p>
+<pre><code>for (i = 0; i &lt; len; i++)
+    output[i] = input[i];
+</code></pre><p>}</p>
+<p>/<strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong>**</strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong>/<br>//    名称：MD5_memset<br>//    功能：对MD5运算缓冲区中填充数据<br>//  参数：output:    指向unsigned char类型缓冲区<br>//          value:    数据<br>//          len:        填充大小<br>//    返回：无</p>
+<p>/<strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong>**</strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong>/<br>void MD5_memset(unsigned char *output, int value, unsigned int len)<br>{<br>    unsigned int i;</p>
+<pre><code>for (i = 0; i &lt; len; i++)
+    ((char *)output)[i] = (char)value;
+</code></pre><p>}</p>
+<p>/<strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong>**</strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong>/<br>//    名称：Encode<br>//    功能：数据类型轮换(unsigned long char -&gt; unsigned char)<br>//  参数：output:    指向unsigned char类型输出缓冲区<br>//          input:    指向unsigned long int类型输入缓冲区<br>//          len:        输入数据长度(字节)<br>//    返回：无</p>
+<p>/<strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong>**</strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong>/<br>void Encode(unsigned char <em>output, unsigned long int </em>input, unsigned int len)<br>{<br>    unsigned int i, j;</p>
+<pre><code>for (i = 0, j = 0; j &lt; len; i++, j += 4)
+{
+    output[j] = (unsigned char)(input[i] &amp; 0xff);
+    output[j + 1] = (unsigned char)((input[i] &gt;&gt; 8) &amp; 0xff);
+    output[j + 2] = (unsigned char)((input[i] &gt;&gt; 16) &amp; 0xff);
+    output[j + 3] = (unsigned char)((input[i] &gt;&gt; 24) &amp; 0xff);
+}
+</code></pre><p>}</p>
+<p>/<strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong>**</strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong>/<br>//    名称：Decode<br>//    功能：数据类型轮换(unsigned char -&gt; unsigned long int)<br>//  参数：output:    指向unsigned long int类型输出缓冲区<br>//          input:    指向unsigned char类型输入缓冲区<br>//          len:        输入数据长度(字节)<br>//    返回：无</p>
+<p>/<strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong>**</strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong>/<br>void Decode(unsigned long int <em>output, unsigned char </em>input, unsigned int len)<br>{<br>    unsigned int i, j;</p>
+<pre><code>for (i = 0, j = 0; j &lt; len; i++, j += 4)
+    output[i] = ((unsigned long int)input[j]) | (((unsigned long int)input[j + 1]) &lt;&lt; 8) |
+    (((unsigned long int)input[j + 2]) &lt;&lt; 16) | (((unsigned long int)input[j + 3]) &lt;&lt; 24);
+</code></pre><p>}</p>
+<p>/<strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong>**</strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong>/<br>//    名称：MD5Init<br>//    功能：初始链接变量赋值；初始化填充位<br>//  参数：指向MD5状态数据变量<br>//    返回：无<br>//  备注：填充位第1位为1,其余位为0</p>
+<p>/<strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong>**</strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong>/<br>void MD5_Init(MD5_State *s)<br>{<br>    s-&gt;count[0] = s-&gt;count[1] = 0;<br>    //! 初始链接变量<br>    s-&gt;state[0] = 0x67452301;<br>    s-&gt;state[1] = 0xefcdab89;<br>    s-&gt;state[2] = 0x98badcfe;<br>    s-&gt;state[3] = 0x10325476;</p>
+<pre><code>//! 初始填充位(目标形式: 0x80000000......，共计512位)
+MD5_memset(s-&gt;PADDING, 0, sizeof(s-&gt;PADDING));
+*(s-&gt;PADDING) = 0x80;
+//  s-&gt;PADDING = {
+//    0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+//    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+//    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0    };
+</code></pre><p>}</p>
+<p>/<strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong>**</strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong>/<br>//    名称：MD5Transform<br>//    功能：MD5 4轮运算<br>//  参数：state: 链接变量；block: 子明文分组<br>//    返回：无<br>//  备注：4轮共计64步运算</p>
+<p>/<strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong>**</strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong>/<br>void MD5_Transform(unsigned long int state[4], unsigned char block[64])<br>{<br>    unsigned long int a = state[0], b = state[1], c = state[2], d = state[3], x[16];</p>
+<pre><code>Decode(x, block, 64);
+
+//! 第1轮
+
+FF(a, b, c, d, x[0], S11, 0xd76aa478); // 1
+FF(d, a, b, c, x[1], S12, 0xe8c7b756); // 2
+FF(c, d, a, b, x[2], S13, 0x242070db); // 3
+FF(b, c, d, a, x[3], S14, 0xc1bdceee); // 4
+FF(a, b, c, d, x[4], S11, 0xf57c0faf); // 5
+FF(d, a, b, c, x[5], S12, 0x4787c62a); // 6
+FF(c, d, a, b, x[6], S13, 0xa8304613); // 7
+FF(b, c, d, a, x[7], S14, 0xfd469501); // 8
+FF(a, b, c, d, x[8], S11, 0x698098d8); // 9
+FF(d, a, b, c, x[9], S12, 0x8b44f7af); // 10
+FF(c, d, a, b, x[10], S13, 0xffff5bb1); // 11
+FF(b, c, d, a, x[11], S14, 0x895cd7be); // 12
+FF(a, b, c, d, x[12], S11, 0x6b901122); // 13
+FF(d, a, b, c, x[13], S12, 0xfd987193); // 14
+FF(c, d, a, b, x[14], S13, 0xa679438e); // 15
+FF(b, c, d, a, x[15], S14, 0x49b40821); // 16
+
+//! 第2轮
+GG(a, b, c, d, x[1], S21, 0xf61e2562); // 17
+GG(d, a, b, c, x[6], S22, 0xc040b340); // 18
+GG(c, d, a, b, x[11], S23, 0x265e5a51); // 19
+GG(b, c, d, a, x[0], S24, 0xe9b6c7aa); // 20
+GG(a, b, c, d, x[5], S21, 0xd62f105d); // 21
+GG(d, a, b, c, x[10], S22, 0x2441453); // 22
+GG(c, d, a, b, x[15], S23, 0xd8a1e681); // 23
+GG(b, c, d, a, x[4], S24, 0xe7d3fbc8); // 24
+GG(a, b, c, d, x[9], S21, 0x21e1cde6); // 25
+GG(d, a, b, c, x[14], S22, 0xc33707d6); // 26
+GG(c, d, a, b, x[3], S23, 0xf4d50d87); // 27
+GG(b, c, d, a, x[8], S24, 0x455a14ed); // 28
+GG(a, b, c, d, x[13], S21, 0xa9e3e905); // 29
+GG(d, a, b, c, x[2], S22, 0xfcefa3f8); // 30
+GG(c, d, a, b, x[7], S23, 0x676f02d9); // 31
+GG(b, c, d, a, x[12], S24, 0x8d2a4c8a); // 32
+
+//! 第3轮
+HH(a, b, c, d, x[5], S31, 0xfffa3942); // 33
+HH(d, a, b, c, x[8], S32, 0x8771f681); // 34
+HH(c, d, a, b, x[11], S33, 0x6d9d6122); // 35
+HH(b, c, d, a, x[14], S34, 0xfde5380c); // 36
+HH(a, b, c, d, x[1], S31, 0xa4beea44); // 37
+HH(d, a, b, c, x[4], S32, 0x4bdecfa9); // 38
+HH(c, d, a, b, x[7], S33, 0xf6bb4b60); // 39
+HH(b, c, d, a, x[10], S34, 0xbebfbc70); // 40
+HH(a, b, c, d, x[13], S31, 0x289b7ec6); // 41
+HH(d, a, b, c, x[0], S32, 0xeaa127fa); // 42
+HH(c, d, a, b, x[3], S33, 0xd4ef3085); // 43
+HH(b, c, d, a, x[6], S34, 0x4881d05); // 44
+HH(a, b, c, d, x[9], S31, 0xd9d4d039); // 45
+HH(d, a, b, c, x[12], S32, 0xe6db99e5); // 46
+HH(c, d, a, b, x[15], S33, 0x1fa27cf8); // 47
+HH(b, c, d, a, x[2], S34, 0xc4ac5665); // 48
+
+//! 第4轮
+II(a, b, c, d, x[0], S41, 0xf4292244); // 49
+II(d, a, b, c, x[7], S42, 0x432aff97); // 50
+II(c, d, a, b, x[14], S43, 0xab9423a7); // 51
+II(b, c, d, a, x[5], S44, 0xfc93a039); // 52
+II(a, b, c, d, x[12], S41, 0x655b59c3); // 53
+II(d, a, b, c, x[3], S42, 0x8f0ccc92); // 54
+II(c, d, a, b, x[10], S43, 0xffeff47d); // 55
+II(b, c, d, a, x[1], S44, 0x85845dd1); // 56
+II(a, b, c, d, x[8], S41, 0x6fa87e4f); // 57
+II(d, a, b, c, x[15], S42, 0xfe2ce6e0); // 58
+II(c, d, a, b, x[6], S43, 0xa3014314); // 59
+II(b, c, d, a, x[13], S44, 0x4e0811a1); // 60
+II(a, b, c, d, x[4], S41, 0xf7537e82); // 61
+II(d, a, b, c, x[11], S42, 0xbd3af235); // 62
+II(c, d, a, b, x[2], S43, 0x2ad7d2bb); // 63
+II(b, c, d, a, x[9], S44, 0xeb86d391); // 64
+
+state[0] += a;
+state[1] += b;
+state[2] += c;
+state[3] += d;
+
+MD5_memset((unsigned char*)x, 0, sizeof(x));
+</code></pre><p>}</p>
+<p>/<strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong>**</strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong>/<br>//    名称：MD5_Update<br>//    功能：明文填充，明文分组，16个子明文分组<br>//  参数：指向SHA状态变量<br>//    返回：无</p>
+<p>/<strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong>**</strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong>/<br>void MD5_Update(MD5_State <em>s, unsigned char </em>input, unsigned int inputLen)<br>{<br>    unsigned int i, index, partLen;</p>
+<pre><code>//! 明文填充
+
+//! 字节数 mod 64
+index = (unsigned int)((s-&gt;count[0] &gt;&gt; 3) &amp; 0x3F);
+
+//! 更新位数
+if ((s-&gt;count[0] += ((unsigned long int)inputLen &lt;&lt; 3))
+    &lt; ((unsigned long int)inputLen &lt;&lt; 3))
+    s-&gt;count[1]++;
+s-&gt;count[1] += ((unsigned long int)inputLen &gt;&gt; 29);
+
+partLen = 64 - index;
+
+//! MD5 4轮运算
+if (inputLen &gt;= partLen)
+{
+    MD5_memcpy((unsigned char*)&amp;s-&gt;buffer[index], (unsigned char*)input, partLen);
+    MD5_Transform(s-&gt;state, s-&gt;buffer);
+
+    for (i = partLen; i + 63 &lt; inputLen; i += 64)
+        MD5_Transform(s-&gt;state, &amp;input[i]);
+
+    index = 0;
+}
+else
+    i = 0;
+
+MD5_memcpy((unsigned char*)&amp;s-&gt;buffer[index], (unsigned char*)&amp;input[i], inputLen - i);
+</code></pre><p>}</p>
+<p>/<strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong>**</strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong>/<br>//    名称：MD5_Final<br>//    功能：MD5最后变换<br>//  参数：strContent:指向文件内容缓冲区; iLength:文件内容长度; output:摘要输出缓冲区<br>//    返回：无</p>
+<p>/<strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong>**</strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong>/<br>void MD5_Final(MD5_State *s, unsigned char digest[16])<br>{<br>    unsigned char bits[8];<br>    unsigned int index, padLen;</p>
+<pre><code>Encode(bits, s-&gt;count, 8);
+
+//! 长度小于448位(mod 512),对明文进行填充
+index = (unsigned int)((s-&gt;count[0] &gt;&gt; 3) &amp; 0x3f);
+padLen = (index &lt; 56) ? (56 - index) : (120 - index);
+MD5_Update(s, s-&gt;PADDING, padLen);
+
+MD5_Update(s, bits, 8);
+Encode(digest, s-&gt;state, 16);
+
+MD5_memset((unsigned char*)s, 0, sizeof(*s));
+MD5_Init(s);
+</code></pre><p>}</p>
+<p>/<strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong>**</strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong>/<br>//    名称：SHA_digest<br>//    功能：生成文件摘要<br>//  参数：strContent:指向文件内容缓冲区; iLength:文件内容长度; output:摘要输出缓冲区<br>//    返回：无</p>
+<p>/<strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong>**</strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong>/<br>void md5_digest(void const <em>strContent, unsigned int iLength, unsigned char output[16])<br>{<br>    unsigned char </em>q = (unsigned char*)strContent;<br>    MD5_State s;</p>
+<pre><code>MD5_Init(&amp;s);
+MD5_Update(&amp;s, q, iLength);
+MD5_Final(&amp;s, output);
+</code></pre><p>}</p>
+<p>int main(int argc, char* argv[])<br>{<br>    unsigned char output[16] = { 0 };<br>    int i = 0;</p>
+<pre><code>//md5_digest(&quot;device0FCAA1460F12C&quot;, strlen(&quot;device0FCAA1460F12C&quot;), output);
+md5_digest(&quot;pediywww.pediy.com&quot;, strlen(&quot;pediywww.pediy.com&quot;), output);
+for (i = 0; i &lt; 16; i++)
+{
+    printf(&quot;%02x&quot;, output[i]);
+}
+printf(&quot;\r\n&quot;);
+
+char table[0x20] = { &quot;3456789ABCDEFGHJKLMNPQRSTUVWXYZ&quot; };
+char serial[0x20] = { 0 };
+for (int i = 0; i &lt; 0x10; i++)
+{
+    int j = output[i] &amp; 0x1f;
+    serial[i] = table[j];
+}
+printf(serial);
+
+return 0;
+</code></pre><p>}<br>```<br>测试成功。</p>
+<p>总结一下识别Md5的关键特征：<br>1）四个初始化的常量0x67452301,0xEFCDAB89,0x98BADCFE,0x10325476<br>2）4轮运算</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/算法/" rel="tag">#算法</a>
+          
+            <a href="/tags/逆向/" rel="tag">#逆向</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/12/06/逆向笔记（八）/" rel="next" title="逆向笔记（八）">
+                <i class="fa fa-chevron-left"></i> 逆向笔记（八）
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/12/08/算法识别之Md5/"
+           data-title="算法识别之M都" data-url="http://blog.injectxx.com/2016/12/08/算法识别之Md5/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpg"
+               alt="岁月。" />
+          <p class="site-author-name" itemprop="name">岁月。</p>
+          <p class="site-description motion-element" itemprop="description">志之所向，金石为开，谁能御之？</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">23</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">17</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/Kernel32Sun" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://weibo.com" target="_blank" title="Weibo">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                  Weibo
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="mailto:s.allure.love@gmail.com" target="_blank" title="Email">
+                  
+                    <i class="fa fa-fw fa-envelope"></i>
+                  
+                  Email
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-block">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              小伙伴儿
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.injectxx.com/" title="岁月's Blog" target="_blank">岁月's Blog</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.wangzhixian.org/" title="wnagzihxain’s Blog" target="_blank">wnagzihxain’s Blog</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Md5算法简介"><span class="nav-number">1.</span> <span class="nav-text">Md5算法简介</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#一、MD5概念"><span class="nav-number">1.1.</span> <span class="nav-text">一、MD5概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#二、MD5计算步骤"><span class="nav-number">1.2.</span> <span class="nav-text">二、MD5计算步骤</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#应用"><span class="nav-number">1.3.</span> <span class="nav-text">应用</span></a></li></ol></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+
+
+<div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">岁月。</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+        
+
+<div class="busuanzi-count">
+
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv"><i class="fa fa-user"></i><span class="busuanzi-value" id="busuanzi_value_site_uv"></span></span>
+  
+
+  
+    <span class="site-pv"><i class="fa fa-eye"></i><span class="busuanzi-value" id="busuanzi_value_site_pv"></span></span>
+  
+  
+</div>
+
+
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"kernel32sun"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+<script type="text/javascript" async src="//push.zhanzhang.baidu.com/push.js">
+</script>
+
+
+</body>
+</html>
