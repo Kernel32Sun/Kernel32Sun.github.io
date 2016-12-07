@@ -90,7 +90,7 @@
 <meta property="og:url" content="http://blog.injectxx.com/2016/12/08/算法识别之Md5/index.html">
 <meta property="og:site_name" content="岁月's Blog">
 <meta property="og:description" content="先来谈谈最熟悉的MD5吧，小时候就知道这个加密算法了。">
-<meta property="og:updated_time" content="2016-12-07T16:38:43.000Z">
+<meta property="og:updated_time" content="2016-12-07T16:39:50.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="算法识别之Md5">
 <meta name="twitter:description" content="先来谈谈最熟悉的MD5吧，小时候就知道这个加密算法了。">
@@ -337,8 +337,8 @@
       
         <p>先来谈谈最熟悉的MD5吧，小时候就知道这个加密算法了。<br><a id="more"></a></p>
 <h2 id="Md5算法简介"><a href="#Md5算法简介" class="headerlink" title="Md5算法简介"></a>Md5算法简介</h2><p>算法简介内容来源自网络。</p>
-<h3 id="一、MD5概念"><a href="#一、MD5概念" class="headerlink" title="一、MD5概念"></a>一、MD5概念</h3><pre><code>MD5，全名Message Digest Algorithm 5 ，中文名为消息摘要算法第五版，为计算机安全领域广泛使用的一种散列函数，用以提供消息的完整性保护。上面这段话话引用自百度百科，我的理解MD5是一种信息摘要算法，主要是通过特定的hash散列方法将文本信息转换成简短的信息摘要，压缩+加密+hash算法的结合体，是绝对不可逆的。
-</code></pre><h3 id="二、MD5计算步骤"><a href="#二、MD5计算步骤" class="headerlink" title="二、MD5计算步骤"></a>二、MD5计算步骤</h3><p>MD5以512位分组来处理输入的信息，且每一分组又被划分为16个32位子分组，经过了一系列的处理后，算法的输出由四个32位分组组成，将这四个32位分组级联后将生成一个128位散列值。<br>第一步、填充<br>如果输入信息的长度(bit)对512求余的结果不等于448，就需要填充使得对512求余的结果等于448。填充的方法是填充一个1和n个0。填充完后，信息的长度就为N*512+448(bit)；</p>
+<h3 id="一、MD5概念"><a href="#一、MD5概念" class="headerlink" title="一、MD5概念"></a>一、MD5概念</h3><p>MD5，全名Message Digest Algorithm 5 ，中文名为消息摘要算法第五版，为计算机安全领域广泛使用的一种散列函数，用以提供消息的完整性保护。上面这段话话引用自百度百科，我的理解MD5是一种信息摘要算法，主要是通过特定的hash散列方法将文本信息转换成简短的信息摘要，压缩+加密+hash算法的结合体，是绝对不可逆的。</p>
+<h3 id="二、MD5计算步骤"><a href="#二、MD5计算步骤" class="headerlink" title="二、MD5计算步骤"></a>二、MD5计算步骤</h3><p>MD5以512位分组来处理输入的信息，且每一分组又被划分为16个32位子分组，经过了一系列的处理后，算法的输出由四个32位分组组成，将这四个32位分组级联后将生成一个128位散列值。<br>第一步、填充<br>如果输入信息的长度(bit)对512求余的结果不等于448，就需要填充使得对512求余的结果等于448。填充的方法是填充一个1和n个0。填充完后，信息的长度就为N*512+448(bit)；</p>
 <p>第二步、记录信息长度<br>用64位来存储填充前信息长度。这64位加在第一步结果的后面，这样信息长度就变为N<em>512+448+64=(N+1)</em>512位。</p>
 <p>第三步、装入标准的幻数（四个整数）<br>标准的幻数（物理顺序）是（A=(01234567)16，B=(89ABCDEF)16，C=(FEDCBA98)16，D=(76543210)16）。如果在程序中定义应该是（A=0X67452301L，B=0XEFCDAB89L，C=0X98BADCFEL，D=0X10325476L）。</p>
 <p>第四步、四轮循环运算</p>
