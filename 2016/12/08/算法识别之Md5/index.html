@@ -86,13 +86,13 @@
 
 <meta name="description" content="先来谈谈最熟悉的MD5吧，小时候就知道这个加密算法了。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="算法识别之M都">
+<meta property="og:title" content="算法识别之Md5">
 <meta property="og:url" content="http://blog.injectxx.com/2016/12/08/算法识别之Md5/index.html">
 <meta property="og:site_name" content="岁月's Blog">
 <meta property="og:description" content="先来谈谈最熟悉的MD5吧，小时候就知道这个加密算法了。">
-<meta property="og:updated_time" content="2016-12-07T16:30:08.000Z">
+<meta property="og:updated_time" content="2016-12-07T16:36:28.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="算法识别之M都">
+<meta name="twitter:title" content="算法识别之Md5">
 <meta name="twitter:description" content="先来谈谈最熟悉的MD5吧，小时候就知道这个加密算法了。">
 
 
@@ -116,7 +116,7 @@
 
   <link rel="canonical" href="http://blog.injectxx.com/2016/12/08/算法识别之Md5/"/>
 
-  <title> 算法识别之M都 | 岁月's Blog </title>
+  <title> 算法识别之Md5 | 岁月's Blog </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -282,7 +282,7 @@
             
             
               
-                算法识别之M都
+                算法识别之Md5
               
             
           </h1>
@@ -342,7 +342,7 @@
 <p>第二步、记录信息长度<br>用64位来存储填充前信息长度。这64位加在第一步结果的后面，这样信息长度就变为N<em>512+448+64=(N+1)</em>512位。</p>
 <p>第三步、装入标准的幻数（四个整数）<br>标准的幻数（物理顺序）是（A=(01234567)16，B=(89ABCDEF)16，C=(FEDCBA98)16，D=(76543210)16）。如果在程序中定义应该是（A=0X67452301L，B=0XEFCDAB89L，C=0X98BADCFEL，D=0X10325476L）。</p>
 <p>第四步、四轮循环运算</p>
-<p>循环的次数是分组的个数（N+1）<br>1）将每一512字节细分成16个小组，每个小组64位（8个字节）<br>2）先认识四个线性函数(&amp;是与,|是或,~是非,^是异或)<br>F(X,Y,Z)=(X&amp;Y)|((~X)&amp;Z)<br>G(X,Y,Z)=(X&amp;Z)|(Y&amp;(~Z))<br>H(X,Y,Z)=X^Y^Z<br>I(X,Y,Z)=Y^(X|(~Z))  </p>
+<p>循环的次数是分组的个数（N+1）<br>1）将每一512字节细分成16个小组，每个小组64位（8个字节）<br>2）先认识四个线性函数(&amp;是与,|是或,~是非,^是异或)<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">F(X,Y,Z)=(X&amp;Y)|((~X)&amp;Z)  </div><div class="line">G(X,Y,Z)=(X&amp;Z)|(Y&amp;(~Z))  </div><div class="line">H(X,Y,Z)=X^Y^Z  </div><div class="line">I(X,Y,Z)=Y^(X|(~Z))</div></pre></td></tr></table></figure></p>
 <p>3）设Mj表示消息的第j个子分组（从0到15），&lt;&lt;&lt; s表示循环左移s位，则四种操作为：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">FF(a,b,c,d,Mj,s,ti)表示a=b+((a+F(b,c,d)+Mj+ti)&lt;&lt; &lt;s) </div><div class="line">GG(a,b,c,d,Mj,s,ti)表示a=b+((a+G(b,c,d)+Mj+ti)&lt;&lt; &lt;s)  </div><div class="line">HH(a,b,c,d,Mj,s,ti)表示a=b+((a+H(b,c,d)+Mj+ti)&lt;&lt; &lt;s)  </div><div class="line">II(a,b,c,d,Mj,s,ti)表示a=b+((a+I(b,c,d)+Mj+ti)&lt;&lt; &lt;s)</div></pre></td></tr></table></figure></p>
 <p>4）四轮运算<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div></pre></td><td class="code"><pre><div class="line">第一轮</div><div class="line">a=FF(a,b,c,d,M0,7,0xd76aa478)</div><div class="line">b=FF(d,a,b,c,M1,12,0xe8c7b756)</div><div class="line">c=FF(c,d,a,b,M2,17,0x242070db)</div><div class="line">d=FF(b,c,d,a,M3,22,0xc1bdceee)</div><div class="line">a=FF(a,b,c,d,M4,7,0xf57c0faf)</div><div class="line">b=FF(d,a,b,c,M5,12,0x4787c62a)</div><div class="line">c=FF(c,d,a,b,M6,17,0xa8304613)</div><div class="line">d=FF(b,c,d,a,M7,22,0xfd469501)</div><div class="line">a=FF(a,b,c,d,M8,7,0x698098d8)</div><div class="line">b=FF(d,a,b,c,M9,12,0x8b44f7af)</div><div class="line">c=FF(c,d,a,b,M10,17,0xffff5bb1)</div><div class="line">d=FF(b,c,d,a,M11,22,0x895cd7be)</div><div class="line">a=FF(a,b,c,d,M12,7,0x6b901122)</div><div class="line">b=FF(d,a,b,c,M13,12,0xfd987193)</div><div class="line">c=FF(c,d,a,b,M14,17,0xa679438e)</div><div class="line">d=FF(b,c,d,a,M15,22,0x49b40821)</div><div class="line"></div><div class="line">第二轮</div><div class="line">a=GG(a,b,c,d,M1,5,0xf61e2562)</div><div class="line">b=GG(d,a,b,c,M6,9,0xc040b340)</div><div class="line">c=GG(c,d,a,b,M11,14,0x265e5a51)</div><div class="line">d=GG(b,c,d,a,M0,20,0xe9b6c7aa)</div><div class="line">a=GG(a,b,c,d,M5,5,0xd62f105d)</div><div class="line">b=GG(d,a,b,c,M10,9,0x02441453)</div><div class="line">c=GG(c,d,a,b,M15,14,0xd8a1e681)</div><div class="line">d=GG(b,c,d,a,M4,20,0xe7d3fbc8)</div><div class="line">a=GG(a,b,c,d,M9,5,0x21e1cde6)</div><div class="line">b=GG(d,a,b,c,M14,9,0xc33707d6)</div><div class="line">c=GG(c,d,a,b,M3,14,0xf4d50d87)</div><div class="line">d=GG(b,c,d,a,M8,20,0x455a14ed)</div><div class="line">a=GG(a,b,c,d,M13,5,0xa9e3e905)</div><div class="line">b=GG(d,a,b,c,M2,9,0xfcefa3f8)</div><div class="line">c=GG(c,d,a,b,M7,14,0x676f02d9)</div><div class="line">d=GG(b,c,d,a,M12,20,0x8d2a4c8a)</div><div class="line"></div><div class="line">第三轮</div><div class="line">a=HH(a,b,c,d,M5,4,0xfffa3942)</div><div class="line">b=HH(d,a,b,c,M8,11,0x8771f681)</div><div class="line">c=HH(c,d,a,b,M11,16,0x6d9d6122)</div><div class="line">d=HH(b,c,d,a,M14,23,0xfde5380c)</div><div class="line">a=HH(a,b,c,d,M1,4,0xa4beea44)</div><div class="line">b=HH(d,a,b,c,M4,11,0x4bdecfa9)</div><div class="line">c=HH(c,d,a,b,M7,16,0xf6bb4b60)</div><div class="line">d=HH(b,c,d,a,M10,23,0xbebfbc70)</div><div class="line">a=HH(a,b,c,d,M13,4,0x289b7ec6)</div><div class="line">b=HH(d,a,b,c,M0,11,0xeaa127fa)</div><div class="line">c=HH(c,d,a,b,M3,16,0xd4ef3085)</div><div class="line">d=HH(b,c,d,a,M6,23,0x04881d05)</div><div class="line">a=HH(a,b,c,d,M9,4,0xd9d4d039)</div><div class="line">b=HH(d,a,b,c,M12,11,0xe6db99e5)</div><div class="line">c=HH(c,d,a,b,M15,16,0x1fa27cf8)</div><div class="line">d=HH(b,c,d,a,M2,23,0xc4ac5665)</div><div class="line"></div><div class="line">第四轮</div><div class="line">a=II(a,b,c,d,M0,6,0xf4292244)</div><div class="line">b=II(d,a,b,c,M7,10,0x432aff97)</div><div class="line">c=II(c,d,a,b,M14,15,0xab9423a7)</div><div class="line">d=II(b,c,d,a,M5,21,0xfc93a039)</div><div class="line">a=II(a,b,c,d,M12,6,0x655b59c3)</div><div class="line">b=II(d,a,b,c,M3,10,0x8f0ccc92)</div><div class="line">c=II(c,d,a,b,M10,15,0xffeff47d)</div><div class="line">d=II(b,c,d,a,M1,21,0x85845dd1)</div><div class="line">a=II(a,b,c,d,M8,6,0x6fa87e4f)</div><div class="line">b=II(d,a,b,c,M15,10,0xfe2ce6e0)</div><div class="line">c=II(c,d,a,b,M6,15,0xa3014314)</div><div class="line">d=II(b,c,d,a,M13,21,0x4e0811a1)</div><div class="line">a=II(a,b,c,d,M4,6,0xf7537e82)</div><div class="line">b=II(d,a,b,c,M11,10,0xbd3af235)</div><div class="line">c=II(c,d,a,b,M2,15,0x2ad7d2bb)</div><div class="line">d=II(b,c,d,a,M9,21,0xeb86d391)</div><div class="line">5）每轮循环后，将A，B，C，D分别加上a，b，c，d，然后进入下一循环。</div></pre></td></tr></table></figure></p>
 <h3 id="应用"><a href="#应用" class="headerlink" title="应用"></a>应用</h3><p>简单了解了一下MD5的实现原理，直接来个例子分析一下，例子有很多，就直接拿加密与解密这本书中的例子来说吧。</p>
@@ -418,7 +418,7 @@
   <div class="comments" id="comments">
     
       <div class="ds-thread" data-thread-key="2016/12/08/算法识别之Md5/"
-           data-title="算法识别之M都" data-url="http://blog.injectxx.com/2016/12/08/算法识别之Md5/">
+           data-title="算法识别之Md5" data-url="http://blog.injectxx.com/2016/12/08/算法识别之Md5/">
       </div>
     
   </div>
