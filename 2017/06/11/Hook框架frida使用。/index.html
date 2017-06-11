@@ -68,7 +68,7 @@
 <link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="inject,远程线程注入," />
+  <meta name="keywords" content="Android,Hook,frida," />
 
 
 
@@ -84,18 +84,19 @@
 
 
 
-<meta name="description" content="好久没更新博客了，转眼自己又长大了一岁，搬砖的时间长了感觉文笔越来越差（其实以前也不怎么好），什么也写不出来，这里就写最近工作中用到的一些小方法吧，没什么技术含量，共勉之。">
+<meta name="description" content="0x1 简介Frida是一款基于python + javascript 的hook框架，通杀android\ios\linux\win\osx等各平台。官网为https://www.frida.re
+0x2 安装安装python，安装pip，安装frida执行pip install frida命令，下载frida服务端。pip下载地址： https://pypi.python.org/pypi/p">
 <meta property="og:type" content="article">
-<meta property="og:title" content="代码注入之一。">
-<meta property="og:url" content="http://blog.injectxx.com/2016/10/15/代码注入之一。/index.html">
+<meta property="og:title" content="Hook框架frida使用。">
+<meta property="og:url" content="http://blog.injectxx.com/2017/06/11/Hook框架frida使用。/index.html">
 <meta property="og:site_name" content="岁月's Blog">
-<meta property="og:description" content="好久没更新博客了，转眼自己又长大了一岁，搬砖的时间长了感觉文笔越来越差（其实以前也不怎么好），什么也写不出来，这里就写最近工作中用到的一些小方法吧，没什么技术含量，共勉之。">
-<meta property="og:image" content="http://blog.injectxx.com/img/15.png">
-<meta property="og:updated_time" content="2016-12-18T12:03:40.000Z">
+<meta property="og:description" content="0x1 简介Frida是一款基于python + javascript 的hook框架，通杀android\ios\linux\win\osx等各平台。官网为https://www.frida.re
+0x2 安装安装python，安装pip，安装frida执行pip install frida命令，下载frida服务端。pip下载地址： https://pypi.python.org/pypi/p">
+<meta property="og:updated_time" content="2017-06-11T16:15:59.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="代码注入之一。">
-<meta name="twitter:description" content="好久没更新博客了，转眼自己又长大了一岁，搬砖的时间长了感觉文笔越来越差（其实以前也不怎么好），什么也写不出来，这里就写最近工作中用到的一些小方法吧，没什么技术含量，共勉之。">
-<meta name="twitter:image" content="http://blog.injectxx.com/img/15.png">
+<meta name="twitter:title" content="Hook框架frida使用。">
+<meta name="twitter:description" content="0x1 简介Frida是一款基于python + javascript 的hook框架，通杀android\ios\linux\win\osx等各平台。官网为https://www.frida.re
+0x2 安装安装python，安装pip，安装frida执行pip install frida命令，下载frida服务端。pip下载地址： https://pypi.python.org/pypi/p">
 
 
 
@@ -116,9 +117,9 @@
 
 
 
-  <link rel="canonical" href="http://blog.injectxx.com/2016/10/15/代码注入之一。/"/>
+  <link rel="canonical" href="http://blog.injectxx.com/2017/06/11/Hook框架frida使用。/"/>
 
-  <title> 代码注入之一。 | 岁月's Blog </title>
+  <title> Hook框架frida使用。 | 岁月's Blog </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -294,7 +295,7 @@
             
             
               
-                代码注入之一。
+                Hook框架frida使用。
               
             
           </h1>
@@ -306,8 +307,8 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-10-15T09:48:13+08:00" content="2016-10-15">
-              2016-10-15
+            <time itemprop="dateCreated" datetime="2017-06-11T23:54:09+08:00" content="2017-06-11">
+              2017-06-11
             </time>
           </span>
 
@@ -321,8 +322,8 @@
               <span class="post-meta-item-text">分类于</span>
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/Windows/" itemprop="url" rel="index">
-                    <span itemprop="name">Windows</span>
+                  <a href="/categories/逆向/" itemprop="url" rel="index">
+                    <span itemprop="name">逆向</span>
                   </a>
                 </span>
 
@@ -337,8 +338,8 @@
             
               <span class="post-comments-count">
                 &nbsp; | &nbsp;
-                <a href="/2016/10/15/代码注入之一。/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/10/15/代码注入之一。/" itemprop="commentsCount"></span>
+                <a href="/2017/06/11/Hook框架frida使用。/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/06/11/Hook框架frida使用。/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -366,15 +367,11 @@
       
 
       
-        <p>好久没更新博客了，转眼自己又长大了一岁，搬砖的时间长了感觉文笔越来越差（其实以前也不怎么好），什么也写不出来，这里就写最近工作中用到的一些小方法吧，没什么技术含量，共勉之。</p>
-<a id="more"></a>
-<p>有时候需要用某些程序中的函数实现其功能，但现在代码保护技术十分强大的情况下，分析代码着实是一个体力活，这算是一种解决方案吧。</p>
-<p>测试代码：<br><figure class="highlight plain"><figcaption><span>C</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">#include &quot;stdafx.h&quot;</div><div class="line">#include &lt;stdio.h&gt;</div><div class="line"></div><div class="line">int Add(int a,int b)</div><div class="line">&#123;</div><div class="line">    int nRes = a + b;</div><div class="line">    return nRes;</div><div class="line">&#125;</div><div class="line"></div><div class="line">int main(int argc, char* argv[])</div><div class="line">&#123;</div><div class="line">    int a,b;</div><div class="line">    scanf(&quot;%d %d&quot;,&amp;a,&amp;b);</div><div class="line">    int n = Add(a,b);</div><div class="line">    printf(&quot;Hello World! %d\n&quot;,n);</div><div class="line">    return 0;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>程序逻辑很简单，就是做一个加法，现在我想不去逆Add的具体实现方法，只分析其函数参数进行远程调用。</p>
-<p>丢入OD定位代码：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">0040102F     |.  52            push edx                                 ;  </div><div class="line">00401030     |.  50            push eax</div><div class="line">00401031     |.  E8 CAFFFFFF   call Test.00401000</div><div class="line">00401036     |.  50            push eax</div><div class="line">00401037     |.  68 30804000   push Test.00408030                       ;  Hello World! %d\n</div><div class="line">0040103C     |.  E8 0F000000   call Test.00401050</div></pre></td></tr></table></figure></p>
-<p>00401031处就是我们的Add函数，根据stdcall调用规则，函数从右到左依次入栈，至此可以进行远程call调用。</p>
-<p>注入代码：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div></pre></td><td class="code"><pre><div class="line">#include &quot;stdafx.h&quot;</div><div class="line">#include &lt;windows.h&gt;</div><div class="line">int InjectProcess(LPVOID mFunc, LPVOID Param, DWORD ParamSize)</div><div class="line">&#123;</div><div class="line">    </div><div class="line">    DWORD dwPID = 1560;</div><div class="line">    HANDLE hProcess;</div><div class="line">    HANDLE  hThread;</div><div class="line">    LPVOID ThreadAddr;</div><div class="line">    LPVOID ParamAddr;</div><div class="line">    DWORD lpNumberOfBytes;</div><div class="line">    </div><div class="line">    </div><div class="line">    hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, dwPID);</div><div class="line">    if (hProcess == NULL)</div><div class="line">    &#123;</div><div class="line">        return 0;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    ParamAddr = VirtualAllocEx(hProcess, NULL, ParamSize, MEM_COMMIT, PAGE_EXECUTE_READWRITE);</div><div class="line">    </div><div class="line">    if (ParamAddr == NULL)</div><div class="line">    &#123;</div><div class="line">        return 0;</div><div class="line">    &#125;</div><div class="line">    ThreadAddr = VirtualAllocEx(hProcess, NULL, 0x100, MEM_COMMIT, PAGE_EXECUTE_READWRITE);</div><div class="line">    if (ThreadAddr == NULL)</div><div class="line">    &#123;</div><div class="line">        return 0;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    if (!WriteProcessMemory(hProcess, ParamAddr, Param, ParamSize, &amp;lpNumberOfBytes))</div><div class="line">    &#123;</div><div class="line">        return 0;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    if (!WriteProcessMemory(hProcess, ThreadAddr, mFunc, 0x128, &amp;lpNumberOfBytes))</div><div class="line">    &#123;</div><div class="line">        return 0;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    </div><div class="line">    hThread = CreateRemoteThread(hProcess, NULL, 0, (LPTHREAD_START_ROUTINE)ThreadAddr, ParamAddr, 0, &amp;lpNumberOfBytes);</div><div class="line">    </div><div class="line">    </div><div class="line">    WaitForSingleObject(hThread, INFINITE);</div><div class="line">    DWORD dwRet = 0;</div><div class="line">    GetExitCodeThread(hThread, &amp;dwRet);</div><div class="line">    </div><div class="line">    </div><div class="line">    </div><div class="line">    VirtualFreeEx(hProcess, ThreadAddr, 0x128, MEM_RELEASE);</div><div class="line">    VirtualFreeEx(hProcess, ParamAddr, ParamSize, MEM_RELEASE);</div><div class="line">    CloseHandle(hThread);</div><div class="line">    CloseHandle(hProcess);</div><div class="line">    return 0;</div><div class="line">&#125;</div><div class="line"></div><div class="line">typedef struct _Param</div><div class="line">&#123;</div><div class="line">    int a;</div><div class="line">    int b;</div><div class="line">&#125;Param, *PParam;</div><div class="line"></div><div class="line">void __stdcall Add(PParam Param)</div><div class="line">&#123;</div><div class="line">    DWORD dwAddr = 0x00401000;</div><div class="line">    int a = Param-&gt;a;</div><div class="line">    int b = Param-&gt;b;</div><div class="line">    __asm</div><div class="line">    &#123;</div><div class="line">        push a</div><div class="line">        push b</div><div class="line">        call dwAddr</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">void CallAdd(int a,int b)</div><div class="line">&#123;</div><div class="line">    Param p;</div><div class="line">    p.a = a;</div><div class="line">    p.b = b;</div><div class="line">    InjectProcess(Add, &amp;p, sizeof(p));</div><div class="line">&#125;</div><div class="line">int main(int argc, char* argv[])</div><div class="line">&#123;</div><div class="line">    CallAdd(2,3);</div><div class="line">    printf(&quot;Hello World!\n&quot;);</div><div class="line">    return 0;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>结果：<br><img src="/img/15.png" alt="说明" title="15"></p>
+        <h2 id="0x1-简介"><a href="#0x1-简介" class="headerlink" title="0x1 简介"></a>0x1 简介</h2><p>Frida是一款基于python + javascript 的hook框架，通杀android\ios\linux\win\osx等各平台。<br>官网为<a href="https://www.frida.re" target="_blank" rel="external">https://www.frida.re</a></p>
+<h2 id="0x2-安装"><a href="#0x2-安装" class="headerlink" title="0x2 安装"></a>0x2 安装</h2><p>安装python，安装pip，安装frida执行pip install frida命令，下载frida服务端。<br>pip下载地址： <a href="https://pypi.python.org/pypi/pip" target="_blank" rel="external">https://pypi.python.org/pypi/pip</a><br>服务器下载地址：<a href="https://github.com/frida/frida/releases" target="_blank" rel="external">https://github.com/frida/frida/releases</a></p>
+<h2 id="0x3-例子"><a href="#0x3-例子" class="headerlink" title="0x3 例子"></a>0x3 例子</h2><p>把frida服务器安装到手机，修改权限，运行。<br>进行端口转发。<br>adb forward tcp:27042 tcp:27042<br>adb forward tcp:27043 tcp:27043</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">MainActivity.java</div><div class="line"></div><div class="line">  boolean bRet = Debug.isDebuggerConnected();</div><div class="line">     if (bRet == true) &#123;</div><div class="line">         Log.e(&quot;IsDebug&quot;, &quot;IsDebug&quot;);</div><div class="line"></div><div class="line">     &#125; else &#123;</div><div class="line">         Log.e(&quot;IsNotDebug&quot;, &quot;IsNotDebug&quot;);</div><div class="line">     &#125;</div><div class="line"></div><div class="line"> Calc MyAdd =  new Calc();</div><div class="line"> int nRet =  MyAdd.add(1,2);</div><div class="line"> Log.e(&quot;Add&quot;,String.valueOf(nRet));</div><div class="line"></div><div class="line">Calc.java</div><div class="line"></div><div class="line"> public class Calc &#123;</div><div class="line">    public  int add(int a,int b)</div><div class="line">    &#123;</div><div class="line">        int nRet = a + b;</div><div class="line">        Log.e(&quot;Add&quot;,String.valueOf(nRet));</div><div class="line">        return nRet;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div></pre></td><td class="code"><pre><div class="line">import frida</div><div class="line">import sys</div><div class="line">rdev = frida.get_remote_device()</div><div class="line">session = rdev.attach(&quot;com.example.xxx.myapplication&quot;)</div><div class="line">scr = &quot;&quot;&quot;</div><div class="line">Java.perform(function()&#123;</div><div class="line"></div><div class="line">    var Debug = Java.use(&quot;android.os.Debug&quot;);</div><div class="line">    Debug.isDebuggerConnected.implementation = function()&#123;</div><div class="line">        send(&quot;Called isDebuggerConnected&quot;);</div><div class="line">        return true;</div><div class="line">    &#125;;</div><div class="line"></div><div class="line">    var CallCalc = Java.use(&quot;com.example.xxx.myapplication.Calc&quot;);</div><div class="line">    send(&quot;Called Add&quot;);</div><div class="line">    var instance = CallCalc.$new();</div><div class="line">    var res = instance.add(100,200);</div><div class="line">    send(res);</div><div class="line">    </div><div class="line">    var FakeRet = Java.use(&quot;com.example.xxx.myapplication.Calc&quot;);</div><div class="line">    FakeRet.add.implementation = function()&#123;</div><div class="line">        send(&quot;Called Add FakeRet&quot;);</div><div class="line">        return 10 ;</div><div class="line">    &#125;;</div><div class="line">    </div><div class="line">    var Hello = Java.use(&quot;com.example.xxx.myapplication.Calc&quot;);</div><div class="line">    Hello.hello.overload(&quot;int&quot;).implementation = function(var_0) &#123;</div><div class="line">        send(var_0);</div><div class="line">        var ret = this.hello(2);//调用原函数失败</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;);</div><div class="line">&#125;);</div><div class="line">&quot;&quot;&quot;</div><div class="line">script = session.create_script(scr)</div><div class="line">def on_message(message ,data):</div><div class="line">    print message</div><div class="line">script.on(&quot;message&quot; , on_message)</div><div class="line">script.load()</div><div class="line">sys.stdin.read()</div></pre></td></tr></table></figure>
 
       
     </div>
@@ -397,9 +394,11 @@
       
         <div class="post-tags">
           
-            <a href="/tags/inject/" rel="tag">#inject</a>
+            <a href="/tags/Android/" rel="tag">#Android</a>
           
-            <a href="/tags/远程线程注入/" rel="tag">#远程线程注入</a>
+            <a href="/tags/Hook/" rel="tag">#Hook</a>
+          
+            <a href="/tags/frida/" rel="tag">#frida</a>
           
         </div>
       
@@ -408,17 +407,13 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2016/08/24/Xposed Hook/" rel="next" title="Android Xposed Hook。">
-                <i class="fa fa-chevron-left"></i> Android Xposed Hook。
+              <a href="/2017/04/18/复现笔记。/" rel="next" title="NSA工具包之0day Eternalblue 复现笔记。">
+                <i class="fa fa-chevron-left"></i> NSA工具包之0day Eternalblue 复现笔记。
               </a>
             
           </div>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2016/10/28/Patch Clover。/" rel="prev" title="Patch Clover。">
-                Patch Clover。 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -444,8 +439,8 @@
           
   <div class="comments" id="comments">
     
-      <div class="ds-thread" data-thread-key="2016/10/15/代码注入之一。/"
-           data-title="代码注入之一。" data-url="http://blog.injectxx.com/2016/10/15/代码注入之一。/">
+      <div class="ds-thread" data-thread-key="2017/06/11/Hook框架frida使用。/"
+           data-title="Hook框架frida使用。" data-url="http://blog.injectxx.com/2017/06/11/Hook框架frida使用。/">
       </div>
     
   </div>
@@ -587,7 +582,7 @@
               
             
             
-              <p class="post-toc-empty">此文章未包含目录</p>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#0x1-简介"><span class="nav-number">1.</span> <span class="nav-text">0x1 简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x2-安装"><span class="nav-number">2.</span> <span class="nav-text">0x2 安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x3-例子"><span class="nav-number">3.</span> <span class="nav-text">0x3 例子</span></a></li></ol></div>
             
           </div>
         </section>
